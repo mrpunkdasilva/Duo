@@ -175,9 +175,9 @@ export default function HomePage() {
                 <Users className="h-6 w-6 text-duo-teal" />
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold">{t("connectPartner")}</h3>
+                <h3 className="font-semibold">{t("connectDuo")}</h3>
                 <p className="text-sm text-muted-foreground">
-                  {t("connectPartnerDescription")}
+                  {t("connectDuoDescription")}
                 </p>
               </div>
               <ArrowRight className="h-5 w-5 text-duo-teal flex-shrink-0" />

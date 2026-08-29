@@ -20,7 +20,7 @@
     "home": "Início",
     "places": "Lugares",
     "new": "Novo",
-    "partner": "Par"
+    "duo": "Duo"
   },
   "auth": {
     "login": {
@@ -67,25 +67,25 @@
     "seeAll": "Ver todos",
     "addFirstPlace": "Adicione o primeiro lugar",
     "addFirstPlaceDescription": "Um restaurante, uma praia, um parque... qualquer lugar que vocês queiram ir juntos",
-    "connectPartner": "Conectar com sua par",
-    "connectPartnerDescription": "Adicione o código da sua par para compartilhar lugares juntos"
+    "connectDuo": "Conectar com seu Duo",
+    "connectDuoDescription": "Adicione o código do seu Duo para compartilhar lugares juntos"
   },
-  "partner": {
-    "title": "Seu Par",
-    "subtitle": "Conecte-se com sua par para compartilhar lugares",
+  "duo": {
+    "title": "Seu Duo",
+    "subtitle": "Conecte-se com seu Duo para compartilhar lugares",
     "connected": "Conectado com",
     "shareCode": "Compartilhar código",
-    "shareCodeDescription": "Envie este código para sua par",
+    "shareCodeDescription": "Envie este código para seu Duo",
     "generateCode": "Gerar código",
     "enterCode": "Entrar com código",
-    "enterCodeDescription": "Digite o código que sua par te enviou",
+    "enterCodeDescription": "Digite o código que seu Duo te enviou",
     "link": "Vincular",
     "invalidCode": "Código deve ter 6 caracteres",
     "linkError": "Erro ao vincular. Verifique o código.",
-    "linkedSuccess": "Par vinculado com sucesso!",
+    "linkedSuccess": "Duo vinculado com sucesso!",
     "howItWorks": "Como funciona",
     "step1": "Um de vocês gera um código de convite",
-    "step2": "A par recebe e digita o código",
+    "step2": "Seu Duo recebe e digita o código",
     "step3": "Pronto! Agora vocês compartilham os lugares"
   },
   "places": {
@@ -150,8 +150,8 @@
   },
   "profile": {
     "title": "Perfil",
-    "myPartner": "Minha Par",
-    "myPartnerDescription": "Gerenciar vinculo com sua par",
+    "myDuo": "Meu Duo",
+    "myDuoDescription": "Gerenciar vínculo com seu Duo",
     "myPlaces": "Meus Lugares",
     "myPlacesDescription": "Ver todos os lugares salvos",
     "signOut": "Sair da conta"

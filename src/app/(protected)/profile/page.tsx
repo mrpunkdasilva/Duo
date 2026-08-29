@@ -47,8 +47,8 @@ export default function ProfilePage() {
                 <Users className="h-5 w-5 text-duo-teal" />
               </div>
               <div className="flex-1">
-                <p className="font-medium text-sm">{t("myPartner")}</p>
-                <p className="text-xs text-muted-foreground">{t("myPartnerDescription")}</p>
+                <p className="font-medium text-sm">{t("myDuo")}</p>
+                <p className="text-xs text-muted-foreground">{t("myDuoDescription")}</p>
               </div>
               <ChevronRight className="h-4 w-4 text-muted-foreground" />
             </CardContent>

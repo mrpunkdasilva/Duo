@@ -11,7 +11,7 @@ const navItems = [
   { href: "/home", icon: Home, label: "Início" },
   { href: "/places", icon: MapPin, label: "Lugares" },
   { href: "/places/new", icon: Plus, label: "Novo", isAction: true },
-  { href: "/partner", icon: Users, label: "Par" },
+  { href: "/partner", icon: Users, label: "Duo" },
 ];
 
 export function MobileNav() {

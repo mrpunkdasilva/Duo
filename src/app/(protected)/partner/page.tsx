@@ -10,7 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Loader2, Copy, Check, Heart, LinkIcon, UserPlus } from "lucide-react";
 
 export default function PartnerPage() {
-  const t = useTranslations("partner");
+  const t = useTranslations("duo");
   const [inviteCode, setInviteCode] = useState<string | null>(null);
   const [partnerName, setPartnerName] = useState<string | null>(null);
   const [partnerImage, setPartnerImage] = useState<string | null>(null);
