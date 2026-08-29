@@ -116,13 +116,13 @@ export default function HomePage() {
                 <div className="flex items-center -space-x-2">
                   <Avatar className="h-8 w-8 ring-2 ring-background">
                     <AvatarImage src={session?.user?.image || ""} />
-                    <AvatarFallback className="bg-duo-rose/20 text-duo-rose text-xs font-bold">
+                    <AvatarFallback className="bg-duo-rose-light text-duo-rose-dark text-xs font-bold">
                       {userName?.charAt(0).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                   <Avatar className="h-8 w-8 ring-2 ring-background">
                     <AvatarImage src={partner.image || ""} />
-                    <AvatarFallback className="bg-duo-teal/20 text-duo-teal text-xs font-bold">
+                    <AvatarFallback className="bg-duo-teal-light text-duo-teal-dark text-xs font-bold">
                       {partnerName?.charAt(0).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>

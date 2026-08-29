@@ -30,7 +30,7 @@ export function MobileNav() {
           <Link href="/profile">
             <Avatar className="h-8 w-8 ring-2 ring-duo-rose/20">
               <AvatarImage src={session?.user?.image || ""} alt={session?.user?.name || ""} />
-              <AvatarFallback className="bg-duo-rose/10 text-duo-rose text-xs font-bold">
+              <AvatarFallback className="bg-duo-rose-light text-duo-rose-dark text-xs font-bold">
                 {session?.user?.name?.charAt(0).toUpperCase() || "U"}
               </AvatarFallback>
             </Avatar>
@@ -71,7 +71,7 @@ export function MobileNav() {
             <Link href="/profile">
               <Avatar className="h-9 w-9 ring-2 ring-duo-rose/20 cursor-pointer">
                 <AvatarImage src={session?.user?.image || ""} alt={session?.user?.name || ""} />
-                <AvatarFallback className="bg-duo-rose/10 text-duo-rose font-bold">
+                <AvatarFallback className="bg-duo-rose-light text-duo-rose-dark font-bold">
                   {session?.user?.name?.charAt(0).toUpperCase() || "U"}
                 </AvatarFallback>
               </Avatar>

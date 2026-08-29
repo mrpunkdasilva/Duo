@@ -28,7 +28,7 @@ export default function ProfilePage() {
           <div className="relative -mt-12 mb-4">
             <Avatar className="h-24 w-24 ring-4 ring-background">
               <AvatarImage src={session?.user?.image || ""} alt={userName} />
-              <AvatarFallback className="bg-duo-rose/10 text-duo-rose text-3xl font-bold">
+              <AvatarFallback className="bg-duo-rose-light text-duo-rose-dark text-3xl font-bold">
                 {userName.charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>

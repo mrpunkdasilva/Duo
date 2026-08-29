@@ -107,7 +107,7 @@ export default function PartnerPage() {
             <div className="relative">
               <Avatar className="h-16 w-16 ring-2 ring-duo-teal/30">
                 <AvatarImage src={partnerImage || ""} alt={partnerName} />
-                <AvatarFallback className="bg-duo-teal/10 text-duo-teal text-xl font-bold">
+                <AvatarFallback className="bg-duo-teal-light text-duo-teal-dark text-xl font-bold">
                   {partnerName.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
