@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useSession, signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Home, MapPin, Plus, Heart, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -27,12 +27,14 @@ export function MobileNav() {
             <Heart className="h-5 w-5 fill-duo-rose text-duo-rose" />
             <span className="text-lg font-bold text-gradient">duo</span>
           </Link>
-          <Avatar className="h-8 w-8 ring-2 ring-duo-rose/20">
-            <AvatarImage src={session?.user?.image || ""} alt={session?.user?.name || ""} />
-            <AvatarFallback className="bg-duo-rose/10 text-duo-rose text-xs font-bold">
-              {session?.user?.name?.charAt(0).toUpperCase() || "U"}
-            </AvatarFallback>
-          </Avatar>
+          <Link href="/profile">
+            <Avatar className="h-8 w-8 ring-2 ring-duo-rose/20">
+              <AvatarImage src={session?.user?.image || ""} alt={session?.user?.name || ""} />
+              <AvatarFallback className="bg-duo-rose/10 text-duo-rose text-xs font-bold">
+                {session?.user?.name?.charAt(0).toUpperCase() || "U"}
+              </AvatarFallback>
+            </Avatar>
+          </Link>
         </div>
       </header>
 
@@ -66,12 +68,14 @@ export function MobileNav() {
             <span className="text-sm text-muted-foreground">
               {session?.user?.name?.split(" ")[0]}
             </span>
-            <Avatar className="h-9 w-9 ring-2 ring-duo-rose/20 cursor-pointer" onClick={() => signOut()}>
-              <AvatarImage src={session?.user?.image || ""} alt={session?.user?.name || ""} />
-              <AvatarFallback className="bg-duo-rose/10 text-duo-rose font-bold">
-                {session?.user?.name?.charAt(0).toUpperCase() || "U"}
-              </AvatarFallback>
-            </Avatar>
+            <Link href="/profile">
+              <Avatar className="h-9 w-9 ring-2 ring-duo-rose/20 cursor-pointer">
+                <AvatarImage src={session?.user?.image || ""} alt={session?.user?.name || ""} />
+                <AvatarFallback className="bg-duo-rose/10 text-duo-rose font-bold">
+                  {session?.user?.name?.charAt(0).toUpperCase() || "U"}
+                </AvatarFallback>
+              </Avatar>
+            </Link>
           </div>
         </div>
       </header>

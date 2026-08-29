@@ -147,5 +147,13 @@
   "metadata": {
     "title": "duo - Lugares para visitar juntos",
     "description": "App para casais registrarem e descobrirem lugares para visitar juntos"
+  },
+  "profile": {
+    "title": "Perfil",
+    "myPartner": "Minha Par",
+    "myPartnerDescription": "Gerenciar vinculo com sua par",
+    "myPlaces": "Meus Lugares",
+    "myPlacesDescription": "Ver todos os lugares salvos",
+    "signOut": "Sair da conta"
   }
 }
