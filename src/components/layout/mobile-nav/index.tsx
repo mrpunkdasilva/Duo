@@ -27,7 +27,7 @@ export function MobileNav() {
             <span className="text-lg font-bold text-gradient">duo</span>
           </Link>
           <Link href="/profile">
-            <Avatar className="h-8 w-8 ring-2 ring-duo-rose-light">
+            <Avatar className="h-8 w-8 ring-2 ring-white">
               <AvatarImage src={session?.user?.image || ""} alt={session?.user?.name || ""} />
               <AvatarFallback className="bg-duo-rose-light text-duo-rose-dark text-xs font-bold">
                 {session?.user?.name?.charAt(0).toUpperCase() || "U"}
@@ -68,7 +68,7 @@ export function MobileNav() {
               {session?.user?.name?.split(" ")[0]}
             </span>
             <Link href="/profile">
-              <Avatar className="h-9 w-9 ring-2 ring-duo-rose-light cursor-pointer">
+              <Avatar className="h-9 w-9 ring-2 ring-white cursor-pointer">
                 <AvatarImage src={session?.user?.image || ""} alt={session?.user?.name || ""} />
                 <AvatarFallback className="bg-duo-rose-light text-duo-rose-dark font-bold">
                   {session?.user?.name?.charAt(0).toUpperCase() || "U"}
@@ -97,9 +97,6 @@ export function MobileNav() {
                 >
                   <item.icon className={cn("h-5 w-5", isActive && "fill-duo-rose/20")} />
                   <span className="text-[10px] font-medium">{item.label}</span>
-                  {isActive && (
-                    <div className="absolute bottom-6 w-1 h-1 rounded-full bg-duo-rose" />
-                  )}
                 </div>
               </Link>
             );

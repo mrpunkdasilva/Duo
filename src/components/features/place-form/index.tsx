@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { CreatePlaceInput, PLACE_CATEGORIES, CATEGORY_LABELS } from "@/types";
 import { Loader2 } from "lucide-react";
 
@@ -74,19 +75,19 @@ export function PlaceForm({ initialData, onSubmit, isLoading, onCancel }: PlaceF
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="category" className="text-sm font-medium">{t("category")}</Label>
-        <select
-          id="category"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          className="flex h-12 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm"
-        >
-          {PLACE_CATEGORIES.map((cat) => (
-            <option key={cat} value={cat}>
-              {CATEGORY_LABELS[cat]}
-            </option>
-          ))}
-        </select>
+        <Label className="text-sm font-medium">{t("category")}</Label>
+        <Select value={category} onValueChange={setCategory}>
+          <SelectTrigger className="h-12 rounded-xl w-full">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {PLACE_CATEGORIES.map((cat) => (
+              <SelectItem key={cat} value={cat}>
+                {CATEGORY_LABELS[cat]}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       <div className="space-y-2">

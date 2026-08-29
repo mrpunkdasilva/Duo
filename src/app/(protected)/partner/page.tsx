@@ -105,7 +105,7 @@ export default function PartnerPage() {
         <Card className="border-0 bg-duo-teal/5">
           <CardContent className="flex items-center gap-4 py-6">
             <div className="relative">
-              <Avatar className="h-16 w-16 ring-2 ring-duo-teal/30">
+              <Avatar className="h-16 w-16 ring-2 ring-white">
                 <AvatarImage src={partnerImage || ""} alt={partnerName} />
                 <AvatarFallback className="bg-duo-teal-light text-duo-teal-dark text-xl font-bold">
                   {partnerName.charAt(0).toUpperCase()}
