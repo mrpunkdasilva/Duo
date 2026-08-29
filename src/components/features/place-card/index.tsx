@@ -40,15 +40,15 @@ const categoryIcons: Record<PlaceCategory, React.ElementType> = {
   outro: MapPin,
 };
 
-const categoryBg: Record<PlaceCategory, string> = {
-  restaurante: "bg-orange-50 text-orange-600",
-  praia: "bg-blue-50 text-blue-600",
-  museu: "bg-purple-50 text-purple-600",
-  parque: "bg-green-50 text-green-600",
-  cafeteria: "bg-amber-50 text-amber-600",
-  bar: "bg-pink-50 text-pink-600",
-  loja: "bg-violet-50 text-violet-600",
-  outro: "bg-duo-rose/10 text-duo-rose",
+const categoryColors: Record<PlaceCategory, string> = {
+  restaurante: "from-orange-400 to-red-400",
+  praia: "from-blue-400 to-cyan-400",
+  museu: "from-purple-400 to-indigo-400",
+  parque: "from-green-400 to-emerald-400",
+  cafeteria: "from-amber-400 to-yellow-400",
+  bar: "from-pink-400 to-rose-400",
+  loja: "from-violet-400 to-purple-400",
+  outro: "from-duo-rose to-duo-teal",
 };
 
 export function PlaceCard({ place, onToggleVisited, onEdit, onDelete }: PlaceCardProps) {
@@ -56,20 +56,24 @@ export function PlaceCard({ place, onToggleVisited, onEdit, onDelete }: PlaceCar
   const tc = useTranslations("common");
   const [showActions, setShowActions] = useState(false);
   const CategoryIcon = categoryIcons[place.category] || MapPin;
-  const bgColor = categoryBg[place.category] || "bg-duo-rose/10 text-duo-rose";
+  const colorGradient = categoryColors[place.category] || "from-duo-rose to-duo-teal";
 
   return (
     <Card
-      className={`border border-border/60 rounded-2xl shadow-sm transition-all ${
+      className={`border border-border/60 rounded-2xl shadow-sm overflow-hidden transition-all ${
         place.visited ? "opacity-70" : ""
       }`}
     >
-      <CardContent className="p-4 space-y-3">
-        {/* Header: icon + name + heart */}
-        <div className="flex items-start gap-3">
-          <div className={`flex-shrink-0 w-10 h-10 rounded-xl ${bgColor} flex items-center justify-center`}>
-            <CategoryIcon className="h-5 w-5" />
-          </div>
+      <CardContent className="p-0">
+        {/* Color stripe */}
+        <div className={`h-1.5 bg-gradient-to-r ${colorGradient}`} />
+
+        <div className="p-4 space-y-3">
+          {/* Header: icon + name + heart */}
+          <div className="flex items-start gap-3">
+            <div className={`flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br ${colorGradient} flex items-center justify-center`}>
+              <CategoryIcon className="h-5 w-5 text-white" />
+            </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
               <h3 className="font-semibold text-base truncate">{place.name}</h3>
