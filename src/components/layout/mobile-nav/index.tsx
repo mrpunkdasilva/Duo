@@ -92,11 +92,18 @@ export function MobileNav() {
 
             if (item.isAction) {
               return (
-                <Link key={item.href} href={item.href}>
-                  <div className="relative -mt-5">
-                    <div className="flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-br from-duo-rose to-duo-teal shadow-lg shadow-duo-rose/30 text-white">
-                      <item.icon className="h-6 w-6" />
-                    </div>
+                <Link key={item.href} href={item.href} className="flex-1">
+                  <div
+                    className={cn(
+                      "flex flex-col items-center gap-1 py-2 transition-all",
+                      isActive ? "text-duo-rose" : "text-muted-foreground"
+                    )}
+                  >
+                    <item.icon className={cn("h-5 w-5", isActive && "fill-duo-rose/20")} />
+                    <span className="text-[10px] font-medium">{item.label}</span>
+                    {isActive && (
+                      <div className="absolute bottom-6 w-1 h-1 rounded-full bg-duo-rose" />
+                    )}
                   </div>
                 </Link>
               );
