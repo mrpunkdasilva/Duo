@@ -6,9 +6,15 @@ import { useTranslations } from "next-intl";
 import { PlaceList } from "@/components/features/place-list";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Place, DashboardStats } from "@/types";
-import { Plus, Heart, Sparkles, MapPin, Users } from "lucide-react";
+import { Plus, Heart, Sparkles, MapPin, Users, ArrowRight } from "lucide-react";
 import Link from "next/link";
+
+interface PartnerInfo {
+  name: string;
+  image?: string;
+}
 
 export default function HomePage() {
   const t = useTranslations("dashboard");
@@ -16,13 +22,15 @@ export default function HomePage() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [recentPlaces, setRecentPlaces] = useState<Place[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [partner, setPartner] = useState<PartnerInfo | null>(null);
 
   useEffect(() => {
     async function loadData() {
       try {
-        const [statsRes, placesRes] = await Promise.all([
+        const [statsRes, placesRes, coupleRes] = await Promise.all([
           fetch("/api/stats"),
           fetch("/api/places?limit=5"),
+          fetch("/api/couple"),
         ]);
 
         if (statsRes.ok) {
@@ -33,6 +41,13 @@ export default function HomePage() {
         if (placesRes.ok) {
           const placesData = await placesRes.json();
           setRecentPlaces(placesData.data || []);
+        }
+
+        if (coupleRes.ok) {
+          const coupleData = await coupleRes.json();
+          if (coupleData.data?.partner) {
+            setPartner(coupleData.data.partner);
+          }
         }
       } catch (error) {
         console.error("Erro ao carregar dados:", error);
@@ -78,7 +93,9 @@ export default function HomePage() {
     }
   };
 
-  const firstName = session?.user?.name?.split(" ")[0] || "vocês";
+  const userName = session?.user?.name?.split(" ")[0] || "você";
+  const partnerName = partner?.name?.split(" ")[0];
+  const hasPartner = !!partner;
 
   return (
     <div className="px-4 pt-4 space-y-6">
@@ -89,14 +106,44 @@ export default function HomePage() {
             <Heart className="h-5 w-5 fill-duo-rose text-duo-rose" />
             <span className="text-sm font-medium text-duo-rose">{t("forYouTwo")}</span>
           </div>
-          <h1 className="text-2xl md:text-3xl font-bold mb-1">
-            {t("greeting", { name: firstName })}
-          </h1>
-          <p className="text-muted-foreground text-sm md:text-base">
-            {recentPlaces.length === 0
-              ? t("emptyState")
-              : t("placesToExplore", { count: recentPlaces.length })}
-          </p>
+
+          {hasPartner ? (
+            <>
+              <h1 className="text-2xl md:text-3xl font-bold mb-1">
+                {userName} & {partnerName}
+              </h1>
+              <div className="flex items-center gap-3 mt-3">
+                <div className="flex items-center -space-x-2">
+                  <Avatar className="h-8 w-8 ring-2 ring-background">
+                    <AvatarImage src={session?.user?.image || ""} />
+                    <AvatarFallback className="bg-duo-rose/20 text-duo-rose text-xs font-bold">
+                      {userName?.charAt(0).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <Avatar className="h-8 w-8 ring-2 ring-background">
+                    <AvatarImage src={partner.image || ""} />
+                    <AvatarFallback className="bg-duo-teal/20 text-duo-teal text-xs font-bold">
+                      {partnerName?.charAt(0).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                </div>
+                <p className="text-muted-foreground text-sm">
+                  {recentPlaces.length === 0
+                    ? t("emptyState")
+                    : t("placesToExplore", { count: recentPlaces.length })}
+                </p>
+              </div>
+            </>
+          ) : (
+            <>
+              <h1 className="text-2xl md:text-3xl font-bold mb-1">
+                {t("greeting", { name: userName })}
+              </h1>
+              <p className="text-muted-foreground text-sm md:text-base">
+                {t("emptyState")}
+              </p>
+            </>
+          )}
         </div>
         <Sparkles className="absolute top-4 right-4 h-16 w-16 text-duo-teal/10" />
       </div>
@@ -119,7 +166,27 @@ export default function HomePage() {
         </div>
       )}
 
-      {/* Add new place - above recentes */}
+      {/* Connect partner - only when no partner */}
+      {!hasPartner && !isLoading && (
+        <Link href="/partner" className="block">
+          <Card className="border-2 border-dashed border-duo-teal/30 bg-duo-teal/5 hover:bg-duo-teal/10 transition-colors cursor-pointer">
+            <CardContent className="flex items-center gap-4 py-5 px-4">
+              <div className="w-12 h-12 rounded-full bg-duo-teal/10 flex items-center justify-center flex-shrink-0">
+                <Users className="h-6 w-6 text-duo-teal" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-semibold">{t("connectPartner")}</h3>
+                <p className="text-sm text-muted-foreground">
+                  {t("connectPartnerDescription")}
+                </p>
+              </div>
+              <ArrowRight className="h-5 w-5 text-duo-teal flex-shrink-0" />
+            </CardContent>
+          </Card>
+        </Link>
+      )}
+
+      {/* Add new place */}
       <Link href="/places/new" className="block">
         <Card className="border-2 border-dashed border-duo-rose/20 bg-duo-rose/5 hover:bg-duo-rose/10 transition-colors cursor-pointer">
           <CardContent className="flex items-center gap-4 py-5 px-4">
@@ -130,23 +197,6 @@ export default function HomePage() {
               <h3 className="font-semibold">{t("addFirstPlace")}</h3>
               <p className="text-sm text-muted-foreground">
                 {t("addFirstPlaceDescription")}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      </Link>
-
-      {/* Partner card */}
-      <Link href="/partner" className="block">
-        <Card className="border-0 bg-duo-teal/5 hover:bg-duo-teal/10 transition-colors cursor-pointer">
-          <CardContent className="flex items-center gap-4 py-5 px-4">
-            <div className="w-12 h-12 rounded-full bg-duo-teal/10 flex items-center justify-center flex-shrink-0">
-              <Users className="h-6 w-6 text-duo-teal" />
-            </div>
-            <div>
-              <h3 className="font-semibold">{t("connectPartner")}</h3>
-              <p className="text-sm text-muted-foreground">
-                {t("connectPartnerDescription")}
               </p>
             </div>
           </CardContent>
