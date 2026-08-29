@@ -1,0 +1,151 @@
+{
+  "common": {
+    "appName": "duo",
+    "tagline": "Lugares para visitar juntos",
+    "back": "Voltar",
+    "save": "Salvar",
+    "saving": "Salvando...",
+    "cancel": "Cancelar",
+    "edit": "Editar",
+    "delete": "Excluir",
+    "confirm": "Confirmar",
+    "loading": "Carregando...",
+    "notFound": "Não encontrado",
+    "seeAll": "Ver todos",
+    "newPlace": "Novo Lugar",
+    "error": "Erro",
+    "tryAgain": "Tente novamente"
+  },
+  "nav": {
+    "home": "Início",
+    "places": "Lugares",
+    "new": "Novo",
+    "partner": "Par"
+  },
+  "auth": {
+    "login": {
+      "title": "Entrar",
+      "description": "Acesse sua conta para continuar",
+      "email": "Email",
+      "emailPlaceholder": "seu@email.com",
+      "password": "Senha",
+      "passwordPlaceholder": "••••••••",
+      "submit": "Entrar",
+      "noAccount": "Não tem uma conta?",
+      "createAccount": "Criar conta",
+      "invalidCredentials": "Email ou senha inválidos",
+      "loginError": "Erro ao fazer login"
+    },
+    "register": {
+      "title": "Criar conta",
+      "description": "Comece a salvar lugares juntos",
+      "name": "Nome",
+      "namePlaceholder": "Seu nome",
+      "email": "Email",
+      "emailPlaceholder": "seu@email.com",
+      "password": "Senha",
+      "passwordPlaceholder": "••••••••",
+      "submit": "Criar Conta",
+      "hasAccount": "Já tem uma conta?",
+      "login": "Entrar",
+      "passwordMin": "A senha deve ter pelo menos 6 caracteres",
+      "createError": "Erro ao criar conta"
+    }
+  },
+  "dashboard": {
+    "greeting": "Oi, {name}!",
+    "forYouTwo": "Para vocês dois",
+    "placesToExplore_one": "Vocês têm {count} lugar pra explorar",
+    "placesToExplore_other": "Vocês têm {count} lugares pra explorar",
+    "emptyState": "Comecem a salvar lugares para visitar juntos",
+    "stats": {
+      "places": "Lugares",
+      "visited": "Visitados",
+      "pending": "Pendentes"
+    },
+    "recent": "Recentes",
+    "seeAll": "Ver todos",
+    "addFirstPlace": "Adicione o primeiro lugar",
+    "addFirstPlaceDescription": "Um restaurante, uma praia, um parque... qualquer lugar que vocês queiram ir juntos",
+    "connectPartner": "Conectar com sua par",
+    "connectPartnerDescription": "Adicione o código da sua par para compartilhar lugares juntos"
+  },
+  "partner": {
+    "title": "Seu Par",
+    "subtitle": "Conecte-se com sua par para compartilhar lugares",
+    "connected": "Conectado com",
+    "shareCode": "Compartilhar código",
+    "shareCodeDescription": "Envie este código para sua par",
+    "generateCode": "Gerar código",
+    "enterCode": "Entrar com código",
+    "enterCodeDescription": "Digite o código que sua par te enviou",
+    "link": "Vincular",
+    "invalidCode": "Código deve ter 6 caracteres",
+    "linkError": "Erro ao vincular. Verifique o código.",
+    "linkedSuccess": "Par vinculado com sucesso!",
+    "howItWorks": "Como funciona",
+    "step1": "Um de vocês gera um código de convite",
+    "step2": "A par recebe e digita o código",
+    "step3": "Pronto! Agora vocês compartilham os lugares"
+  },
+  "places": {
+    "title": "Lugares",
+    "emptyAll": "Nenhum lugar salvo ainda",
+    "savedCount_one": "{count} lugar salvo",
+    "savedCount_other": "{count} lugares salvos",
+    "searchPlaceholder": "Buscar lugares...",
+    "tabs": {
+      "all": "Todos",
+      "pending": "Pendentes",
+      "visited": "Visitados"
+    },
+    "emptySearch": "Nenhum lugar encontrado",
+    "emptyPending": "Nenhum lugar pendente",
+    "emptyVisited": "Nenhum lugar visitado ainda",
+    "confirmDelete": "Tem certeza que deseja excluir este lugar?"
+  },
+  "placeForm": {
+    "name": "Nome *",
+    "namePlaceholder": "Ex: Restaurante Lua Cheia",
+    "nameRequired": "Nome é obrigatório",
+    "description": "Por que vocês querem ir?",
+    "descriptionPlaceholder": "Um lugar especial, com boa comida, atmosfera...",
+    "category": "Categoria",
+    "address": "Endereço",
+    "addressPlaceholder": "Rua, número, cidade",
+    "photoUrl": "URL da Foto",
+    "photoUrlPlaceholder": "https://...",
+    "notes": "Notas Pessoais",
+    "notesPlaceholder": "Observações, dicas, horários...",
+    "submit": "Salvar",
+    "submitLoading": "Salvando..."
+  },
+  "newPlace": {
+    "title": "Novo Lugar",
+    "subtitle": "Onde vocês querem ir juntos?",
+    "error": "Erro ao criar lugar. Tente novamente."
+  },
+  "editPlace": {
+    "title": "Editar Lugar",
+    "subtitle": "Atualize as informações",
+    "notFound": "Lugar não encontrado",
+    "error": "Erro ao atualizar lugar. Tente novamente."
+  },
+  "placeCard": {
+    "visited": "Visitado"
+  },
+  "categories": {
+    "restaurante": "Restaurante",
+    "praia": "Praia",
+    "museu": "Museu",
+    "parque": "Parque",
+    "cafeteria": "Cafeteria",
+    "bar": "Bar",
+    "loja": "Loja",
+    "outro": "Outro"
+  },
+  "metadata": {
+    "title": "duo - Lugares para visitar juntos",
+    "description": "App para casais registrarem e descobrirem lugares para visitar juntos"
+  }
+}

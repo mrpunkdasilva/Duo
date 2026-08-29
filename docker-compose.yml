@@ -1,0 +1,15 @@
+services:
+  mongodb:
+    image: mongo:8.0
+    container_name: duo-mongodb
+    restart: unless-stopped
+    ports:
+      - "27018:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: duo
+      MONGO_INITDB_ROOT_PASSWORD: duo123
+    volumes:
+      - mongodb_data:/data/db
+
+volumes:
+  mongodb_data:
