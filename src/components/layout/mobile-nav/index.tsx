@@ -4,13 +4,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Home, MapPin, Plus, Heart, Users } from "lucide-react";
+import { Home, MapPin, Heart, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { href: "/home", icon: Home, label: "Início" },
   { href: "/places", icon: MapPin, label: "Lugares" },
-  { href: "/places/new", icon: Plus, label: "Novo", isAction: true },
   { href: "/partner", icon: Users, label: "Duo" },
 ];
 
@@ -28,7 +27,7 @@ export function MobileNav() {
             <span className="text-lg font-bold text-gradient">duo</span>
           </Link>
           <Link href="/profile">
-            <Avatar className="h-8 w-8 ring-2 ring-duo-rose/20">
+            <Avatar className="h-8 w-8 ring-2 ring-duo-rose-light">
               <AvatarImage src={session?.user?.image || ""} alt={session?.user?.name || ""} />
               <AvatarFallback className="bg-duo-rose-light text-duo-rose-dark text-xs font-bold">
                 {session?.user?.name?.charAt(0).toUpperCase() || "U"}
@@ -69,7 +68,7 @@ export function MobileNav() {
               {session?.user?.name?.split(" ")[0]}
             </span>
             <Link href="/profile">
-              <Avatar className="h-9 w-9 ring-2 ring-duo-rose/20 cursor-pointer">
+              <Avatar className="h-9 w-9 ring-2 ring-duo-rose-light cursor-pointer">
                 <AvatarImage src={session?.user?.image || ""} alt={session?.user?.name || ""} />
                 <AvatarFallback className="bg-duo-rose-light text-duo-rose-dark font-bold">
                   {session?.user?.name?.charAt(0).toUpperCase() || "U"}
@@ -86,28 +85,7 @@ export function MobileNav() {
           {navItems.map((item) => {
             const isActive = item.href === "/home"
               ? pathname === "/home"
-              : item.href === "/places/new"
-                ? pathname === "/places/new"
-                : pathname.startsWith(item.href);
-
-            if (item.isAction) {
-              return (
-                <Link key={item.href} href={item.href} className="flex-1">
-                  <div
-                    className={cn(
-                      "flex flex-col items-center gap-1 py-2 transition-all",
-                      isActive ? "text-duo-rose" : "text-muted-foreground"
-                    )}
-                  >
-                    <item.icon className={cn("h-5 w-5", isActive && "fill-duo-rose/20")} />
-                    <span className="text-[10px] font-medium">{item.label}</span>
-                    {isActive && (
-                      <div className="absolute bottom-6 w-1 h-1 rounded-full bg-duo-rose" />
-                    )}
-                  </div>
-                </Link>
-              );
-            }
+              : pathname.startsWith(item.href);
 
             return (
               <Link key={item.href} href={item.href} className="flex-1">

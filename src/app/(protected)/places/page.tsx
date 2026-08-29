@@ -5,12 +5,15 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { PlaceList } from "@/components/features/place-list";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Place } from "@/types";
-import { Search } from "lucide-react";
+import { Plus, Search } from "lucide-react";
+import Link from "next/link";
 
 export default function PlacesPage() {
   const t = useTranslations("places");
+  const tc = useTranslations("common");
   const router = useRouter();
   const [places, setPlaces] = useState<Place[]>([]);
 
@@ -100,13 +103,21 @@ export default function PlacesPage() {
 
   return (
     <div className="px-4 pt-4 space-y-4">
-      <div>
-        <h1 className="text-2xl font-bold">{t("title")}</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          {places.length === 0
-            ? t("emptyAll")
-            : t("savedCount", { count: places.length })}
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">{t("title")}</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            {places.length === 0
+              ? t("emptyAll")
+              : t("savedCount", { count: places.length })}
+          </p>
+        </div>
+        <Link href="/places/new">
+          <Button className="bg-gradient-to-r from-duo-rose to-duo-teal hover:opacity-90">
+            <Plus className="h-4 w-4 mr-2" />
+            {tc("newPlace")}
+          </Button>
+        </Link>
       </div>
 
       <div className="relative">
