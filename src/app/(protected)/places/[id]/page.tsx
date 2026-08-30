@@ -41,14 +41,14 @@ const categoryIcons: Record<string, React.ElementType> = {
   loja: ShoppingBag,
 };
 
-const categoryColors: Record<string, string> = {
-  restaurante: "from-orange-400 to-red-400",
-  praia: "from-blue-400 to-cyan-400",
-  museu: "from-purple-400 to-indigo-400",
-  parque: "from-green-400 to-emerald-400",
-  cafeteria: "from-amber-400 to-yellow-400",
-  bar: "from-pink-400 to-rose-400",
-  loja: "from-violet-400 to-purple-400",
+const categoryColors: Record<string, string[]> = {
+  restaurante: ["#fb923c", "#f87171"],
+  praia: ["#60a5fa", "#22d3ee"],
+  museu: ["#a78bfa", "#818cf8"],
+  parque: ["#4ade80", "#34d399"],
+  cafeteria: ["#fbbf24", "#facc15"],
+  bar: ["#f472b6", "#fb7185"],
+  loja: ["#a78bfa", "#c084fc"],
 };
 
 export default function PlaceDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -183,7 +183,7 @@ export default function PlaceDetailPage({ params }: { params: Promise<{ id: stri
   };
 
   const CategoryIcon = place ? (categoryIcons[place.category] || MapPin) : MapPin;
-  const colorGradient = place ? (categoryColors[place.category] || "from-duo-rose to-duo-teal") : "from-duo-rose to-duo-teal";
+  const colors = place ? (categoryColors[place.category] || ["#f43f5e", "#14b8a6"]) : ["#f43f5e", "#14b8a6"];
 
   if (isLoading) {
     return (
@@ -220,7 +220,10 @@ export default function PlaceDetailPage({ params }: { params: Promise<{ id: stri
         </Link>
       </div>
 
-      <div className={`h-2 rounded-full bg-gradient-to-r ${colorGradient}`} />
+      <div
+        className="h-2 rounded-full"
+        style={{ background: `linear-gradient(to right, ${colors[0]}, ${colors[1]})` }}
+      />
 
       {place.photoUrl && (
         <div className="relative w-full h-48 rounded-2xl overflow-hidden">
@@ -234,7 +237,10 @@ export default function PlaceDetailPage({ params }: { params: Promise<{ id: stri
       )}
 
       <div className="flex items-start gap-4">
-        <div className={`flex-shrink-0 w-14 h-14 rounded-2xl bg-gradient-to-br ${colorGradient} flex items-center justify-center shadow-sm`}>
+        <div
+          className="flex-shrink-0 w-14 h-14 rounded-2xl flex items-center justify-center shadow-sm"
+          style={{ background: `linear-gradient(to bottom right, ${colors[0]}, ${colors[1]})` }}
+        >
           <CategoryIcon className="h-7 w-7 text-white" />
         </div>
         <div className="flex-1 min-w-0">

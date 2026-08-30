@@ -39,20 +39,20 @@ const categoryIcons: Record<string, React.ElementType> = {
   loja: ShoppingBag,
 };
 
-const categoryColors: Record<string, string> = {
-  restaurante: "from-orange-400 to-red-400",
-  praia: "from-blue-400 to-cyan-400",
-  museu: "from-purple-400 to-indigo-400",
-  parque: "from-green-400 to-emerald-400",
-  cafeteria: "from-amber-400 to-yellow-400",
-  bar: "from-pink-400 to-rose-400",
-  loja: "from-violet-400 to-purple-400",
+const categoryColors: Record<string, string[]> = {
+  restaurante: ["#fb923c", "#f87171"],
+  praia: ["#60a5fa", "#22d3ee"],
+  museu: ["#a78bfa", "#818cf8"],
+  parque: ["#4ade80", "#34d399"],
+  cafeteria: ["#fbbf24", "#facc15"],
+  bar: ["#f472b6", "#fb7185"],
+  loja: ["#a78bfa", "#c084fc"],
 };
 
 export function PlaceCard({ place, onToggleVisited, onEdit, onDelete }: PlaceCardProps) {
   const t = useTranslations("placeCard");
   const CategoryIcon = categoryIcons[place.category] || MapPin;
-  const colorGradient = categoryColors[place.category] || "from-duo-rose to-duo-teal";
+  const colors = categoryColors[place.category] || ["#f43f5e", "#14b8a6"];
 
   return (
     <Link href={`/places/${place._id}`} className="block">
@@ -62,11 +62,17 @@ export function PlaceCard({ place, onToggleVisited, onEdit, onDelete }: PlaceCar
         }`}
       >
         <CardContent className="p-0">
-          <div className={`h-1.5 bg-gradient-to-r ${colorGradient}`} />
+          <div
+            className="h-1.5"
+            style={{ background: `linear-gradient(to right, ${colors[0]}, ${colors[1]})` }}
+          />
 
           <div className="p-4 space-y-3">
             <div className="flex items-start gap-3">
-              <div className={`flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br ${colorGradient} flex items-center justify-center`}>
+              <div
+                className="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center"
+                style={{ background: `linear-gradient(to bottom right, ${colors[0]}, ${colors[1]})` }}
+              >
                 <CategoryIcon className="h-5 w-5 text-white" />
               </div>
 
