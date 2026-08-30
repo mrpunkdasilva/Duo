@@ -121,3 +121,16 @@ export interface SessionUser {
   image?: string | null;
   coupleId?: string | null;
 }
+
+export interface Comment {
+  _id: ObjectId | string;
+  placeId: ObjectId | string;
+  userId: {
+    _id: ObjectId | string;
+    name: string;
+    image?: string;
+  };
+  coupleId: ObjectId | string;
+  text: string;
+  createdAt: Date;
+}

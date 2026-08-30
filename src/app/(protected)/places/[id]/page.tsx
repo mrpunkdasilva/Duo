@@ -3,10 +3,13 @@
 import { useEffect, useState } from "react";
 import { use } from "react";
 import { useTranslations } from "next-intl";
+import { useSession } from "next-auth/react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Place, CATEGORY_LABELS } from "@/types";
+import { Textarea } from "@/components/ui/textarea";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Place, Comment, CATEGORY_LABELS } from "@/types";
 import {
   ArrowLeft,
   MapPin,
@@ -14,6 +17,8 @@ import {
   Pencil,
   CheckCircle2,
   Loader2,
+  Send,
+  Trash2,
   UtensilsCrossed,
   Waves,
   Landmark,
@@ -51,8 +56,12 @@ export default function PlaceDetailPage({ params }: { params: Promise<{ id: stri
   const { id } = use(params);
   const t = useTranslations("placeDetail");
   const tc = useTranslations("common");
+  const { data: session } = useSession();
   const [place, setPlace] = useState<Place | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [newComment, setNewComment] = useState("");
+  const [isSubmittingComment, setIsSubmittingComment] = useState(false);
 
   useEffect(() => {
     async function loadPlace() {
@@ -72,6 +81,22 @@ export default function PlaceDetailPage({ params }: { params: Promise<{ id: stri
     loadPlace();
   }, [id]);
 
+  useEffect(() => {
+    async function loadComments() {
+      try {
+        const response = await fetch(`/api/comments?placeId=${id}`);
+        if (response.ok) {
+          const data = await response.json();
+          setComments(data.data || []);
+        }
+      } catch (error) {
+        console.error("Erro ao carregar comentários:", error);
+      }
+    }
+
+    loadComments();
+  }, [id]);
+
   const handleToggleVisited = async () => {
     if (!place) return;
 
@@ -87,6 +112,46 @@ export default function PlaceDetailPage({ params }: { params: Promise<{ id: stri
       }
     } catch (error) {
       console.error("Erro ao atualizar lugar:", error);
+    }
+  };
+
+  const handleSubmitComment = async () => {
+    if (!newComment.trim() || isSubmittingComment) return;
+
+    setIsSubmittingComment(true);
+
+    try {
+      const response = await fetch("/api/comments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ placeId: id, text: newComment.trim() }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setComments((prev) => [data.data, ...prev]);
+        setNewComment("");
+      }
+    } catch (error) {
+      console.error("Erro ao criar comentário:", error);
+    } finally {
+      setIsSubmittingComment(false);
+    }
+  };
+
+  const handleDeleteComment = async (commentId: string) => {
+    try {
+      const response = await fetch("/api/comments", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: commentId }),
+      });
+
+      if (response.ok) {
+        setComments((prev) => prev.filter((c) => c._id.toString() !== commentId));
+      }
+    } catch (error) {
+      console.error("Erro ao excluir comentário:", error);
     }
   };
 
@@ -211,6 +276,72 @@ export default function PlaceDetailPage({ params }: { params: Promise<{ id: stri
         <BookmarkIcon className="h-4 w-4 mr-2" filled={place.visited} />
         {place.visited ? t("markAsPending") : t("markAsVisited")}
       </Button>
+
+      {/* Comments section */}
+      <div className="space-y-3">
+        <h2 className="font-semibold text-lg">{t("comments")}</h2>
+
+        <div className="flex gap-2">
+          <Textarea
+            placeholder={t("commentPlaceholder")}
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            className="min-h-[60px] rounded-xl resize-none"
+            maxLength={500}
+          />
+          <Button
+            onClick={handleSubmitComment}
+            disabled={!newComment.trim() || isSubmittingComment}
+            className="bg-gradient-to-r from-duo-rose to-duo-teal hover:opacity-90 px-4 h-auto self-end rounded-xl"
+          >
+            {isSubmittingComment ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Send className="h-4 w-4" />
+            )}
+          </Button>
+        </div>
+
+        {comments.length === 0 ? (
+          <p className="text-sm text-muted-foreground text-center py-4">
+            {t("noComments")}
+          </p>
+        ) : (
+          <div className="space-y-3">
+            {comments.map((comment) => (
+              <Card key={comment._id.toString()} className="border-0 shadow-sm">
+                <CardContent className="p-3">
+                  <div className="flex items-start gap-3">
+                    <Avatar className="h-8 w-8 flex-shrink-0">
+                      <AvatarImage src={comment.userId?.image || ""} />
+                      <AvatarFallback className="bg-duo-rose-light text-duo-rose-dark text-xs font-bold">
+                        {comment.userId?.name?.charAt(0).toUpperCase() || "?"}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium">{comment.userId?.name || "Você"}</span>
+                        <span className="text-xs text-muted-foreground">
+                          {formatDate(comment.createdAt)}
+                        </span>
+                      </div>
+                      <p className="text-sm mt-1 whitespace-pre-wrap">{comment.text}</p>
+                    </div>
+                    {comment.userId?._id?.toString() === session?.user?.id && (
+                      <button
+                        onClick={() => handleDeleteComment(comment._id.toString())}
+                        className="flex-shrink-0 p-1 rounded hover:bg-red-50 transition-colors"
+                      >
+                        <Trash2 className="h-3.5 w-3.5 text-muted-foreground hover:text-red-500" />
+                      </button>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

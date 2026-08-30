@@ -142,7 +142,10 @@
     "rating": "Avaliação",
     "addedIn": "Adicionado em",
     "markAsVisited": "Marcar como visitado",
-    "markAsPending": "Marcar como pendente"
+    "markAsPending": "Marcar como pendente",
+    "comments": "Comentários",
+    "commentPlaceholder": "Escreva um comentário...",
+    "noComments": "Nenhum comentário ainda. Seja o primeiro a comentar!"
   },
   "categories": {
     "restaurante": "Restaurante",
