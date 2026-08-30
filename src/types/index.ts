@@ -7,8 +7,7 @@ export type PlaceCategory =
   | "parque"
   | "cafeteria"
   | "bar"
-  | "loja"
-  | "outro";
+  | "loja";
 
 export const PLACE_CATEGORIES: PlaceCategory[] = [
   "restaurante",
@@ -18,7 +17,6 @@ export const PLACE_CATEGORIES: PlaceCategory[] = [
   "cafeteria",
   "bar",
   "loja",
-  "outro",
 ];
 
 export const CATEGORY_LABELS: Record<PlaceCategory, string> = {
@@ -29,7 +27,6 @@ export const CATEGORY_LABELS: Record<PlaceCategory, string> = {
   cafeteria: "Cafeteria",
   bar: "Bar",
   loja: "Loja",
-  outro: "Outro",
 };
 
 export const CATEGORY_ICONS: Record<PlaceCategory, string> = {
@@ -40,7 +37,6 @@ export const CATEGORY_ICONS: Record<PlaceCategory, string> = {
   cafeteria: "Coffee",
   bar: "Wine",
   loja: "ShoppingBag",
-  outro: "MapPin",
 };
 
 export interface User {

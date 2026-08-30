@@ -5,11 +5,12 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { PlaceCard } from "@/components/features/place-card";
 import { ConfirmDialog } from "@/components/features/confirm-dialog";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Place, PlaceCategory, CATEGORY_LABELS } from "@/types";
-import { Plus, Search, UtensilsCrossed, Waves, Landmark, TreePine, Coffee, Wine, ShoppingBag, MapPin } from "lucide-react";
+import { Plus, Search, UtensilsCrossed, Waves, Landmark, TreePine, Coffee, Wine, ShoppingBag, Tag } from "lucide-react";
 import Link from "next/link";
 
 const categoryIconMap: Record<PlaceCategory, React.ElementType> = {
@@ -20,7 +21,6 @@ const categoryIconMap: Record<PlaceCategory, React.ElementType> = {
   cafeteria: Coffee,
   bar: Wine,
   loja: ShoppingBag,
-  outro: MapPin,
 };
 
 export default function PlacesPage() {
@@ -272,6 +272,20 @@ export default function PlacesPage() {
           )}
         </TabsContent>
       </Tabs>
+
+      <Link href="/categories" className="block">
+        <Card className="border-2 border-dashed border-violet-300 bg-violet-50 hover:bg-violet-100 transition-colors cursor-pointer">
+          <CardContent className="flex items-center gap-4 py-4 px-4">
+            <div className="w-10 h-10 rounded-xl bg-violet-500/10 flex items-center justify-center">
+              <Tag className="h-5 w-5 text-violet-500" />
+            </div>
+            <div className="flex-1">
+              <p className="font-medium text-sm">Gerenciar Categorias</p>
+              <p className="text-xs text-muted-foreground">Criar, editar ou excluir categorias</p>
+            </div>
+          </CardContent>
+        </Card>
+      </Link>
 
       <ConfirmDialog
         open={!!deleteId}

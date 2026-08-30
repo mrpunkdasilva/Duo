@@ -22,7 +22,7 @@ export function PlaceForm({ initialData, onSubmit, isLoading, onCancel }: PlaceF
   const tc = useTranslations("common");
   const [name, setName] = useState(initialData?.name || "");
   const [description, setDescription] = useState(initialData?.description || "");
-  const [category, setCategory] = useState<string>(initialData?.category || "outro");
+  const [category, setCategory] = useState<string>(initialData?.category || "restaurante");
   const [address, setAddress] = useState(initialData?.address || "");
   const [photoUrl, setPhotoUrl] = useState(initialData?.photoUrl || "");
   const [notes, setNotes] = useState(initialData?.notes || "");

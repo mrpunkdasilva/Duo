@@ -37,7 +37,6 @@ const categoryIcons: Record<PlaceCategory, React.ElementType> = {
   cafeteria: Coffee,
   bar: Wine,
   loja: ShoppingBag,
-  outro: MapPin,
 };
 
 const categoryColors: Record<PlaceCategory, string> = {
@@ -48,7 +47,6 @@ const categoryColors: Record<PlaceCategory, string> = {
   cafeteria: "from-amber-400 to-yellow-400",
   bar: "from-pink-400 to-rose-400",
   loja: "from-violet-400 to-purple-400",
-  outro: "from-duo-rose to-duo-teal",
 };
 
 export function PlaceCard({ place, onToggleVisited, onEdit, onDelete }: PlaceCardProps) {

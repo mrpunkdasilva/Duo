@@ -353,6 +353,17 @@ export default function CategoriesPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <ConfirmDialog
+        open={!!deleteId}
+        onOpenChange={() => setDeleteId(null)}
+        title="Excluir categoria"
+        description="Tem certeza que deseja excluir esta categoria? Esta ação não pode ser desfeita."
+        confirmText={tc("delete")}
+        cancelText={tc("cancel")}
+        variant="destructive"
+        onConfirm={confirmDelete}
+      />
     </div>
   );
 }

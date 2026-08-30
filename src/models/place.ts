@@ -42,8 +42,8 @@ const PlaceSchema = new Schema<IPlace>({
   },
   category: {
     type: String,
-    enum: ["restaurante", "praia", "museu", "parque", "cafeteria", "bar", "loja", "outro"],
-    default: "outro",
+    enum: ["restaurante", "praia", "museu", "parque", "cafeteria", "bar", "loja"],
+    default: "restaurante",
   },
   address: {
     type: String,
