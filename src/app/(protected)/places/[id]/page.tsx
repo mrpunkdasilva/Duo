@@ -248,7 +248,7 @@ export default function PlaceDetailPage({ params }: { params: Promise<{ id: stri
             )}
           </div>
           <p className="text-sm text-muted-foreground mt-1">
-            {CATEGORY_LABELS[place.category]}
+            {CATEGORY_LABELS[place.category] || place.category}
           </p>
         </div>
       </div>

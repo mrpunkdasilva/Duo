@@ -9,11 +9,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Place, PlaceCategory, CATEGORY_LABELS } from "@/types";
-import { Plus, Search, UtensilsCrossed, Waves, Landmark, TreePine, Coffee, Wine, ShoppingBag, Tag } from "lucide-react";
+import { Place, CATEGORY_LABELS } from "@/types";
+import { Plus, Search, UtensilsCrossed, Waves, Landmark, TreePine, Coffee, Wine, ShoppingBag, Tag, MapPin } from "lucide-react";
 import Link from "next/link";
 
-const categoryIconMap: Record<PlaceCategory, React.ElementType> = {
+const categoryIconMap: Record<string, React.ElementType> = {
   restaurante: UtensilsCrossed,
   praia: Waves,
   museu: Landmark,
@@ -135,7 +135,7 @@ export default function PlacesPage() {
   };
 
   const sortedCategories = useMemo(() => {
-    return Object.keys(groupedPlaces).sort() as PlaceCategory[];
+    return Object.keys(groupedPlaces).sort() as string[];
   }, [groupedPlaces]);
 
   return (
@@ -185,12 +185,12 @@ export default function PlacesPage() {
             <p className="text-center text-muted-foreground py-8">{t("emptySearch")}</p>
           ) : (
             sortedCategories.map((category) => {
-              const Icon = categoryIconMap[category];
+              const Icon = categoryIconMap[category] || MapPin;
               return (
                 <div key={category} className="space-y-3">
                   <div className="flex items-center gap-2">
-                    {Icon && <Icon className="h-4 w-4 text-muted-foreground" />}
-                    <h2 className="font-semibold text-sm">{CATEGORY_LABELS[category]}</h2>
+                    <Icon className="h-4 w-4 text-muted-foreground" />
+                    <h2 className="font-semibold text-sm">{CATEGORY_LABELS[category] || category}</h2>
                     <span className="text-xs text-muted-foreground">({groupedPlaces[category]?.length})</span>
                   </div>
                   <div className="space-y-3">
@@ -215,13 +215,13 @@ export default function PlacesPage() {
             <p className="text-center text-muted-foreground py-8">{t("emptyPending")}</p>
           ) : (
             sortedCategories.filter(cat => groupedPlaces[cat]?.some(p => !p.visited)).map((category) => {
-              const Icon = categoryIconMap[category];
+              const Icon = categoryIconMap[category] || MapPin;
               const pendingPlaces = groupedPlaces[category]?.filter(p => !p.visited) || [];
               return (
                 <div key={category} className="space-y-3">
                   <div className="flex items-center gap-2">
-                    {Icon && <Icon className="h-4 w-4 text-muted-foreground" />}
-                    <h2 className="font-semibold text-sm">{CATEGORY_LABELS[category]}</h2>
+                    <Icon className="h-4 w-4 text-muted-foreground" />
+                    <h2 className="font-semibold text-sm">{CATEGORY_LABELS[category] || category}</h2>
                     <span className="text-xs text-muted-foreground">({pendingPlaces.length})</span>
                   </div>
                   <div className="space-y-3">
@@ -246,13 +246,13 @@ export default function PlacesPage() {
             <p className="text-center text-muted-foreground py-8">{t("emptyVisited")}</p>
           ) : (
             sortedCategories.filter(cat => groupedPlaces[cat]?.some(p => p.visited)).map((category) => {
-              const Icon = categoryIconMap[category];
+              const Icon = categoryIconMap[category] || MapPin;
               const visitedPlaces = groupedPlaces[category]?.filter(p => p.visited) || [];
               return (
                 <div key={category} className="space-y-3">
                   <div className="flex items-center gap-2">
-                    {Icon && <Icon className="h-4 w-4 text-muted-foreground" />}
-                    <h2 className="font-semibold text-sm">{CATEGORY_LABELS[category]}</h2>
+                    <Icon className="h-4 w-4 text-muted-foreground" />
+                    <h2 className="font-semibold text-sm">{CATEGORY_LABELS[category] || category}</h2>
                     <span className="text-xs text-muted-foreground">({visitedPlaces.length})</span>
                   </div>
                   <div className="space-y-3">

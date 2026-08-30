@@ -1,14 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-import { CreatePlaceInput, PLACE_CATEGORIES, CATEGORY_LABELS } from "@/types";
-import { Loader2 } from "lucide-react";
+import { CreatePlaceInput, PLACE_CATEGORIES, CATEGORY_LABELS, Category } from "@/types";
+import { Loader2, Plus } from "lucide-react";
+import Link from "next/link";
 
 interface PlaceFormProps {
   initialData?: Partial<CreatePlaceInput>;
@@ -27,6 +28,23 @@ export function PlaceForm({ initialData, onSubmit, isLoading, onCancel }: PlaceF
   const [photoUrl, setPhotoUrl] = useState(initialData?.photoUrl || "");
   const [notes, setNotes] = useState(initialData?.notes || "");
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [customCategories, setCustomCategories] = useState<Category[]>([]);
+
+  useEffect(() => {
+    async function loadCategories() {
+      try {
+        const response = await fetch("/api/categories");
+        if (response.ok) {
+          const data = await response.json();
+          setCustomCategories(data.data || []);
+        }
+      } catch (error) {
+        console.error("Erro ao carregar categorias:", error);
+      }
+    }
+
+    loadCategories();
+  }, []);
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
@@ -86,8 +104,17 @@ export function PlaceForm({ initialData, onSubmit, isLoading, onCancel }: PlaceF
                 {CATEGORY_LABELS[cat]}
               </SelectItem>
             ))}
+            {customCategories.map((cat) => (
+              <SelectItem key={cat._id.toString()} value={cat.name.toLowerCase()}>
+                {cat.name}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
+        <Link href="/categories" className="inline-flex items-center gap-1 text-xs text-duo-rose hover:underline mt-1">
+          <Plus className="h-3 w-3" />
+          {tc("newCategory")}
+        </Link>
       </div>
 
       <div className="space-y-2">

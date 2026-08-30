@@ -18,7 +18,7 @@ import {
   Trash2,
   Bookmark,
 } from "lucide-react";
-import { Place, CATEGORY_LABELS, PlaceCategory } from "@/types";
+import { Place, CATEGORY_LABELS } from "@/types";
 import { formatDate } from "@/lib/helpers";
 import Link from "next/link";
 
@@ -29,7 +29,7 @@ interface PlaceCardProps {
   onDelete?: (id: string) => void;
 }
 
-const categoryIcons: Record<PlaceCategory, React.ElementType> = {
+const categoryIcons: Record<string, React.ElementType> = {
   restaurante: UtensilsCrossed,
   praia: Waves,
   museu: Landmark,
@@ -39,7 +39,7 @@ const categoryIcons: Record<PlaceCategory, React.ElementType> = {
   loja: ShoppingBag,
 };
 
-const categoryColors: Record<PlaceCategory, string> = {
+const categoryColors: Record<string, string> = {
   restaurante: "from-orange-400 to-red-400",
   praia: "from-blue-400 to-cyan-400",
   museu: "from-purple-400 to-indigo-400",
@@ -81,7 +81,7 @@ export function PlaceCard({ place, onToggleVisited, onEdit, onDelete }: PlaceCar
                   )}
                 </div>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  {CATEGORY_LABELS[place.category]}
+                  {CATEGORY_LABELS[place.category] || place.category}
                 </p>
               </div>
 
