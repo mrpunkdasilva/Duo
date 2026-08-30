@@ -1,5 +1,13 @@
 import mongoose, { Schema, Document } from "mongoose";
 
+export interface IPlaceRating {
+  comida?: number;
+  ambiente?: number;
+  romance?: number;
+  custo?: number;
+  experiencia?: number;
+}
+
 export interface IPlace extends Document {
   _id: mongoose.Types.ObjectId;
   coupleId: mongoose.Types.ObjectId;
@@ -11,7 +19,7 @@ export interface IPlace extends Document {
   longitude?: number;
   photoUrl?: string;
   visited: boolean;
-  rating?: number;
+  rating?: IPlaceRating;
   notes?: string;
   createdAt: Date;
   updatedAt: Date;
@@ -60,9 +68,11 @@ const PlaceSchema = new Schema<IPlace>({
     default: false,
   },
   rating: {
-    type: Number,
-    min: 1,
-    max: 5,
+    comida: { type: Number, min: 1, max: 5 },
+    ambiente: { type: Number, min: 1, max: 5 },
+    romance: { type: Number, min: 1, max: 5 },
+    custo: { type: Number, min: 1, max: 5 },
+    experiencia: { type: Number, min: 1, max: 5 },
   },
   notes: {
     type: String,

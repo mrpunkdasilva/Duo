@@ -9,11 +9,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Place, Comment, CATEGORY_LABELS } from "@/types";
+import { Place, Comment, PlaceRating, CATEGORY_LABELS, RATING_CATEGORIES, RATING_LABELS } from "@/types";
 import {
   ArrowLeft,
   MapPin,
-  Star,
   Pencil,
   CheckCircle2,
   Loader2,
@@ -28,7 +27,9 @@ import {
   ShoppingBag,
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { formatDate } from "@/lib/helpers";
+import { StarRating } from "@/components/features/star-rating";
 
 const categoryIcons: Record<string, React.ElementType> = {
   restaurante: UtensilsCrossed,
@@ -62,6 +63,8 @@ export default function PlaceDetailPage({ params }: { params: Promise<{ id: stri
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState("");
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
+  const [rating, setRating] = useState<PlaceRating>({});
+  const [isSavingRating, setIsSavingRating] = useState(false);
 
   useEffect(() => {
     async function loadPlace() {
@@ -70,6 +73,9 @@ export default function PlaceDetailPage({ params }: { params: Promise<{ id: stri
         if (response.ok) {
           const data = await response.json();
           setPlace(data.data);
+          if (data.data.rating) {
+            setRating(data.data.rating);
+          }
         }
       } catch (error) {
         console.error("Erro ao carregar lugar:", error);
@@ -112,6 +118,29 @@ export default function PlaceDetailPage({ params }: { params: Promise<{ id: stri
       }
     } catch (error) {
       console.error("Erro ao atualizar lugar:", error);
+    }
+  };
+
+  const handleRatingChange = async (category: keyof PlaceRating, value: number) => {
+    const newRating = { ...rating, [category]: value };
+    setRating(newRating);
+    setIsSavingRating(true);
+
+    try {
+      const response = await fetch("/api/places", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, rating: newRating }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setPlace(data.data);
+      }
+    } catch (error) {
+      console.error("Erro ao salvar avaliação:", error);
+    } finally {
+      setIsSavingRating(false);
     }
   };
 
@@ -195,6 +224,17 @@ export default function PlaceDetailPage({ params }: { params: Promise<{ id: stri
 
       <div className={`h-2 rounded-full bg-gradient-to-r ${colorGradient}`} />
 
+      {place.photoUrl && (
+        <div className="relative w-full h-48 rounded-2xl overflow-hidden">
+          <Image
+            src={place.photoUrl}
+            alt={place.name}
+            fill
+            className="object-cover"
+          />
+        </div>
+      )}
+
       <div className="flex items-start gap-4">
         <div className={`flex-shrink-0 w-14 h-14 rounded-2xl bg-gradient-to-br ${colorGradient} flex items-center justify-center shadow-sm`}>
           <CategoryIcon className="h-7 w-7 text-white" />
@@ -241,25 +281,32 @@ export default function PlaceDetailPage({ params }: { params: Promise<{ id: stri
             </div>
           )}
 
-          {place.rating && (
-            <div>
-              <h3 className="text-sm font-medium text-muted-foreground mb-1">{t("rating")}</h3>
-              <div className="flex items-center gap-1">
-                {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className={`h-4 w-4 ${
-                      i < place.rating! ? "fill-yellow-400 text-yellow-400" : "text-gray-200"
-                    }`}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
-
           <div>
             <h3 className="text-sm font-medium text-muted-foreground mb-1">{t("addedIn")}</h3>
             <p className="text-sm">{formatDate(place.createdAt)}</p>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Rating section */}
+      <Card className="border-0 shadow-sm bg-muted/30">
+        <CardContent className="p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="font-medium">{t("rating")}</h3>
+            {isSavingRating && (
+              <span className="text-xs text-muted-foreground">{tc("saving")}</span>
+            )}
+          </div>
+          <div className="space-y-2">
+            {RATING_CATEGORIES.map((category) => (
+              <StarRating
+                key={category}
+                value={rating[category]}
+                onChange={(value) => handleRatingChange(category, value)}
+                label={RATING_LABELS[category]}
+                size="sm"
+              />
+            ))}
           </div>
         </CardContent>
       </Card>

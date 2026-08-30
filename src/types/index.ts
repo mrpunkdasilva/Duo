@@ -59,6 +59,30 @@ export interface Couple {
   createdAt: Date;
 }
 
+export interface PlaceRating {
+  comida?: number;
+  ambiente?: number;
+  romance?: number;
+  custo?: number;
+  experiencia?: number;
+}
+
+export const RATING_CATEGORIES: (keyof PlaceRating)[] = [
+  "comida",
+  "ambiente",
+  "romance",
+  "custo",
+  "experiencia",
+];
+
+export const RATING_LABELS: Record<keyof PlaceRating, string> = {
+  comida: "Comida",
+  ambiente: "Ambiente",
+  romance: "Romance",
+  custo: "Custo-Benefício",
+  experiencia: "Experiência",
+};
+
 export interface Place {
   _id: ObjectId | string;
   coupleId: ObjectId | string;
@@ -70,7 +94,7 @@ export interface Place {
   longitude?: number;
   photoUrl?: string;
   visited: boolean;
-  rating?: number;
+  rating?: PlaceRating;
   notes?: string;
   createdAt: Date;
   updatedAt: Date;
