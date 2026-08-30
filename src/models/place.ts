@@ -1,7 +1,6 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 export interface IPlaceRating {
-  comida?: number;
   ambiente?: number;
   romance?: number;
   custo?: number;
@@ -68,7 +67,6 @@ const PlaceSchema = new Schema<IPlace>({
     default: false,
   },
   rating: {
-    comida: { type: Number, min: 1, max: 5 },
     ambiente: { type: Number, min: 1, max: 5 },
     romance: { type: Number, min: 1, max: 5 },
     custo: { type: Number, min: 1, max: 5 },

@@ -3,13 +3,24 @@
 import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { PlaceList } from "@/components/features/place-list";
+import { PlaceCard } from "@/components/features/place-card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Place } from "@/types";
-import { Plus, Search } from "lucide-react";
+import { Place, PlaceCategory, CATEGORY_LABELS } from "@/types";
+import { Plus, Search, UtensilsCrossed, Waves, Landmark, TreePine, Coffee, Wine, ShoppingBag, MapPin } from "lucide-react";
 import Link from "next/link";
+
+const categoryIconMap: Record<PlaceCategory, React.ElementType> = {
+  restaurante: UtensilsCrossed,
+  praia: Waves,
+  museu: Landmark,
+  parque: TreePine,
+  cafeteria: Coffee,
+  bar: Wine,
+  loja: ShoppingBag,
+  outro: MapPin,
+};
 
 export default function PlacesPage() {
   const t = useTranslations("places");
@@ -56,6 +67,20 @@ export default function PlacesPage() {
     return result;
   }, [places, searchQuery, activeTab]);
 
+  const groupedPlaces = useMemo(() => {
+    const groups: Partial<Record<PlaceCategory, Place[]>> = {};
+
+    filteredPlaces.forEach((place) => {
+      const category = place.category;
+      if (!groups[category]) {
+        groups[category] = [];
+      }
+      groups[category]!.push(place);
+    });
+
+    return groups;
+  }, [filteredPlaces]);
+
   const handleToggleVisited = async (id: string) => {
     try {
       const place = places.find((p) => p._id.toString() === id);
@@ -101,6 +126,10 @@ export default function PlacesPage() {
     }
   };
 
+  const sortedCategories = useMemo(() => {
+    return Object.keys(groupedPlaces).sort() as PlaceCategory[];
+  }, [groupedPlaces]);
+
   return (
     <div className="px-4 pt-4 space-y-4">
       <div className="flex items-center justify-between">
@@ -143,32 +172,96 @@ export default function PlacesPage() {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="all" className="mt-4">
-          <PlaceList
-            places={filteredPlaces}
-            onToggleVisited={handleToggleVisited}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            emptyMessage={t("emptySearch")}
-          />
+        <TabsContent value="all" className="mt-4 space-y-6">
+          {sortedCategories.length === 0 ? (
+            <p className="text-center text-muted-foreground py-8">{t("emptySearch")}</p>
+          ) : (
+            sortedCategories.map((category) => {
+              const Icon = categoryIconMap[category];
+              return (
+                <div key={category} className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    {Icon && <Icon className="h-4 w-4 text-muted-foreground" />}
+                    <h2 className="font-semibold text-sm">{CATEGORY_LABELS[category]}</h2>
+                    <span className="text-xs text-muted-foreground">({groupedPlaces[category]?.length})</span>
+                  </div>
+                  <div className="space-y-3">
+                    {groupedPlaces[category]?.map((place) => (
+                      <PlaceCard
+                        key={place._id.toString()}
+                        place={place}
+                        onToggleVisited={handleToggleVisited}
+                        onEdit={handleEdit}
+                        onDelete={handleDelete}
+                      />
+                    ))}
+                  </div>
+                </div>
+              );
+            })
+          )}
         </TabsContent>
-        <TabsContent value="pending" className="mt-4">
-          <PlaceList
-            places={filteredPlaces}
-            onToggleVisited={handleToggleVisited}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            emptyMessage={t("emptyPending")}
-          />
+
+        <TabsContent value="pending" className="mt-4 space-y-6">
+          {sortedCategories.filter(cat => groupedPlaces[cat]?.some(p => !p.visited)).length === 0 ? (
+            <p className="text-center text-muted-foreground py-8">{t("emptyPending")}</p>
+          ) : (
+            sortedCategories.filter(cat => groupedPlaces[cat]?.some(p => !p.visited)).map((category) => {
+              const Icon = categoryIconMap[category];
+              const pendingPlaces = groupedPlaces[category]?.filter(p => !p.visited) || [];
+              return (
+                <div key={category} className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    {Icon && <Icon className="h-4 w-4 text-muted-foreground" />}
+                    <h2 className="font-semibold text-sm">{CATEGORY_LABELS[category]}</h2>
+                    <span className="text-xs text-muted-foreground">({pendingPlaces.length})</span>
+                  </div>
+                  <div className="space-y-3">
+                    {pendingPlaces.map((place) => (
+                      <PlaceCard
+                        key={place._id.toString()}
+                        place={place}
+                        onToggleVisited={handleToggleVisited}
+                        onEdit={handleEdit}
+                        onDelete={handleDelete}
+                      />
+                    ))}
+                  </div>
+                </div>
+              );
+            })
+          )}
         </TabsContent>
-        <TabsContent value="visited" className="mt-4">
-          <PlaceList
-            places={filteredPlaces}
-            onToggleVisited={handleToggleVisited}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            emptyMessage={t("emptyVisited")}
-          />
+
+        <TabsContent value="visited" className="mt-4 space-y-6">
+          {sortedCategories.filter(cat => groupedPlaces[cat]?.some(p => p.visited)).length === 0 ? (
+            <p className="text-center text-muted-foreground py-8">{t("emptyVisited")}</p>
+          ) : (
+            sortedCategories.filter(cat => groupedPlaces[cat]?.some(p => p.visited)).map((category) => {
+              const Icon = categoryIconMap[category];
+              const visitedPlaces = groupedPlaces[category]?.filter(p => p.visited) || [];
+              return (
+                <div key={category} className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    {Icon && <Icon className="h-4 w-4 text-muted-foreground" />}
+                    <h2 className="font-semibold text-sm">{CATEGORY_LABELS[category]}</h2>
+                    <span className="text-xs text-muted-foreground">({visitedPlaces.length})</span>
+                  </div>
+                  <div className="space-y-3">
+                    {visitedPlaces.map((place) => (
+                      <PlaceCard
+                        key={place._id.toString()}
+                        place={place}
+                        onToggleVisited={handleToggleVisited}
+                        onEdit={handleEdit}
+                        onDelete={handleDelete}
+                      />
+                    ))}
+                  </div>
+                </div>
+              );
+            })
+          )}
         </TabsContent>
       </Tabs>
     </div>

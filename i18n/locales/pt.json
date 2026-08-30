@@ -55,8 +55,7 @@
   "dashboard": {
     "greeting": "Oi, {name}!",
     "forYouTwo": "Para vocês dois",
-    "placesToExplore_one": "Vocês têm {count} lugar pra explorar",
-    "placesToExplore_other": "Vocês têm {count} lugares pra explorar",
+    "placesToExplore": "{count, plural, one {Vocês têm # lugar pra explorar} other {Vocês têm # lugares pra explorar}}",
     "emptyState": "Comecem a salvar lugares para visitar juntos",
     "stats": {
       "places": "Lugares",
@@ -91,8 +90,7 @@
   "places": {
     "title": "Lugares",
     "emptyAll": "Nenhum lugar salvo ainda",
-    "savedCount_one": "{count} lugar salvo",
-    "savedCount_other": "{count} lugares salvos",
+    "savedCount": "{count, plural, one {# lugar salvo} other {# lugares salvos}}",
     "searchPlaceholder": "Buscar lugares...",
     "tabs": {
       "all": "Todos",

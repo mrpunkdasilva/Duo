@@ -60,7 +60,6 @@ export interface Couple {
 }
 
 export interface PlaceRating {
-  comida?: number;
   ambiente?: number;
   romance?: number;
   custo?: number;
@@ -68,7 +67,6 @@ export interface PlaceRating {
 }
 
 export const RATING_CATEGORIES: (keyof PlaceRating)[] = [
-  "comida",
   "ambiente",
   "romance",
   "custo",
@@ -76,7 +74,6 @@ export const RATING_CATEGORIES: (keyof PlaceRating)[] = [
 ];
 
 export const RATING_LABELS: Record<keyof PlaceRating, string> = {
-  comida: "Comida",
   ambiente: "Ambiente",
   romance: "Romance",
   custo: "Custo-Benefício",
