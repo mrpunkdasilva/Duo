@@ -4,6 +4,7 @@ import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { PlaceCard } from "@/components/features/place-card";
+import { ConfirmDialog } from "@/components/features/confirm-dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -46,6 +47,7 @@ export default function PlacesPage() {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("all");
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const filteredPlaces = useMemo(() => {
     let result = places;
@@ -109,20 +111,26 @@ export default function PlacesPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm(t("confirmDelete"))) return;
+    setDeleteId(id);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteId) return;
 
     try {
       const response = await fetch("/api/places", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id }),
+        body: JSON.stringify({ id: deleteId }),
       });
 
       if (response.ok) {
-        setPlaces((prev) => prev.filter((p) => p._id.toString() !== id));
+        setPlaces((prev) => prev.filter((p) => p._id.toString() !== deleteId));
       }
     } catch (error) {
       console.error("Erro ao excluir lugar:", error);
+    } finally {
+      setDeleteId(null);
     }
   };
 
@@ -264,6 +272,17 @@ export default function PlacesPage() {
           )}
         </TabsContent>
       </Tabs>
+
+      <ConfirmDialog
+        open={!!deleteId}
+        onOpenChange={() => setDeleteId(null)}
+        title={t("confirmDelete")}
+        description="Esta ação não pode ser desfeita."
+        confirmText={tc("delete")}
+        cancelText={tc("cancel")}
+        variant="destructive"
+        onConfirm={confirmDelete}
+      />
     </div>
   );
 }

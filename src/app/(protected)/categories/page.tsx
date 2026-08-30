@@ -13,6 +13,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { ConfirmDialog } from "@/components/features/confirm-dialog";
 import { Category } from "@/types";
 import {
   Plus,
@@ -81,6 +82,7 @@ export default function CategoriesPage() {
   const [selectedColor, setSelectedColor] = useState("from-duo-rose to-duo-teal");
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState("");
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -163,32 +165,36 @@ export default function CategoriesPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Tem certeza que deseja excluir esta categoria?")) return;
+    setDeleteId(id);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteId) return;
 
     try {
       const response = await fetch("/api/categories", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id }),
+        body: JSON.stringify({ id: deleteId }),
       });
 
       if (response.ok) {
-        setCategories((prev) => prev.filter((c) => c._id !== id));
+        setCategories((prev) => prev.filter((c) => c._id !== deleteId));
       }
     } catch (error) {
       console.error("Erro ao excluir categoria:", error);
+    } finally {
+      setDeleteId(null);
     }
   };
 
   return (
     <div className="px-4 pt-4 space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">{t("title")}</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            {t("subtitle")}
-          </p>
-        </div>
+      <div className="space-y-2">
+        <h1 className="text-2xl font-bold">{t("title")}</h1>
+        <p className="text-sm text-muted-foreground">
+          {t("subtitle")}
+        </p>
         <Button
           onClick={() => handleOpenDialog()}
           className="bg-gradient-to-r from-duo-rose to-duo-teal hover:opacity-90"
