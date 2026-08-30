@@ -281,18 +281,18 @@ export default function PlaceDetailPage({ params }: { params: Promise<{ id: stri
       <div className="space-y-3">
         <h2 className="font-semibold text-lg">{t("comments")}</h2>
 
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-end">
           <Textarea
             placeholder={t("commentPlaceholder")}
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
-            className="min-h-[60px] rounded-xl resize-none"
+            className="min-h-[40px] rounded-xl resize-none flex-1"
             maxLength={500}
           />
           <Button
             onClick={handleSubmitComment}
             disabled={!newComment.trim() || isSubmittingComment}
-            className="bg-gradient-to-r from-duo-rose to-duo-teal hover:opacity-90 px-4 h-auto self-end rounded-xl"
+            className="h-[40px] w-[40px] bg-gradient-to-r from-duo-rose to-duo-teal hover:opacity-90 rounded-xl flex-shrink-0"
           >
             {isSubmittingComment ? (
               <Loader2 className="h-4 w-4 animate-spin" />
