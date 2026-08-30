@@ -1,36 +1,108 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Duo
 
-## Getting Started
+App para casais registrarem e descobrirem lugares para visitar juntos.
 
-First, run the development server:
+## Funcionalidades
 
+- **Autenticação** - Login e registro com email/senha (NextAuth)
+- **Sistema de Duplas (Duo)** - Conectar com seu parceiro via código de convite
+- **Lugares** - Criar, editar, excluir e visualizar lugares
+- **Avaliação por Estrelas** - Avaliar lugares em 4 categorias: Ambiente, Romance, Custo-Benefício, Experiência
+- **Comentários** - Adicionar comentários nos lugares
+- **Status de Visitado** - Marcar lugares como visitados ou pendentes
+- **Busca e Filtros** - Buscar lugares e filtrar por status
+- **Organização por Categorias** - Lugares agrupados por tipo (Restaurante, Praia, Museu, etc.)
+- **Imagens** - Upload e exibição de imagens dos lugares
+- **Dashboard** - Visão geral com estatísticas e lugares recentes
+- **i18n** - Interface em português (pt-BR)
+- **Design Mobile-First** - Layout responsivo com navegação inferior
+
+## Stack Tecnológica
+
+- **Frontend**: Next.js 16, React 19, TypeScript
+- **UI**: Tailwind CSS 4, shadcn/ui, Lucide Icons
+- **Backend**: Next.js API Routes
+- **Banco de Dados**: MongoDB 8.0 com Mongoose 9
+- **Autenticação**: NextAuth v4
+- **i18n**: next-intl
+
+## Pré-requisitos
+
+- Node.js 18+
+- Docker (para MongoDB)
+
+## Instalação
+
+1. Clone o repositório:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <url-do-repositorio>
+cd duo-app
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Instale as dependências:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Configure as variáveis de ambiente copiando `.env.example` para `.env.local`:
+```bash
+cp .env.example .env.local
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Inicie o MongoDB com Docker:
+```bash
+docker-compose up -d
+```
 
-## Learn More
+5. Execute o servidor de desenvolvimento:
+```bash
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+6. Acesse [http://localhost:3000](http://localhost:3000)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Estrutura do Projeto
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+src/
+├── app/
+│   ├── (auth)/           # Páginas de autenticação
+│   ├── (protected)/      # Páginas protegidas (requer login)
+│   │   ├── home/         # Dashboard
+│   │   ├── places/       # CRUD de lugares
+│   │   ├── partner/      # Conectar com Duo
+│   │   └── profile/      # Perfil do usuário
+│   └── api/              # API Routes
+├── components/
+│   ├── features/         # Componentes de feature
+│   ├── layout/           # Componentes de layout
+│   └── ui/               # Componentes UI (shadcn)
+├── models/               # Modelos Mongoose
+├── types/                # Tipos TypeScript
+└── lib/                  # Utilitários
+```
 
-## Deploy on Vercel
+## APIs
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Lugares
+- `GET /api/places` - Listar lugares
+- `POST /api/places` - Criar lugar
+- `PUT /api/places` - Atualizar lugar
+- `DELETE /api/places` - Excluir lugar
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Comentários
+- `GET /api/comments?placeId=<id>` - Listar comentários
+- `POST /api/comments` - Criar comentário
+- `DELETE /api/comments` - Excluir comentário
+
+### Stats
+- `GET /api/stats` - Estatísticas do dashboard
+
+## Deploy
+
+O projeto pode ser deployado na Vercel ou qualquer plataforma que suporte Next.js.
+
+```bash
+npm run build
+npm start
+```
