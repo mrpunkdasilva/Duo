@@ -134,6 +134,16 @@
   "placeCard": {
     "visited": "Visitado"
   },
+  "placeDetail": {
+    "visited": "Visitado",
+    "description": "Por que querem ir?",
+    "address": "Endereço",
+    "notes": "Notas",
+    "rating": "Avaliação",
+    "addedIn": "Adicionado em",
+    "markAsVisited": "Marcar como visitado",
+    "markAsPending": "Marcar como pendente"
+  },
   "categories": {
     "restaurante": "Restaurante",
     "praia": "Praia",

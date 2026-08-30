@@ -23,12 +23,24 @@ export async function GET(request: NextRequest) {
   const coupleId = user.coupleId;
   const { searchParams } = new URL(request.url);
 
+  const id = searchParams.get("id");
   const category = searchParams.get("category");
   const visited = searchParams.get("visited");
   const search = searchParams.get("search");
   const limit = searchParams.get("limit");
 
   const filter: Record<string, unknown> = { coupleId };
+
+  if (id) {
+    const place = await Place.findOne({ _id: id, coupleId });
+    if (!place) {
+      return NextResponse.json(
+        { success: false, error: "Lugar não encontrado" },
+        { status: 404 }
+      );
+    }
+    return NextResponse.json({ success: true, data: place });
+  }
 
   if (category) filter.category = category;
   if (visited !== null) filter.visited = visited === "true";

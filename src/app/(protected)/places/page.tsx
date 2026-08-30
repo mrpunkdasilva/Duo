@@ -80,7 +80,7 @@ export default function PlacesPage() {
   };
 
   const handleEdit = (id: string) => {
-    router.push(`/places/${id}`);
+    router.push(`/places/${id}/edit`);
   };
 
   const handleDelete = async (id: string) => {
