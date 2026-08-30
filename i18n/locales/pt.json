@@ -146,6 +146,18 @@
     "noComments": "Nenhum comentário ainda. Seja o primeiro a comentar!"
   },
   "categories": {
+    "title": "Categorias",
+    "subtitle": "Gerencie as categorias dos seus lugares",
+    "newCategory": "Nova Categoria",
+    "editCategory": "Editar Categoria",
+    "name": "Nome",
+    "namePlaceholder": "Nome da categoria",
+    "icon": "Ícone",
+    "color": "Cor",
+    "preview": "Pré-visualização",
+    "categoryPreview": "Nome da categoria",
+    "empty": "Nenhuma categoria ainda",
+    "emptyDescription": "Crie categorias para organizar seus lugares",
     "restaurante": "Restaurante",
     "praia": "Praia",
     "museu": "Museu",
@@ -165,6 +177,8 @@
     "myDuoDescription": "Gerenciar vínculo com seu Duo",
     "myPlaces": "Meus Lugares",
     "myPlacesDescription": "Ver todos os lugares salvos",
+    "myCategories": "Categorias",
+    "myCategoriesDescription": "Gerenciar categorias dos lugares",
     "signOut": "Sair da conta"
   }
 }

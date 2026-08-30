@@ -143,6 +143,17 @@ export interface SessionUser {
   coupleId?: string | null;
 }
 
+export interface Category {
+  _id: ObjectId | string;
+  coupleId: ObjectId | string;
+  name: string;
+  icon?: string;
+  color?: string;
+  order: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface Comment {
   _id: ObjectId | string;
   placeId: ObjectId | string;

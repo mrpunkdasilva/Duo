@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { LogOut, ChevronRight, MapPin, Users } from "lucide-react";
+import { LogOut, ChevronRight, MapPin, Users, Tag } from "lucide-react";
 import Link from "next/link";
 
 export default function ProfilePage() {
@@ -64,6 +64,21 @@ export default function ProfilePage() {
               <div className="flex-1">
                 <p className="font-medium text-sm">{t("myPlaces")}</p>
                 <p className="text-xs text-muted-foreground">{t("myPlacesDescription")}</p>
+              </div>
+              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+            </CardContent>
+          </Card>
+        </Link>
+
+        <Link href="/categories" className="block">
+          <Card className="border-0 shadow-sm hover:bg-muted/50 transition-colors cursor-pointer">
+            <CardContent className="flex items-center gap-4 py-4 px-4">
+              <div className="w-10 h-10 rounded-xl bg-violet-500/10 flex items-center justify-center">
+                <Tag className="h-5 w-5 text-violet-500" />
+              </div>
+              <div className="flex-1">
+                <p className="font-medium text-sm">{t("myCategories")}</p>
+                <p className="text-xs text-muted-foreground">{t("myCategoriesDescription")}</p>
               </div>
               <ChevronRight className="h-4 w-4 text-muted-foreground" />
             </CardContent>
