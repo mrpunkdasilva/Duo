@@ -204,7 +204,7 @@ export default function PlaceDetailPage({ params }: { params: Promise<{ id: stri
   }
 
   return (
-    <div className="px-4 pt-4 max-w-lg mx-auto space-y-4">
+    <div className="px-4 pt-4 max-w-lg mx-auto space-y-8">
       <div className="flex items-center justify-between">
         <Link href="/places">
           <Button variant="ghost" size="sm" className="-ml-2 text-muted-foreground">
@@ -370,7 +370,7 @@ export default function PlaceDetailPage({ params }: { params: Promise<{ id: stri
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
+                      <div className="flex flex-col">
                         <span className="text-sm font-medium">{comment.userId?.name || "Você"}</span>
                         <span className="text-xs text-muted-foreground">
                           {formatDate(comment.createdAt)}

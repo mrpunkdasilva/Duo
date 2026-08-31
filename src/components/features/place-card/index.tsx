@@ -125,20 +125,24 @@ export function PlaceCard({ place, onToggleVisited, onEdit, onDelete }: PlaceCar
             <div className="flex items-center justify-between pt-1">
               <div className="flex items-center gap-3">
                 {place.rating ? (
-                  <div className="flex items-center gap-0.5">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`h-3.5 w-3.5 ${
-                          i < place.rating! ? "fill-yellow-400 text-yellow-400" : "text-gray-200"
-                        }`}
-                      />
-                    ))}
-                  </div>
+                  <>
+                    <div className="flex items-center gap-0.5">
+                      {[...Array(5)].map((_, i) => {
+                        const values = Object.values(place.rating!).filter(Boolean);
+                        const avg = values.length > 0 ? values.reduce((a, b) => a + b, 0) / values.length : 0;
+                        return (
+                          <Star
+                            key={i}
+                            className={`h-3.5 w-3.5 ${
+                              i < Math.round(avg) ? "fill-yellow-400 text-yellow-400" : "text-gray-200"
+                            }`}
+                          />
+                        );
+                      })}
+                    </div>
+                    <span className="text-xs text-muted-foreground">{formatDate(place.createdAt)}</span>
+                  </>
                 ) : (
-                  <span className="text-xs text-muted-foreground">{formatDate(place.createdAt)}</span>
-                )}
-                {place.rating && (
                   <span className="text-xs text-muted-foreground">{formatDate(place.createdAt)}</span>
                 )}
               </div>
