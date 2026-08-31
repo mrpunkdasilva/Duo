@@ -8,7 +8,7 @@ import pt from "../../i18n/locales/pt.json";
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <SessionProvider>
-      <NextIntlClientProvider locale="pt" messages={pt}>
+      <NextIntlClientProvider locale="pt" messages={pt} timeZone="America/Sao_Paulo">
         <TooltipProvider>{children}</TooltipProvider>
       </NextIntlClientProvider>
     </SessionProvider>

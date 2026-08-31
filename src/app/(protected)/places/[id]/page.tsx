@@ -378,7 +378,7 @@ export default function PlaceDetailPage({ params }: { params: Promise<{ id: stri
                       </div>
                       <p className="text-sm mt-1 whitespace-pre-wrap">{comment.text}</p>
                     </div>
-                    {comment.userId?._id?.toString() === session?.user?.id && (
+                    {comment.userId?._id?.toString() === (session?.user as any)?.id && (
                       <button
                         onClick={() => handleDeleteComment(comment._id.toString())}
                         className="flex-shrink-0 p-1 rounded hover:bg-red-50 transition-colors"

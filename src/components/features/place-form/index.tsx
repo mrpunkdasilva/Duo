@@ -94,7 +94,7 @@ export function PlaceForm({ initialData, onSubmit, isLoading, onCancel }: PlaceF
 
       <div className="space-y-2">
         <Label className="text-sm font-medium">{t("category")}</Label>
-        <Select value={category} onValueChange={setCategory}>
+        <Select value={category} onValueChange={(v) => v && setCategory(v)}>
           <SelectTrigger className="h-12 rounded-xl w-full">
             <SelectValue />
           </SelectTrigger>
