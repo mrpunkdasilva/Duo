@@ -29,7 +29,7 @@ export function ProfileMenuItem({
   const content = (
     <Card className="border-0 shadow-sm hover:bg-muted/50 transition-colors cursor-pointer">
       <CardContent className="py-4 px-4">
-        <Flex align="center" gap={4}>
+        <Flex align="center" gap={3}>
           
           <Icon bg={iconBg}>{icon}</Icon>
 
