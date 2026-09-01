@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { PageContainer } from "@/components/layout/page-container/page-container.component";
 import { PageHeader } from "@/components/layout/page-header/page-header.component";
-import { PasswordForm } from "../../components/profile-form/profile-form.component";
+import { PasswordForm } from "../../components/profile-form/password-form.component";
 
 interface ProfilePasswordViewProps {
   onBack: () => void;

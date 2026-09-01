@@ -10,7 +10,7 @@ import { ProfileView } from "./views/profile-view/profile-view.view";
 import { ProfileEditView } from "./views/profile-edit/profile-edit.view";
 import { ProfilePasswordView } from "./views/profile-password/profile-password.view";
 import { ProfileLoadingView } from "./views/profile-loading/profile-loading.view";
-import { useProfile } from "@/hooks/use-profile";
+import { useProfile } from "./hooks/use-profile/use-profile.hook";
 
 export default function ProfilePage() {
   const t = useTranslations("profile");
