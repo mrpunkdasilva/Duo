@@ -1,5 +1,5 @@
 import { ValidationStrategy, ValidationResult } from "./validation.strategy";
-import { UpdateProfileDto, ChangePasswordDto } from "../dto/user-request.dto";
+import { UpdateProfileDto, ChangePasswordDto } from "./user-request.dto";
 
 export class UpdateProfileStrategy implements ValidationStrategy<UpdateProfileDto> {
   validate(data: unknown): ValidationResult<UpdateProfileDto> {
