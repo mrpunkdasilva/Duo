@@ -9,7 +9,7 @@ import { LogOut, MapPin, Users, Tag, Pencil, Lock } from "lucide-react";
 import { ProfileCard } from "@/components/features/profile-card";
 import { ProfileMenuItem } from "@/components/features/profile-menu-item";
 import { ProfileForm, PasswordForm } from "@/components/features/profile-form";
-import { ProfileSkeleton } from "./profile-skeleton";
+import { ProfileSkeleton } from "./components/skeleton";
 
 export default function ProfilePage() {
   const t = useTranslations("profile");
