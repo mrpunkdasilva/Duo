@@ -9,7 +9,7 @@ import { ProfilePageResult, ProfileUser, MenuItem } from "../../types/profile.ty
 export function useProfilePage(): ProfilePageResult {
   const t = useTranslations("profile");
   const { status, data: session } = useSession();
-  const { mode, setMode, bannerColor, handleBack } = useProfile();
+  const { mode, setMode, bannerColor, isLoading, handleBack } = useProfile();
 
   const user: ProfileUser = {
     name: session?.user?.name || "Usuário",
@@ -18,6 +18,10 @@ export function useProfilePage(): ProfilePageResult {
   };
 
   if (status === "loading") {
+    return { view: "loading", props: { title: t("title") } };
+  }
+
+  if (isLoading) {
     return { view: "loading", props: { title: t("title") } };
   }
 

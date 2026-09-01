@@ -7,6 +7,7 @@ type Mode = "view" | "edit" | "password";
 export function useProfile() {
   const [mode, setMode] = useState<Mode>("view");
   const [bannerColor, setBannerColor] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function loadProfile() {
@@ -16,7 +17,9 @@ export function useProfile() {
           const data = await res.json();
           setBannerColor(data.data?.bannerColor || null);
         }
-      } catch {}
+      } catch {} finally {
+        setIsLoading(false);
+      }
     }
 
     loadProfile();
@@ -44,6 +47,7 @@ export function useProfile() {
     mode,
     setMode,
     bannerColor,
+    isLoading,
     handleBack,
   };
 }
