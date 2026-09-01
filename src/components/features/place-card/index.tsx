@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Heading } from "@/components/ui/heading";
 import {
   MapPin,
   Star,
@@ -78,7 +79,7 @@ export function PlaceCard({ place, onToggleVisited, onEdit, onDelete }: PlaceCar
 
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <h3 className="font-semibold text-base truncate">{place.name}</h3>
+                  <Heading as="h3" variant="card" className="truncate">{place.name}</Heading>
                   {place.visited && (
                     <Badge className="bg-duo-teal/10 text-duo-teal border-0 text-[10px] px-1.5 py-0 flex-shrink-0">
                       <CheckCircle2 className="h-2.5 w-2.5 mr-0.5" />

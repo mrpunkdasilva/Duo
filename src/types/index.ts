@@ -151,6 +151,17 @@ export interface Category {
   updatedAt: Date;
 }
 
+export interface UpdateProfileInput {
+  name?: string;
+  email?: string;
+  image?: string;
+}
+
+export interface ChangePasswordInput {
+  currentPassword: string;
+  newPassword: string;
+}
+
 export interface Comment {
   _id: ObjectId | string;
   placeId: ObjectId | string;

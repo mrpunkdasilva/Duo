@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Heading } from "@/components/ui/heading";
 import { Place, Comment, PlaceRating, CATEGORY_LABELS, RATING_CATEGORIES, RATING_LABELS } from "@/types";
 import {
   ArrowLeft,
@@ -245,7 +246,7 @@ export default function PlaceDetailPage({ params }: { params: Promise<{ id: stri
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <h1 className="text-xl font-bold">{place.name}</h1>
+            <Heading as="h1" variant="page" className="text-xl">{place.name}</Heading>
             {place.visited && (
               <Badge className="bg-duo-teal/10 text-duo-teal border-0 text-xs px-2 py-0.5">
                 <CheckCircle2 className="h-3 w-3 mr-1" />
@@ -330,7 +331,7 @@ export default function PlaceDetailPage({ params }: { params: Promise<{ id: stri
 
       {/* Comments section */}
       <div className="space-y-3">
-        <h2 className="font-semibold text-lg">{t("comments")}</h2>
+        <Heading as="h2" variant="section">{t("comments")}</Heading>
 
         <div className="flex gap-2 items-end">
           <Textarea

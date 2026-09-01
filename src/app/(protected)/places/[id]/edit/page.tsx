@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 import { PlaceForm } from "@/components/features/place-form";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Heading } from "@/components/ui/heading";
 import { Place, UpdatePlaceInput } from "@/types";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
@@ -70,7 +71,7 @@ export default function EditPlacePage({ params }: { params: Promise<{ id: string
             {tc("back")}
           </Button>
         </Link>
-        <h1 className="text-2xl font-bold">{t("title")}</h1>
+        <Heading as="h1" variant="page">{t("title")}</Heading>
         <p className="text-sm text-muted-foreground mt-1">
           {t("subtitle")}
         </p>

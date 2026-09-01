@@ -7,8 +7,10 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Heading } from "@/components/ui/heading";
 import { Loader2, Heart } from "lucide-react";
 
 export default function LoginPage() {
@@ -52,7 +54,7 @@ export default function LoginPage() {
             <Heart className="h-8 w-8 text-white fill-white" />
           </div>
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-gradient">duo</h1>
+            <Heading as="h1" variant="page" className="text-gradient">duo</Heading>
             <p className="text-sm text-muted-foreground mt-1">
               {t("description")}
             </p>
@@ -79,9 +81,8 @@ export default function LoginPage() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password" className="text-sm">{t("password")}</Label>
-                <Input
+                <PasswordInput
                   id="password"
-                  type="password"
                   placeholder={t("passwordPlaceholder")}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}

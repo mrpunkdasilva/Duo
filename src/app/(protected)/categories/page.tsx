@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Heading } from "@/components/ui/heading";
 import {
   Dialog,
   DialogContent,
@@ -191,7 +192,7 @@ export default function CategoriesPage() {
   return (
     <div className="px-4 pt-4 space-y-4">
       <div className="space-y-2">
-        <h1 className="text-2xl font-bold">{t("title")}</h1>
+        <Heading as="h1" variant="page">{t("title")}</Heading>
         <p className="text-sm text-muted-foreground">
           {t("subtitle")}
         </p>

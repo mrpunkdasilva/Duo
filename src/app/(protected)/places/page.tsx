@@ -9,6 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Heading } from "@/components/ui/heading";
 import { Place, PlaceCategory, CATEGORY_LABELS } from "@/types";
 import { Plus, Search, UtensilsCrossed, Waves, Landmark, TreePine, Coffee, Wine, ShoppingBag, Tag, MapPin } from "lucide-react";
 import Link from "next/link";
@@ -142,7 +143,7 @@ export default function PlacesPage() {
     <div className="px-4 pt-4 space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">{t("title")}</h1>
+          <Heading as="h1" variant="page">{t("title")}</Heading>
           <p className="text-sm text-muted-foreground mt-1">
             {places.length === 0
               ? t("emptyAll")
