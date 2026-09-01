@@ -4,8 +4,8 @@ import { useTranslations } from "next-intl";
 import { useSession, signOut } from "next-auth/react";
 import { LogOut, MapPin, Users, Tag, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ProfileCard } from "../profile-card/profile-card.component";
-import { ProfileMenuItem } from "../profile-menu-item/profile-menu-item.component";
+import { ProfileCard } from "../../profile-card/profile-card.component";
+import { ProfileMenuItem } from "../../profile-menu-item/profile-menu-item.component";
 
 interface ProfileViewProps {
   bannerColor: string | null;

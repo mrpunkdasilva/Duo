@@ -6,10 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Pencil } from "lucide-react";
 import { PageContainer } from "@/components/layout/page-container/page-container.component";
 import { PageHeader } from "@/components/layout/page-header/page-header.component";
-import { ProfileView } from "./components/profile-view/profile-view.component";
-import { ProfileEditView } from "./components/profile-edit/profile-edit.component";
-import { ProfilePasswordView } from "./components/profile-password/profile-password.component";
-import { ProfileLoadingView } from "./components/profile-loading/profile-loading.component";
+import { ProfileView } from "./components/views/profile-view/profile-view.component";
+import { ProfileEditView } from "./components/views/profile-edit/profile-edit.component";
+import { ProfilePasswordView } from "./components/views/profile-password/profile-password.component";
+import { ProfileLoadingView } from "./components/views/profile-loading/profile-loading.component";
 import { useProfile } from "@/hooks/use-profile";
 
 export default function ProfilePage() {
