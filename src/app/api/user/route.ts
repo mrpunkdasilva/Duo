@@ -4,27 +4,42 @@ import { openApiDocument } from "@/lib/openapi";
 import logger from "@/lib/logger";
 
 export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
+  try {
+    const { searchParams } = new URL(request.url);
 
-  if (searchParams.get("openapi") === "true") {
-    return NextResponse.json(openApiDocument);
+    if (searchParams.get("openapi") === "true") {
+      return NextResponse.json(openApiDocument);
+    }
+
+    logger.info("GET /api/user - Fetching profile");
+    const result = await getProfile();
+    return NextResponse.json(result.body, { status: result.status });
+  } catch (error) {
+    logger.error({ error }, "Error in GET /api/user");
+    return NextResponse.json({ error: "Erro interno" }, { status: 500 });
   }
-
-  logger.info("GET /api/user - Fetching profile");
-  const result = await getProfile();
-  return NextResponse.json(result.body, { status: result.status });
 }
 
 export async function PUT(request: NextRequest) {
-  logger.info("PUT /api/user - Updating profile");
-  const body = await request.json();
-  const result = await updateProfileController(body);
-  return NextResponse.json(result.body, { status: result.status });
+  try {
+    logger.info("PUT /api/user - Updating profile");
+    const body = await request.json();
+    const result = await updateProfileController(body);
+    return NextResponse.json(result.body, { status: result.status });
+  } catch (error) {
+    logger.error({ error }, "Error in PUT /api/user");
+    return NextResponse.json({ error: "Erro interno" }, { status: 500 });
+  }
 }
 
 export async function PATCH(request: NextRequest) {
-  logger.info("PATCH /api/user - Changing password");
-  const body = await request.json();
-  const result = await changePasswordController(body);
-  return NextResponse.json(result.body, { status: result.status });
+  try {
+    logger.info("PATCH /api/user - Changing password");
+    const body = await request.json();
+    const result = await changePasswordController(body);
+    return NextResponse.json(result.body, { status: result.status });
+  } catch (error) {
+    logger.error({ error }, "Error in PATCH /api/user");
+    return NextResponse.json({ error: "Erro interno" }, { status: 500 });
+  }
 }
