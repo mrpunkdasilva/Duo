@@ -1,30 +1,27 @@
-import { Skeleton, SkeletonCircle, SkeletonLine, SkeletonCard, SkeletonSquare } from "@/components/ui/skeleton";
+import { Skeleton, SkeletonCircle, SkeletonLine, SkeletonCard, SkeletonMenuItem } from "@/components/ui/skeleton";
+import { Stack } from "@/components/ui/stack";
+import { Box } from "@/components/ui/box";
 
 export function ProfileSkeleton() {
   return (
-    <div className="space-y-4">
+    <Stack gap={4}>
       <SkeletonCard>
         <Skeleton className="h-24 rounded-none" />
-        <div className="px-6 pb-6 -mt-12 mb-4 relative">
+        
+        <Box className="px-6 pb-6 -mt-12 mb-4 relative">
           <SkeletonCircle className="h-24 w-24 ring-4 ring-background" />
           <SkeletonLine className="h-5 w-32 mt-4 mb-2" />
           <SkeletonLine className="h-4 w-48" />
-        </div>
+        </Box>
       </SkeletonCard>
 
-      <div className="space-y-2">
+      <Stack gap={2}>
         {[...Array(4)].map((_, i) => (
-          <div key={i} className="flex items-center gap-3 p-3 rounded-lg border">
-            <SkeletonSquare className="h-10 w-10 shrink-0" />
-            <div className="flex-1 space-y-1.5">
-              <SkeletonLine className="h-4 w-28" />
-              <SkeletonLine className="h-3 w-44" />
-            </div>
-          </div>
+          <SkeletonMenuItem key={i} />
         ))}
-      </div>
+      </Stack>
 
       <Skeleton className="h-12 w-full rounded-xl" />
-    </div>
+    </Stack>
   );
 }

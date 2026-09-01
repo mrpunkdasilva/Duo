@@ -1,6 +1,11 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
+import { Text } from "@/components/ui/text";
+import { Flex } from "@/components/ui/flex";
+import { Icon } from "@/components/ui/icon";
+import { Button } from "@/components/ui/button";
+import { Link } from "@/components/ui/link";
 import { ChevronRight } from "lucide-react";
 import { ReactNode } from "react";
 
@@ -23,32 +28,37 @@ export function ProfileMenuItem({
 }: ProfileMenuItemProps) {
   const content = (
     <Card className="border-0 shadow-sm hover:bg-muted/50 transition-colors cursor-pointer">
-      <CardContent className="flex items-center gap-4 py-4 px-4">
-        <div
-          className={`w-10 h-10 rounded-xl flex items-center justify-center ${iconBg}`}
-        >
-          {icon}
-        </div>
-        <div className="flex-1">
-          <p className="font-medium text-sm">{label}</p>
-          <p className="text-xs text-muted-foreground">{description}</p>
-        </div>
-        <ChevronRight className="h-4 w-4 text-muted-foreground" />
+      <CardContent className="py-4 px-4">
+        <Flex align="center" gap={4}>
+          
+          <Icon bg={iconBg}>{icon}</Icon>
+
+          <Flex direction="col" className="flex-1">
+            <Text variant="label">{label}</Text>
+            <Text variant="small">{description}</Text>
+          </Flex>
+          
+          <ChevronRight className="h-4 w-4 text-muted-foreground" />
+        </Flex>
       </CardContent>
     </Card>
   );
 
   if (href) {
     return (
-      <a href={href} className="block">
+      <Link href={href}>
         {content}
-      </a>
+      </Link>
     );
   }
 
   return (
-    <button onClick={onClick} className="w-full text-left">
+    <Button
+      variant="ghost"
+      className="w-full p-0 h-auto justify-start"
+      onClick={onClick}
+    >
       {content}
-    </button>
+    </Button>
   );
 }
