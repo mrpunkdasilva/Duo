@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs";
-import { UserData, UpdateProfileData, ChangePasswordData } from "./user.types";
+import { UserData, UpdateProfileData, ChangePasswordData } from "../domain/user.types";
 import { toUserData } from "../infra/user.mapper";
 import {
   findUserById,

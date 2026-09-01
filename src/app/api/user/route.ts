@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getProfile, updateProfileController, changePasswordController } from "./user.controller";
+import { getProfile, updateProfileController, changePasswordController } from "./application/user.controller";
 import { openApiDocument } from "@/lib/openapi";
 import logger from "@/lib/logger";
 
