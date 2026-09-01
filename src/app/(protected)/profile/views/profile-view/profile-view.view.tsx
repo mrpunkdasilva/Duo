@@ -1,4 +1,3 @@
-import { ReactNode } from "react";
 import { signOut } from "next-auth/react";
 import { LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -7,25 +6,7 @@ import { PageContainer } from "@/components/layout/page-container/page-container
 import { PageHeader } from "@/components/layout/page-header/page-header.component";
 import { ProfileCard } from "../../components/profile-card/profile-card.component";
 import { ProfileMenuItem } from "../../components/profile-menu-item/profile-menu-item.component";
-
-interface MenuItem {
-  icon: ReactNode;
-  iconBg: string;
-  label: string;
-  description: string;
-  onClick?: () => void;
-  href?: string;
-}
-
-interface ProfileViewProps {
-  title: string;
-  editText: string;
-  onEdit: () => void;
-  bannerColor: string | null;
-  user: { name: string; email: string; image: string | null };
-  menuItems: MenuItem[];
-  signOutText: string;
-}
+import { ProfileViewProps } from "../../types/profile.types";
 
 export function ProfileView({
   title,

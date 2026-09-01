@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect, useMemo } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { useSession } from "next-auth/react";
 
@@ -14,18 +14,12 @@ export function useProfileForm({ onSaved }: UseProfileFormProps) {
 
   const [name, setName] = useState(session?.user?.name || "");
   const [email, setEmail] = useState(session?.user?.email || "");
-  const [image, setImage] = useState("");
+  const [image, setImage] = useState(session?.user?.image || "");
   const [bannerColor, setBannerColor] = useState(
-    (session?.user as any)?.bannerColor || ""
+    (session?.user as Record<string, string>)?.bannerColor || ""
   );
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState("");
-
-  useEffect(() => {
-    if (session?.user?.image) {
-      setImage(session.user.image);
-    }
-  }, [session?.user]);
 
   const isFormValid = useMemo(() => {
     return name.trim().length > 0 && email.trim().includes("@");

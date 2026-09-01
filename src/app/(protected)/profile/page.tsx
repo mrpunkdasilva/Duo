@@ -11,13 +11,13 @@ export default function ProfilePage() {
 
   switch (view) {
     case "loading":
-      return <ProfileLoadingView {...props as { title: string }} />;
+      return <ProfileLoadingView {...props} />;
     case "edit":
-      return <ProfileEditView {...props as { title: string; onBack: () => void; onSaved: () => void }} />;
+      return <ProfileEditView {...props} />;
     case "password":
-      return <ProfilePasswordView {...props as { title: string; onBack: () => void }} />;
+      return <ProfilePasswordView {...props} />;
     case "view":
-      return <ProfileView {...props as any} />;
+      return <ProfileView {...props} />;
     default:
       return null;
   }

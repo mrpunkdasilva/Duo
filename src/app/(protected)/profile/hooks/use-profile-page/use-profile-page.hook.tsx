@@ -1,32 +1,10 @@
 "use client";
 
-import { ReactNode } from "react";
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { useProfile } from "../use-profile/use-profile.hook";
-import { LogOut, MapPin, Users, Tag, Lock } from "lucide-react";
-
-type ViewKey = "loading" | "view" | "edit" | "password";
-
-interface MenuItem {
-  icon: ReactNode;
-  iconBg: string;
-  label: string;
-  description: string;
-  onClick?: () => void;
-  href?: string;
-}
-
-interface ProfileUser {
-  name: string;
-  email: string;
-  image: string | null;
-}
-
-interface ProfilePageResult {
-  view: ViewKey;
-  props: Record<string, unknown>;
-}
+import { MapPin, Users, Tag, Lock } from "lucide-react";
+import { ProfilePageResult, ProfileUser, MenuItem } from "../../types/profile.types";
 
 export function useProfilePage(): ProfilePageResult {
   const t = useTranslations("profile");
