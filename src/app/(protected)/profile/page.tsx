@@ -1,72 +1,32 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Pencil } from "lucide-react";
 import { PageContainer } from "@/components/layout/page-container/page-container.component";
 import { PageHeader } from "@/components/layout/page-header/page-header.component";
-import { ProfileForm, PasswordForm } from "./components/profile-form/profile-form.component";
 import { ProfileView } from "./components/profile-view/profile-view.component";
-import { ProfileSkeleton } from "./components/skeleton/skeleton.component";
-
-type Mode = "view" | "edit" | "password";
+import { ProfileEditView } from "./components/profile-edit/profile-edit.component";
+import { ProfilePasswordView } from "./components/profile-password/profile-password.component";
+import { ProfileLoadingView } from "./components/profile-loading/profile-loading.component";
+import { useProfile } from "@/hooks/use-profile";
 
 export default function ProfilePage() {
   const t = useTranslations("profile");
   const { status } = useSession();
-  const [mode, setMode] = useState<Mode>("view");
-  const [bannerColor, setBannerColor] = useState<string | null>(null);
+  const { mode, setMode, bannerColor, handleBack } = useProfile();
 
-  const fetchProfile = useCallback(async () => {
-    try {
-      const res = await fetch("/api/user");
-      if (res.ok) {
-        const data = await res.json();
-        setBannerColor(data.data?.bannerColor || null);
-      }
-    } catch {}
-  }, []);
-
-  useEffect(() => {
-    fetchProfile();
-  }, [fetchProfile]);
-
-  useEffect(() => {
-    if (mode === "view") {
-      fetchProfile();
-    }
-  }, [mode, fetchProfile]);
-
-  const isLoading = status === "loading";
-  const handleBack = () => setMode("view");
-
-  if (isLoading) {
-    return (
-      <PageContainer>
-        <PageHeader title={t("title")} />
-        <ProfileSkeleton />
-      </PageContainer>
-    );
+  if (status === "loading") {
+    return <ProfileLoadingView />;
   }
 
   if (mode === "edit") {
-    return (
-      <PageContainer>
-        <PageHeader title={t("title")} />
-        <ProfileForm onCancel={handleBack} onSaved={handleBack} />
-      </PageContainer>
-    );
+    return <ProfileEditView onBack={handleBack} onSaved={handleBack} />;
   }
 
   if (mode === "password") {
-    return (
-      <PageContainer>
-        <PageHeader title={t("title")} />
-        <PasswordForm onCancel={handleBack} />
-      </PageContainer>
-    );
+    return <ProfilePasswordView onBack={handleBack} />;
   }
 
   return (
