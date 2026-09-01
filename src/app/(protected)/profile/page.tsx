@@ -6,10 +6,10 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Heading } from "@/components/ui/heading";
 import { LogOut, MapPin, Users, Tag, Pencil, Lock } from "lucide-react";
-import { ProfileCard } from "@/components/features/profile-card";
-import { ProfileMenuItem } from "@/components/features/profile-menu-item";
-import { ProfileForm, PasswordForm } from "@/components/features/profile-form";
-import { ProfileSkeleton } from "./components/skeleton";
+import { ProfileCard } from "./components/profile-card/profile-card.component";
+import { ProfileMenuItem } from "./components/profile-menu-item/profile-menu-item.component";
+import { ProfileForm, PasswordForm } from "./components/profile-form/profile-form.component";
+import { ProfileSkeleton } from "./components/skeleton/skeleton.component";
 
 export default function ProfilePage() {
   const t = useTranslations("profile");

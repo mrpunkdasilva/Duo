@@ -5,11 +5,9 @@ export function ProfileSkeleton() {
     <div className="space-y-4">
       <SkeletonCard>
         <Skeleton className="h-24 rounded-none" />
-        <div className="relative px-6 pb-6">
-          <div className="relative -mt-12 mb-4">
-            <SkeletonCircle className="h-24 w-24 ring-4 ring-background" />
-          </div>
-          <SkeletonLine className="h-5 w-32 mb-2" />
+        <div className="px-6 pb-6 -mt-12 mb-4 relative">
+          <SkeletonCircle className="h-24 w-24 ring-4 ring-background" />
+          <SkeletonLine className="h-5 w-32 mt-4 mb-2" />
           <SkeletonLine className="h-4 w-48" />
         </div>
       </SkeletonCard>
