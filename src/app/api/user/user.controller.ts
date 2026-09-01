@@ -1,7 +1,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { getUser, updateProfile, changePassword } from "../services/user.service";
-import { UpdateProfileStrategy, ChangePasswordStrategy, validateWithStrategy } from "../strategies/user-type.strategy";
+import { getUser, updateProfile, changePassword } from "./domain/user.service";
+import { UpdateProfileStrategy, ChangePasswordStrategy, validateWithStrategy } from "./domain/user-strategies";
 import logger from "@/lib/logger";
 
 interface SessionUser {

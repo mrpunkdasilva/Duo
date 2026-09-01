@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getProfile, updateProfileController, changePasswordController } from "./controllers/user.controller";
-import logger from "@/lib/logger";
+import { getProfile, updateProfileController, changePasswordController } from "./user.controller";
 import { openApiDocument } from "@/lib/openapi";
+import logger from "@/lib/logger";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
