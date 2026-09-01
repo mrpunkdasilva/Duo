@@ -1,4 +1,4 @@
-import { UserData } from "../domain/user.types";
+import { UserData } from "../types/user.types";
 import { UserDataResponse } from "../dto/user-response.dto";
 import { IUser } from "@/models/user";
 

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getProfile, updateProfileController, changePasswordController } from "./controller/user.controller";
+import { getProfile, updateProfileController, changePasswordController } from "./controllers/user.controller";
 import logger from "@/lib/logger";
 
 export async function GET() {
