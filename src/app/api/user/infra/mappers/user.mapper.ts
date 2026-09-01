@@ -1,5 +1,5 @@
-import { UserData } from "../domain/user.types";
-import { UserDataResponse } from "../domain/user-response.dto";
+import { UserData } from "../../domain/types/user.types";
+import { UserDataResponse } from "../../domain/dto/user-response.dto";
 import { IUser } from "@/models/user";
 
 export function toUserDataResponse(user: IUser): UserDataResponse {

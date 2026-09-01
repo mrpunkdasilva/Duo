@@ -1,12 +1,12 @@
 import bcrypt from "bcryptjs";
-import { UserData, UpdateProfileData, ChangePasswordData } from "../domain/user.types";
-import { toUserData } from "../infra/user.mapper";
+import { UserData, UpdateProfileData, ChangePasswordData } from "../../domain/types/user.types";
+import { toUserData } from "../../infra/mappers/user.mapper";
 import {
   findUserById,
   findUserByIdWithPassword,
   findUserByEmail,
   saveUser,
-} from "../infra/user.repository";
+} from "../../infra/repositories/user.repository";
 import logger from "@/lib/logger";
 
 export async function getUser(userId: string): Promise<UserData | null> {
