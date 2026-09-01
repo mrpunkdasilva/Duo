@@ -7,17 +7,17 @@ import { ProfilePasswordView } from "./views/profile-password/profile-password.v
 import { ProfileLoadingView } from "./views/profile-loading/profile-loading.view";
 
 export default function ProfilePage() {
-  const { view, props } = useProfilePage();
+  const result = useProfilePage();
 
-  switch (view) {
+  switch (result.view) {
     case "loading":
-      return <ProfileLoadingView {...props} />;
+      return <ProfileLoadingView {...result.props} />;
     case "edit":
-      return <ProfileEditView {...props} />;
+      return <ProfileEditView {...result.props} />;
     case "password":
-      return <ProfilePasswordView {...props} />;
+      return <ProfilePasswordView {...result.props} />;
     case "view":
-      return <ProfileView {...props} />;
+      return <ProfileView {...result.props} />;
     default:
       return null;
   }
