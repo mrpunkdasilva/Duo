@@ -33,4 +33,19 @@ function SkeletonCard({ className, children, ...props }: React.ComponentProps<"d
   );
 }
 
-export { Skeleton, SkeletonCircle, SkeletonSquare, SkeletonLine, SkeletonCard };
+function SkeletonMenuItem({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      className={cn("flex items-center gap-3 p-3 rounded-lg border", className)}
+      {...props}
+    >
+      <SkeletonSquare className="h-10 w-10 shrink-0" />
+      <div className="flex-1 space-y-1.5">
+        <SkeletonLine className="h-4 w-28" />
+        <SkeletonLine className="h-3 w-44" />
+      </div>
+    </div>
+  );
+}
+
+export { Skeleton, SkeletonCircle, SkeletonSquare, SkeletonLine, SkeletonCard, SkeletonMenuItem };
