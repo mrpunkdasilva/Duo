@@ -1,63 +1,68 @@
-"use client";
-
-import { useTranslations } from "next-intl";
-import { useSession, signOut } from "next-auth/react";
-import { LogOut, MapPin, Users, Tag, Lock } from "lucide-react";
+import { ReactNode } from "react";
+import { signOut } from "next-auth/react";
+import { LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Stack } from "@/components/ui/stack";
+import { PageContainer } from "@/components/layout/page-container/page-container.component";
+import { PageHeader } from "@/components/layout/page-header/page-header.component";
 import { ProfileCard } from "../../components/profile-card/profile-card.component";
 import { ProfileMenuItem } from "../../components/profile-menu-item/profile-menu-item.component";
 
-interface ProfileViewProps {
-  bannerColor: string | null;
-  onPasswordClick: () => void;
+interface MenuItem {
+  icon: ReactNode;
+  iconBg: string;
+  label: string;
+  description: string;
+  onClick?: () => void;
+  href?: string;
 }
 
-export function ProfileView({ bannerColor, onPasswordClick }: ProfileViewProps) {
-  const t = useTranslations("profile");
-  const { data: session } = useSession();
+interface ProfileViewProps {
+  title: string;
+  editText: string;
+  onEdit: () => void;
+  bannerColor: string | null;
+  user: { name: string; email: string; image: string | null };
+  menuItems: MenuItem[];
+  signOutText: string;
+}
 
+export function ProfileView({
+  title,
+  editText,
+  onEdit,
+  bannerColor,
+  user,
+  menuItems,
+  signOutText,
+}: ProfileViewProps) {
   return (
-    <>
+    <PageContainer>
+      <PageHeader
+        title={title}
+        action={
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onEdit}
+            className="rounded-xl"
+          >
+            {editText}
+          </Button>
+        }
+      />
+
       <ProfileCard
-        name={session?.user?.name || "Usuário"}
-        email={session?.user?.email || ""}
-        image={session?.user?.image}
+        name={user.name}
+        email={user.email}
+        image={user.image}
         bannerColor={bannerColor}
       />
 
       <Stack gap={2}>
-        <ProfileMenuItem
-          icon={<Lock className="h-5 w-5 text-violet-500" />}
-          iconBg="bg-violet-500/10"
-          label={t("changePassword")}
-          description={t("changePasswordDescription")}
-          onClick={onPasswordClick}
-        />
-        
-        <ProfileMenuItem
-          icon={<Users className="h-5 w-5 text-duo-teal" />}
-          iconBg="bg-duo-teal/10"
-          label={t("myDuo")}
-          description={t("myDuoDescription")}
-          href="/partner"
-        />
-
-        <ProfileMenuItem
-          icon={<MapPin className="h-5 w-5 text-duo-rose" />}
-          iconBg="bg-duo-rose/10"
-          label={t("myPlaces")}
-          description={t("myPlacesDescription")}
-          href="/places"
-        />
-
-        <ProfileMenuItem
-          icon={<Tag className="h-5 w-5 text-violet-500" />}
-          iconBg="bg-violet-500/10"
-          label={t("myCategories")}
-          description={t("myCategoriesDescription")}
-          href="/categories"
-        />
+        {menuItems.map((item, i) => (
+          <ProfileMenuItem key={i} {...item} />
+        ))}
       </Stack>
 
       <Button
@@ -66,8 +71,8 @@ export function ProfileView({ bannerColor, onPasswordClick }: ProfileViewProps) 
         onClick={() => signOut({ callbackUrl: "/login" })}
       >
         <LogOut className="h-4 w-4 mr-2" />
-        {t("signOut")}
+        {signOutText}
       </Button>
-    </>
+    </PageContainer>
   );
 }
