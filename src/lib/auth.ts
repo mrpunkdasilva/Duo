@@ -35,7 +35,6 @@ export const authOptions: NextAuthOptions = {
           id: user._id.toString(),
           email: user.email,
           name: user.name,
-          image: user.image,
         };
       },
     }),
@@ -46,9 +45,13 @@ export const authOptions: NextAuthOptions = {
         (session.user as any).id = token.id as string;
 
         await connectToDatabase();
-        const dbUser = await User.findById(token.id).select("coupleId");
+        const dbUser = await User.findById(token.id).select("name email image bannerColor coupleId");
 
         if (dbUser) {
+          session.user.name = dbUser.name;
+          session.user.email = dbUser.email;
+          session.user.image = dbUser.image || null;
+          (session.user as any).bannerColor = dbUser.bannerColor || null;
           (session.user as any).coupleId = dbUser.coupleId?.toString() || null;
         }
       }

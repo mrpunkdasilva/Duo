@@ -7,6 +7,7 @@ import { PlaceList } from "@/components/features/place-list";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Heading } from "@/components/ui/heading";
 import { Place, DashboardStats } from "@/types";
 import { Plus, Heart, Sparkles, MapPin, Users, ArrowRight } from "lucide-react";
 import Link from "next/link";
@@ -109,9 +110,9 @@ export default function HomePage() {
 
           {hasPartner ? (
             <>
-              <h1 className="text-2xl md:text-3xl font-bold mb-1">
+              <Heading as="h1" variant="page" className="mb-1">
                 {userName} & {partnerName}
-              </h1>
+              </Heading>
               <div className="flex items-center gap-3 mt-3">
                 <div className="flex items-center -space-x-2">
                   <Avatar className="h-8 w-8 ring-2 ring-white">
@@ -136,9 +137,9 @@ export default function HomePage() {
             </>
           ) : (
             <>
-              <h1 className="text-2xl md:text-3xl font-bold mb-1">
+              <Heading as="h1" variant="page" className="mb-1">
                 {t("greeting", { name: userName })}
-              </h1>
+              </Heading>
               <p className="text-muted-foreground text-sm md:text-base">
                 {t("emptyState")}
               </p>
@@ -208,7 +209,7 @@ export default function HomePage() {
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <MapPin className="h-4 w-4 text-duo-rose" />
-            <h2 className="font-semibold text-lg">{t("recent")}</h2>
+            <Heading as="h2" variant="section">{t("recent")}</Heading>
           </div>
           {recentPlaces.length > 0 && (
             <Link href="/places">

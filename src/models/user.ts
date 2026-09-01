@@ -6,6 +6,7 @@ export interface IUser extends Document {
   email: string;
   password?: string;
   image?: string;
+  bannerColor?: string;
   coupleId?: mongoose.Types.ObjectId;
   createdAt: Date;
 }
@@ -28,6 +29,9 @@ const UserSchema = new Schema<IUser>({
     select: false,
   },
   image: {
+    type: String,
+  },
+  bannerColor: {
     type: String,
   },
   coupleId: {

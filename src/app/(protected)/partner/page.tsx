@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Heading } from "@/components/ui/heading";
 import { Loader2, Copy, Check, Heart, LinkIcon, UserPlus } from "lucide-react";
 
 export default function PartnerPage() {
@@ -96,7 +97,7 @@ export default function PartnerPage() {
   return (
     <div className="px-4 pt-4 space-y-6 max-w-lg mx-auto">
       <div>
-        <h1 className="text-2xl font-bold">{t("title")}</h1>
+        <Heading as="h1" variant="page">{t("title")}</Heading>
         <p className="text-sm text-muted-foreground mt-1">{t("subtitle")}</p>
       </div>
 
