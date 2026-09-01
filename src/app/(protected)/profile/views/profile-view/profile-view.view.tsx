@@ -40,7 +40,7 @@ export function ProfileView({
         bannerColor={bannerColor}
       />
 
-      <Stack gap={2}>
+      <Stack gap={3}>
         {menuItems.map((item, i) => (
           <ProfileMenuItem key={i} {...item} />
         ))}

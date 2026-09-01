@@ -27,7 +27,7 @@ export function ProfileMenuItem({
   href,
 }: ProfileMenuItemProps) {
   const content = (
-    <Card className="border-0 shadow-sm hover:bg-muted/50 transition-colors cursor-pointer">
+    <Card className="w-full border-0 shadow-sm ring-0 hover:bg-muted/50 transition-colors cursor-pointer">
       <CardContent className="py-4 px-4">
         <Flex align="center" gap={3}>
           
@@ -55,7 +55,7 @@ export function ProfileMenuItem({
   return (
     <Button
       variant="ghost"
-      className="w-full p-0 h-auto justify-start"
+      className="w-full !items-start text-left p-0 h-auto justify-start"
       onClick={onClick}
     >
       {content}

@@ -22,10 +22,10 @@ export function ProfileCard({ name, email, image, bannerColor }: ProfileCardProp
   }, [bannerColor]);
 
   return (
-    <Card className="border-0 shadow-sm overflow-hidden">
+    <Card className="border-0 shadow-sm ring-0 overflow-hidden">
       <Box className="h-24" style={bannerStyle} />
 
-      <CardContent className="relative px-6 pb-6">
+      <CardContent className="relative px-4 pb-4">
         <Box className="relative -mt-12 mb-4">
           <Avatar className="h-24 w-24 ring-4 ring-background">
             <AvatarImage src={image || ""} alt={name} />
