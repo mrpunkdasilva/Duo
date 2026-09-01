@@ -1,8 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getProfile, updateProfileController, changePasswordController } from "./controllers/user.controller";
 import logger from "@/lib/logger";
+import { openApiDocument } from "@/lib/openapi";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+
+  if (searchParams.get("openapi") === "true") {
+    return NextResponse.json(openApiDocument);
+  }
+
   logger.info("GET /api/user - Fetching profile");
   const result = await getProfile();
   return NextResponse.json(result.body, { status: result.status });
