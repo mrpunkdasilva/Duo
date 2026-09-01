@@ -1,4 +1,5 @@
 export interface UserData {
+  id: string;
   name: string;
   email: string;
   image: string | null;
@@ -6,19 +7,14 @@ export interface UserData {
   createdAt: Date;
 }
 
-export interface UpdateProfileRequest {
+export interface UpdateProfileData {
   name: string;
   email: string;
   image?: string;
   bannerColor?: string;
 }
 
-export interface ChangePasswordRequest {
+export interface ChangePasswordData {
   currentPassword: string;
   newPassword: string;
-}
-
-export interface ApiResponse<T = unknown> {
-  data?: T;
-  error?: string;
 }
