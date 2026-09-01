@@ -12,7 +12,7 @@ export default function DocsLayout({ children }: { children: React.ReactNode }) 
           </Link>
         </div>
       </header>
-      <main>{children}</main>
+      <main className="container mx-auto px-4">{children}</main>
     </div>
   );
 }

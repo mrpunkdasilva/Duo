@@ -15,10 +15,10 @@ export default function ApiDocsPage() {
       .then(setSpec);
   }, []);
 
-  if (!spec) return <div>Carregando...</div>;
+  if (!spec) return <div className="flex justify-center items-center h-64">Carregando...</div>;
 
   return (
-    <div>
+    <div className="max-w-4xl mx-auto py-8">
       <SwaggerUI spec={spec} />
     </div>
   );
