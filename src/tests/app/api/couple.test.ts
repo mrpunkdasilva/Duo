@@ -74,8 +74,7 @@ describe("GET /api/couple", () => {
 
   it("should return null data when user has no couple", async () => {
     (getServerSession as jest.Mock).mockResolvedValue(mockSession);
-    const user = makePopulatedUser({ coupleId: null });
-    user.coupleId = null;
+    const user = makePopulatedUser({ coupleId: null as string | null });
     mockUserFindById.mockReturnValue({ populate: jest.fn().mockResolvedValue(user) });
     const res = await GET();
     const data = await res.json();

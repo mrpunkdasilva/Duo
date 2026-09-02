@@ -90,7 +90,7 @@ if (typeof globalThis.Response === "undefined") {
       return typeof this.body === "string" ? this.body : "";
     }
     clone() {
-      return new (this.constructor as typeof Response)(this.body, {
+      return new (this.constructor as typeof Response)(this.body as BodyInit, {
         status: this.status,
         statusText: this.statusText,
       });

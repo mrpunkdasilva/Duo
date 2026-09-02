@@ -190,7 +190,7 @@ describe("user.controller", () => {
       });
 
       expect(result.status).toBe(200);
-      expect(result.body.data.success).toBe(true);
+      expect(result.body.data?.success).toBe(true);
     });
 
     it("should return 400 with error message when service throws", async () => {
