@@ -119,6 +119,131 @@ describe("user.service", () => {
       expect(saveUser).toHaveBeenCalled();
       expect(result.name).toBe("New Name");
     });
+
+    it("should set image when provided", async () => {
+      const mockUser = {
+        _id: { toString: () => "user123" },
+        name: "Test",
+        email: "test@test.com",
+        image: "",
+        bannerColor: "",
+      };
+      (findUserById as jest.Mock).mockResolvedValue(mockUser);
+      (findUserByEmail as jest.Mock).mockResolvedValue(null);
+      (saveUser as jest.Mock).mockResolvedValue(undefined);
+
+      await updateProfile("user123", {
+        name: "Test",
+        email: "test@test.com",
+        image: "https://example.com/photo.jpg",
+      });
+
+      expect(mockUser.image).toBe("https://example.com/photo.jpg");
+    });
+
+    it("should set image to empty string when explicitly empty", async () => {
+      const mockUser = {
+        _id: { toString: () => "user123" },
+        name: "Test",
+        email: "test@test.com",
+        image: "old.jpg",
+        bannerColor: "",
+      };
+      (findUserById as jest.Mock).mockResolvedValue(mockUser);
+      (findUserByEmail as jest.Mock).mockResolvedValue(null);
+      (saveUser as jest.Mock).mockResolvedValue(undefined);
+
+      await updateProfile("user123", {
+        name: "Test",
+        email: "test@test.com",
+        image: "",
+      });
+
+      expect(mockUser.image).toBe("");
+    });
+
+    it("should set bannerColor when provided", async () => {
+      const mockUser = {
+        _id: { toString: () => "user123" },
+        name: "Test",
+        email: "test@test.com",
+        image: "",
+        bannerColor: "",
+      };
+      (findUserById as jest.Mock).mockResolvedValue(mockUser);
+      (findUserByEmail as jest.Mock).mockResolvedValue(null);
+      (saveUser as jest.Mock).mockResolvedValue(undefined);
+
+      await updateProfile("user123", {
+        name: "Test",
+        email: "test@test.com",
+        bannerColor: "#ff0000",
+      });
+
+      expect(mockUser.bannerColor).toBe("#ff0000");
+    });
+
+    it("should set bannerColor to empty string when explicitly empty", async () => {
+      const mockUser = {
+        _id: { toString: () => "user123" },
+        name: "Test",
+        email: "test@test.com",
+        image: "",
+        bannerColor: "#0000ff",
+      };
+      (findUserById as jest.Mock).mockResolvedValue(mockUser);
+      (findUserByEmail as jest.Mock).mockResolvedValue(null);
+      (saveUser as jest.Mock).mockResolvedValue(undefined);
+
+      await updateProfile("user123", {
+        name: "Test",
+        email: "test@test.com",
+        bannerColor: "",
+      });
+
+      expect(mockUser.bannerColor).toBe("");
+    });
+
+    it("should not change image when undefined", async () => {
+      const mockUser = {
+        _id: { toString: () => "user123" },
+        name: "Test",
+        email: "test@test.com",
+        image: "keep.jpg",
+        bannerColor: "keep",
+      };
+      (findUserById as jest.Mock).mockResolvedValue(mockUser);
+      (findUserByEmail as jest.Mock).mockResolvedValue(null);
+      (saveUser as jest.Mock).mockResolvedValue(undefined);
+
+      await updateProfile("user123", {
+        name: "Test",
+        email: "test@test.com",
+      });
+
+      expect(mockUser.image).toBe("keep.jpg");
+      expect(mockUser.bannerColor).toBe("keep");
+    });
+
+    it("should not throw when email is same", async () => {
+      const mockUser = {
+        _id: { toString: () => "user123" },
+        name: "Test",
+        email: "test@test.com",
+        image: "",
+        bannerColor: "",
+      };
+      (findUserById as jest.Mock).mockResolvedValue(mockUser);
+      (saveUser as jest.Mock).mockResolvedValue(undefined);
+
+      const result = await updateProfile("user123", {
+        name: "Test",
+        email: "test@test.com",
+      });
+
+      expect(result.name).toBe("Test");
+      expect(findUserByEmail).not.toHaveBeenCalled();
+    });
   });
 
   describe("changePassword", () => {

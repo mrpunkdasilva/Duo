@@ -72,6 +72,16 @@ describe("user.controller", () => {
       expect(result.status).toBe(200);
       expect(result.body.data).toEqual(mockUser);
     });
+
+    it("should return 401 when session has no id", async () => {
+      (getServerSession as jest.Mock).mockResolvedValue({
+        user: { name: "Test" },
+      });
+
+      const result = await getProfile();
+
+      expect(result.status).toBe(401);
+    });
   });
 
   describe("updateProfileController", () => {
@@ -109,6 +119,21 @@ describe("user.controller", () => {
 
       expect(result.status).toBe(400);
       expect(result.body.error).toBe("Email já em uso");
+    });
+
+    it("should return 400 with generic error when non-Error thrown", async () => {
+      (getServerSession as jest.Mock).mockResolvedValue({
+        user: { id: "user123" },
+      });
+      (updateProfile as jest.Mock).mockRejectedValue("string error");
+
+      const result = await updateProfileController({
+        name: "Test",
+        email: "test@test.com",
+      });
+
+      expect(result.status).toBe(400);
+      expect(result.body.error).toBe("Erro interno");
     });
 
     it("should return 200 with user data on success", async () => {
@@ -183,6 +208,21 @@ describe("user.controller", () => {
 
       expect(result.status).toBe(400);
       expect(result.body.error).toBe("Senha atual incorreta");
+    });
+
+    it("should return 400 with generic error when non-Error thrown", async () => {
+      (getServerSession as jest.Mock).mockResolvedValue({
+        user: { id: "user123" },
+      });
+      (changePassword as jest.Mock).mockRejectedValue({ code: "UNKNOWN" });
+
+      const result = await changePasswordController({
+        currentPassword: "wrong",
+        newPassword: "new123",
+      });
+
+      expect(result.status).toBe(400);
+      expect(result.body.error).toBe("Erro interno");
     });
   });
 });
