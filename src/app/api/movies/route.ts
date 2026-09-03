@@ -121,12 +121,14 @@ export async function POST(request: NextRequest) {
       status,
     } = body;
 
-    if (!tmdbId || !mediaType || !title) {
+    if (!tmdbId || !mediaType || (!title && !name)) {
       return NextResponse.json(
         { error: "Dados obrigatórios não fornecidos" },
         { status: 400 }
       );
     }
+
+    const movieTitle = title || name || "Sem título";
 
     const existingMovie = await Movie.findOne({ coupleId, tmdbId });
 
@@ -142,7 +144,7 @@ export async function POST(request: NextRequest) {
       addedBy: userId,
       tmdbId,
       mediaType,
-      title,
+      title: movieTitle,
       name,
       overview,
       posterPath,
