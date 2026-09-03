@@ -26,9 +26,9 @@ export function MovieGrid({
 
   return (
     <div className="flex flex-col gap-6">
-      {items.map((item) => (
+      {items.map((item, index) => (
         <MovieCard
-          key={item.id}
+          key={`${item.id}-${index}`}
           item={item}
           onAddToList={onAddToList}
           onToggleFavorite={onToggleFavorite}
