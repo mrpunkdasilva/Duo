@@ -144,7 +144,7 @@ export default function NewMoviePage() {
               const isAdded = addedIds.includes(item.id);
               const isAdding = addingId === item.id;
               const title = item.title || item.name || "Sem título";
-              const genres = item.genre_ids
+              const genres = (item.genre_ids || [])
                 .slice(0, 3)
                 .map((id) => GENRE_MAP[id])
                 .filter(Boolean);
