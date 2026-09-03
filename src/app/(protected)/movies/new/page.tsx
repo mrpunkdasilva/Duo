@@ -203,7 +203,7 @@ export default function NewMoviePage() {
                   <div className="absolute bottom-0 left-0 right-0 p-6 space-y-4">
                     <div className="flex gap-4">
                       {item.poster_path && (
-                        <div className="flex-shrink-0 w-24 sm:w-32 md:w-36 aspect-[2/3] rounded-xl overflow-hidden shadow-2xl border-2 border-white/30">
+                        <div className="flex-shrink-0 w-32 sm:w-40 md:w-48 aspect-[2/3] rounded-xl overflow-hidden shadow-2xl border-2 border-white/30">
                           <img
                             src={getImageUrl(item.poster_path, "w300")}
                             alt={title}
