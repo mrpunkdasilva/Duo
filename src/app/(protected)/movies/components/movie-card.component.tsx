@@ -31,7 +31,7 @@ export function MovieCard({
   const title = item.title || item.name || "Sem título";
   const date = item.release_date || item.first_air_date;
   const year = date ? new Date(date).getFullYear() : null;
-  const genres = item.genre_ids
+  const genres = (item.genre_ids || [])
     .slice(0, 3)
     .map((id) => GENRE_MAP[id])
     .filter(Boolean);
