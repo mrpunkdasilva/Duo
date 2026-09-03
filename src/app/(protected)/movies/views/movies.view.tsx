@@ -207,29 +207,24 @@ export function MoviesView() {
       </div>
 
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TabValue)}>
-        <TabsList className="w-full bg-muted/50 rounded-xl h-auto flex flex-wrap gap-1 p-1">
-          <TabsTrigger value="all" className="flex-1 rounded-lg text-xs min-w-0">
-            <Film className="h-3.5 w-3.5 mr-1" />
+        <TabsList className="w-full bg-muted/50 rounded-xl h-11 overflow-x-auto flex">
+          <TabsTrigger value="all" className="rounded-lg text-xs flex-shrink-0">
             Todos ({sortedMovies.length})
           </TabsTrigger>
-          <TabsTrigger value="favorites" className="flex-1 rounded-lg text-xs min-w-0">
+          <TabsTrigger value="favorites" className="rounded-lg text-xs flex-shrink-0">
             <Heart className="h-3.5 w-3.5 mr-1" />
             Fav ({favoriteMovies.length})
           </TabsTrigger>
-          <TabsTrigger value="not_watched" className="flex-1 rounded-lg text-xs min-w-0">
-            <Eye className="h-3.5 w-3.5 mr-1" />
+          <TabsTrigger value="not_watched" className="rounded-lg text-xs flex-shrink-0">
             Não Visto ({notWatchedMovies.length})
           </TabsTrigger>
-          <TabsTrigger value="watching" className="flex-1 rounded-lg text-xs min-w-0">
-            <Clock className="h-3.5 w-3.5 mr-1" />
+          <TabsTrigger value="watching" className="rounded-lg text-xs flex-shrink-0">
             Assistindo ({watchingMovies.length})
           </TabsTrigger>
-          <TabsTrigger value="watched" className="flex-1 rounded-lg text-xs min-w-0">
-            <CheckCircle className="h-3.5 w-3.5 mr-1" />
+          <TabsTrigger value="watched" className="rounded-lg text-xs flex-shrink-0">
             Visto ({watchedMovies.length})
           </TabsTrigger>
-          <TabsTrigger value="to_watch" className="flex-1 rounded-lg text-xs min-w-0">
-            <ListPlus className="h-3.5 w-3.5 mr-1" />
+          <TabsTrigger value="to_watch" className="rounded-lg text-xs flex-shrink-0">
             Ver Depois ({toWatchMovies.length})
           </TabsTrigger>
         </TabsList>
