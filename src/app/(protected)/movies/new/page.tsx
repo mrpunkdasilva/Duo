@@ -86,7 +86,7 @@ export default function NewMoviePage() {
 
   return (
     <div className="px-4 pt-4 max-w-lg mx-auto space-y-8">
-      <div className="space-y-2">
+      <div className="space-y-4">
         <Link href="/movies">
           <Button variant="ghost" size="sm" className="-ml-2 text-muted-foreground">
             <ArrowLeft className="h-4 w-4 mr-1" />
