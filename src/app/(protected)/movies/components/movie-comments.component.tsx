@@ -68,18 +68,18 @@ export function MovieComments({
         Comentários
       </Heading>
 
-      <div className="flex gap-2 items-center">
+      <div className="flex gap-2">
         <Textarea
           placeholder="Deixe um comentário sobre o filme..."
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
-          className="min-h-[40px] rounded-xl resize-none flex-1"
+          className="min-h-[44px] max-h-[120px] rounded-xl resize-none flex-1"
           maxLength={500}
         />
         <Button
           onClick={handleSubmit}
           disabled={!newComment.trim() || isSubmitting}
-          className="h-[40px] w-[40px] bg-gradient-to-r from-duo-rose to-duo-teal hover:opacity-90 rounded-xl flex-shrink-0"
+          className="h-[44px] w-[44px] bg-gradient-to-r from-duo-rose to-duo-teal hover:opacity-90 rounded-xl flex-shrink-0"
         >
           {isSubmitting ? (
             <Loader2 className="h-4 w-4 animate-spin" />
