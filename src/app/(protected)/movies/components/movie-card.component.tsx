@@ -1,8 +1,6 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Heading } from "@/components/ui/heading";
 import { Star, Film, Tv, Heart, Plus } from "lucide-react";
 import { MediaItem, GENRE_MAP } from "@/types";
 import { getImageUrl } from "../data/mock-movies";
@@ -24,101 +22,103 @@ export function MovieCard({
   const date = item.release_date || item.first_air_date;
   const year = date ? new Date(date).getFullYear() : null;
   const genres = item.genre_ids
-    .slice(0, 2)
+    .slice(0, 3)
     .map((id) => GENRE_MAP[id])
     .filter(Boolean);
 
   return (
-    <Card className="border border-border/60 rounded-2xl shadow-sm overflow-hidden transition-all hover:shadow-md hover:border-border/80 active:scale-[0.98]">
-      <CardContent className="p-0">
-        <div className="relative aspect-[2/3] bg-muted">
-          {item.poster_path ? (
-            <img
-              src={getImageUrl(item.poster_path, "w300")}
-              alt={title}
-              className="w-full h-full object-cover"
-            />
+    <div className="relative w-full h-[70vh] min-h-[500px] rounded-2xl overflow-hidden group">
+      {item.backdrop_path ? (
+        <img
+          src={getImageUrl(item.backdrop_path, "original")}
+          alt={title}
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+      ) : item.poster_path ? (
+        <img
+          src={getImageUrl(item.poster_path, "original")}
+          alt={title}
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+      ) : (
+        <div className="absolute inset-0 bg-gradient-to-br from-duo-rose to-duo-teal flex items-center justify-center">
+          {item.media_type === "movie" ? (
+            <Film className="h-24 w-24 text-white/30" />
           ) : (
-            <div className="w-full h-full flex items-center justify-center">
-              {item.media_type === "movie" ? (
-                <Film className="h-12 w-12 text-muted-foreground/50" />
-              ) : (
-                <Tv className="h-12 w-12 text-muted-foreground/50" />
-              )}
-            </div>
+            <Tv className="h-24 w-24 text-white/30" />
           )}
-
-          <div className="absolute top-2 left-2">
-            <Badge className="bg-black/70 text-white border-0 text-[10px] px-2 py-0.5">
-              {item.media_type === "movie" ? "Filme" : "Série"}
-            </Badge>
-          </div>
-
-          <div className="absolute top-2 right-2">
-            <div className="flex items-center gap-1 bg-black/70 rounded-full px-2 py-0.5">
-              <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-              <span className="text-white text-xs font-medium">
-                {item.vote_average.toFixed(1)}
-              </span>
-            </div>
-          </div>
-
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3">
-            <Heading as="h3" variant="card" className="text-white line-clamp-1">
-              {title}
-            </Heading>
-            {year && (
-              <p className="text-white/70 text-xs mt-0.5">{year}</p>
-            )}
-          </div>
         </div>
+      )}
 
-        <div className="p-3 space-y-2">
+      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
+
+      <div className="absolute top-4 left-4 flex items-center gap-2">
+        <Badge className="bg-black/60 text-white border-0 text-xs px-3 py-1 backdrop-blur-sm">
+          {item.media_type === "movie" ? "Filme" : "Série"}
+        </Badge>
+        {year && (
+          <Badge className="bg-black/60 text-white/80 border-0 text-xs px-3 py-1 backdrop-blur-sm">
+            {year}
+          </Badge>
+        )}
+      </div>
+
+      <div className="absolute top-4 right-4">
+        <div className="flex items-center gap-1.5 bg-black/60 rounded-full px-3 py-1.5 backdrop-blur-sm">
+          <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+          <span className="text-white text-sm font-semibold">
+            {item.vote_average.toFixed(1)}
+          </span>
+        </div>
+      </div>
+
+      <div className="absolute bottom-0 left-0 right-0 p-6 space-y-4">
+        <div>
+          <h3 className="text-2xl font-bold text-white line-clamp-2">{title}</h3>
           {genres.length > 0 && (
-            <div className="flex flex-wrap gap-1">
+            <div className="flex flex-wrap gap-2 mt-3">
               {genres.map((genre) => (
                 <Badge
                   key={genre}
-                  variant="secondary"
-                  className="text-[10px] px-1.5 py-0"
+                  className="bg-white/20 text-white border-0 text-xs px-2.5 py-1 backdrop-blur-sm"
                 >
                   {genre}
                 </Badge>
               ))}
             </div>
           )}
-
-          <p className="text-xs text-muted-foreground line-clamp-2">
-            {item.overview}
-          </p>
-
-          <div className="flex items-center gap-2 pt-1">
-            {onToggleFavorite && (
-              <button
-                onClick={() => onToggleFavorite(item.id)}
-                className="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-muted transition-colors"
-                aria-label={isFavorite ? "Remover dos favoritos" : "Adicionar aos favoritos"}
-              >
-                <Heart
-                  className={`h-4 w-4 transition-colors ${
-                    isFavorite ? "fill-red-500 text-red-500" : "text-muted-foreground"
-                  }`}
-                />
-              </button>
-            )}
-
-            {onAddToList && (
-              <button
-                onClick={() => onAddToList(item)}
-                className="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-muted transition-colors"
-                aria-label="Adicionar à lista"
-              >
-                <Plus className="h-4 w-4 text-muted-foreground" />
-              </button>
-            )}
-          </div>
         </div>
-      </CardContent>
-    </Card>
+
+        <p className="text-sm text-white/80 line-clamp-3 leading-relaxed">
+          {item.overview}
+        </p>
+
+        <div className="flex items-center gap-3">
+          {onToggleFavorite && (
+            <button
+              onClick={() => onToggleFavorite(item.id)}
+              className="flex items-center justify-center w-12 h-12 rounded-full bg-white/20 hover:bg-white/30 transition-colors backdrop-blur-sm"
+              aria-label={isFavorite ? "Remover dos favoritos" : "Adicionar aos favoritos"}
+            >
+              <Heart
+                className={`h-5 w-5 transition-colors ${
+                  isFavorite ? "fill-red-500 text-red-500" : "text-white"
+                }`}
+              />
+            </button>
+          )}
+
+          {onAddToList && (
+            <button
+              onClick={() => onAddToList(item)}
+              className="flex items-center justify-center w-12 h-12 rounded-full bg-white/20 hover:bg-white/30 transition-colors backdrop-blur-sm"
+              aria-label="Adicionar à lista"
+            >
+              <Plus className="h-5 w-5 text-white" />
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
