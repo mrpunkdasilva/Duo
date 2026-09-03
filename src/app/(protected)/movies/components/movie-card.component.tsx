@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { Star, Film, Tv, Heart, Users } from "lucide-react";
+import { Film, Tv, Heart, Users } from "lucide-react";
 import { MediaItem, GENRE_MAP } from "@/types";
 import { getImageUrl } from "@/lib/tmdb";
 
@@ -73,17 +73,11 @@ export function MovieCard({
         )}
       </div>
 
-      <div className="absolute top-4 right-4 flex items-center gap-2">
+      <div className="absolute top-4 right-4">
         <div className="flex items-center gap-1.5 bg-duo-rose/80 rounded-full px-3 py-1.5 backdrop-blur-sm">
           <Users className="h-4 w-4 text-white" />
           <span className="text-white text-sm font-semibold">
             {averageRating.toFixed(1)}
-          </span>
-        </div>
-        <div className="flex items-center gap-1.5 bg-black/60 rounded-full px-3 py-1.5 backdrop-blur-sm">
-          <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-          <span className="text-white text-sm font-semibold">
-            {item.vote_average?.toFixed(1) || "0.0"}
           </span>
         </div>
       </div>
