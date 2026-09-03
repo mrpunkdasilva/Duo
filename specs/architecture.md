@@ -15,6 +15,7 @@
 | Upload | Cloudinary |
 | Logger | Pino |
 | Testes | Jest + React Testing Library |
+| APIs Externas | TMDB (The Movie Database) |
 
 ---
 
@@ -539,4 +540,91 @@ user/
     │   └── user.mapper.ts
     └── repositories/
         └── user.repository.ts
+```
+
+---
+
+## APIs Externas
+
+### TMDB (The Movie Database)
+
+**Uso:** Buscar informações de filmes/séries para enriquecer os places (ex: cinemas, restaurantes temáticos).
+
+**Configuração:**
+```env
+TMDB_API_KEY=b805c545ceadfee8f93e2bc45573d1b5
+```
+
+**Padrão de integração:**
+
+```typescript
+// lib/tmdb.ts
+const TMDB_BASE_URL = "https://api.themoviedb.org/3";
+
+export async function tmdbFetch<T>(endpoint: string, params?: Record<string, string>): Promise<T> {
+  const url = new URL(`${TMDB_BASE_URL}${endpoint}`);
+  url.searchParams.set("api_key", process.env.TMDB_API_KEY!);
+  url.searchParams.set("language", "pt-BR");
+
+  if (params) {
+    Object.entries(params).forEach(([key, value]) => {
+      url.searchParams.set(key, value);
+    });
+  }
+
+  const response = await fetch(url.toString());
+  if (!response.ok) {
+    throw new Error(`TMDB API error: ${response.status}`);
+  }
+
+  return response.json();
+}
+```
+
+**Uso em Components/Hooks:**
+
+```typescript
+// Hook
+const [movies, setMovies] = useState<Movie[]>([]);
+
+useEffect(() => {
+  async function search() {
+    const data = await tmdbFetch<TMDBSearchResponse>("/search/movie", { query: "cinema" });
+    setMovies(data.results);
+  }
+  search();
+}, []);
+```
+
+**Endpoints principais:**
+- `GET /search/movie` — Buscar filmes
+- `GET /search/person` — Buscar pessoas
+- `GET /movie/{id}` — Detalhes do filme
+- `GET /movie/{id}/credits` — Elenco
+- `GET /movie/{id}/images` — Imagens/posters
+
+**Rate Limits:**
+- 40 requests por 10 segundos
+- Retry automático com exponential backoff
+
+### Cloudinary
+
+**Uso:** Upload e servir imagens de perfil.
+
+**Configuração:**
+```env
+CLOUDINARY_CLOUD_NAME=dqfskeyhk
+CLOUDINARY_API_KEY=745918487472362
+CLOUDINARY_API_SECRET=QVPfRt8HXjPt3Ggn49RFtWHkO94
+```
+
+**Endpoint:** `POST /api/upload`
+
+**Padrão:**
+```typescript
+// Upload via FormData
+const formData = new FormData();
+formData.append("file", file);
+const res = await fetch("/api/upload", { method: "POST", body: formData });
+const { url } = await res.json();
 ```
