@@ -85,10 +85,10 @@ export default function NewMoviePage() {
   };
 
   return (
-    <div className="px-4 pt-4 max-w-lg mx-auto space-y-8">
+    <div className="px-4 pt-4 max-w-lg mx-auto space-y-4">
       <div className="space-y-4">
         <Link href="/movies">
-          <Button variant="ghost" size="sm" className="-ml-2 text-muted-foreground">
+          <Button variant="ghost" size="sm" className="-ml-2 text-muted-foreground mb-3">
             <ArrowLeft className="h-4 w-4 mr-1" />
             Voltar
           </Button>
@@ -182,7 +182,7 @@ export default function NewMoviePage() {
                             <div className="flex items-center gap-0.5">
                               <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
                               <span className="text-xs">
-                                {item.vote_average.toFixed(1)}
+                                {item.vote_average?.toFixed(1) || "0.0"}
                               </span>
                             </div>
                           </div>
