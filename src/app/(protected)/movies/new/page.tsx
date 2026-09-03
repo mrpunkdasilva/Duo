@@ -152,7 +152,7 @@ export default function NewMoviePage() {
               return (
                 <div
                   key={item.id}
-                  className="relative w-full h-[60vh] min-h-[450px] rounded-2xl overflow-hidden shadow-lg"
+                  className="relative w-full h-[80vh] min-h-[600px] rounded-2xl overflow-hidden shadow-lg"
                 >
                   {item.backdrop_path ? (
                     <img
