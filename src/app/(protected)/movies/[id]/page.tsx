@@ -5,13 +5,23 @@ import { useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Loader2 } from "lucide-react";
 import { MovieDetailView } from "./views/movie-detail.view";
-import { MediaDetail } from "@/types";
+import { MediaItem } from "@/types";
+
+interface MovieWithDB extends MediaItem {
+  _id?: string;
+  coupleRating?: {
+    romancio?: number;
+    diversao?: number;
+    emocao?: number;
+    recomendaria?: number;
+  };
+}
 
 export default function MovieDetailPage() {
   const params = useParams();
   const { data: session } = useSession();
-  const id = Number(params.id);
-  const [movie, setMovie] = useState<MediaDetail | null>(null);
+  const tmdbId = Number(params.id);
+  const [movie, setMovie] = useState<MovieWithDB | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -21,14 +31,21 @@ export default function MovieDetailPage() {
       setError(null);
 
       try {
-        const response = await fetch(`/api/movies/${id}?type=movie`);
+        const response = await fetch("/api/movies");
 
         if (!response.ok) {
-          throw new Error("Failed to fetch movie");
+          throw new Error("Failed to fetch movies");
         }
 
         const data = await response.json();
-        setMovie(data.data);
+        const movies = data.data || [];
+        const foundMovie = movies.find((m: MovieWithDB) => m.id === tmdbId);
+
+        if (!foundMovie) {
+          throw new Error("Filme não encontrado na sua lista");
+        }
+
+        setMovie(foundMovie);
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred");
       } finally {
@@ -36,10 +53,10 @@ export default function MovieDetailPage() {
       }
     }
 
-    if (id) {
+    if (tmdbId) {
       fetchMovie();
     }
-  }, [id]);
+  }, [tmdbId]);
 
   if (isLoading) {
     return (
@@ -67,6 +84,7 @@ export default function MovieDetailPage() {
   return (
     <MovieDetailView
       movie={movie}
+      movieId={movie._id}
       currentUserId={(session?.user as { id?: string })?.id}
       currentUserName={session?.user?.name || undefined}
       currentUserImage={session?.user?.image || undefined}

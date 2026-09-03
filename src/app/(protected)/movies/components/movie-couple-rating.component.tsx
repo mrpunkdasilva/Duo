@@ -1,14 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Heading } from "@/components/ui/heading";
 import { Badge } from "@/components/ui/badge";
 import { Star, Heart, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface CoupleRatingProps {
-  movieId: number;
-  onRate?: (ratings: CoupleRatings) => void;
+  movieId: string;
 }
 
 export interface CoupleRatings {
@@ -25,7 +24,7 @@ const RATING_CRITERIA = [
   { key: "recomendaria" as const, label: "Recomendaria", icon: Heart, color: "text-red-500" },
 ];
 
-export function MovieCoupleRating({ movieId, onRate }: CoupleRatingProps) {
+export function MovieCoupleRating({ movieId }: CoupleRatingProps) {
   const [ratings, setRatings] = useState<CoupleRatings>({
     romancio: 0,
     diversao: 0,
@@ -34,17 +33,79 @@ export function MovieCoupleRating({ movieId, onRate }: CoupleRatingProps) {
   });
 
   const [hoveredStar, setHoveredStar] = useState<{ key: string; value: number } | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
 
-  const handleRate = (key: keyof CoupleRatings, value: number) => {
+  useEffect(() => {
+    async function fetchRating() {
+      try {
+        const response = await fetch("/api/movies");
+        if (response.ok) {
+          const data = await response.json();
+          const movie = (data.data || []).find((m: { _id?: string }) => m._id === movieId);
+          if (movie?.coupleRating) {
+            setRatings({
+              romancio: movie.coupleRating.romancio || 0,
+              diversao: movie.coupleRating.diversao || 0,
+              emocao: movie.coupleRating.emocao || 0,
+              recomendaria: movie.coupleRating.recomendaria || 0,
+            });
+          }
+        }
+      } catch (err) {
+        console.error("Erro ao carregar avaliação:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchRating();
+  }, [movieId]);
+
+  const handleRate = async (key: keyof CoupleRatings, value: number) => {
     const newRatings = { ...ratings, [key]: value };
     setRatings(newRatings);
-    onRate?.(newRatings);
+
+    setIsSaving(true);
+    try {
+      const response = await fetch("/api/movies", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: movieId,
+          coupleRating: newRatings,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Erro ao salvar avaliação");
+      }
+    } catch (err) {
+      console.error("Erro ao salvar avaliação:", err);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const averageRating = Object.values(ratings).filter(Boolean).length > 0
     ? Object.values(ratings).filter(Boolean).reduce((a, b) => a + b, 0) /
       Object.values(ratings).filter(Boolean).length
     : 0;
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        <Heading as="h2" variant="section">
+          Avaliação do Casal
+        </Heading>
+        <div className="animate-pulse space-y-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="h-12 bg-muted rounded-lg" />
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
@@ -108,11 +169,15 @@ export function MovieCoupleRating({ movieId, onRate }: CoupleRatingProps) {
         })}
       </div>
 
+      {isSaving && (
+        <p className="text-xs text-muted-foreground text-center">Salvando...</p>
+      )}
+
       {Object.values(ratings).every((v) => v > 0) && (
         <div className="p-4 rounded-xl bg-duo-rose/5 border border-duo-rose/20">
           <p className="text-sm text-center text-muted-foreground">
             {averageRating >= 4
-              ? "Vocês amaram esse filme! 🎬❤️"
+              ? "Vocês amaram esse filme!"
               : averageRating >= 3
               ? "Bom filme para assistir juntos!"
               : "Talvez não seja o ideal para vocês dois"}

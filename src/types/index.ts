@@ -205,6 +205,10 @@ export interface MediaItem {
     emocao?: number;
     recomendaria?: number;
   };
+  watchStatuses?: {
+    userId: string;
+    status: "not_watched" | "watching" | "watched" | "to_watch";
+  }[];
 }
 
 export interface MediaDetail extends MediaItem {
