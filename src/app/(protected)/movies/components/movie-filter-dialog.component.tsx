@@ -161,9 +161,9 @@ export function MovieFilterDialog({
         <DialogFooter className="gap-2 sm:gap-0">
           {activeFilterCount > 0 && (
             <Button
-              variant="ghost"
+              variant="outline"
               onClick={handleClearAll}
-              className="rounded-xl text-muted-foreground"
+              className="rounded-xl"
             >
               <X className="h-4 w-4 mr-1" />
               Limpar

@@ -6,8 +6,8 @@ import { MovieCard } from "./movie-card.component";
 interface MovieGridProps {
   items: MediaItem[];
   onAddToList?: (item: MediaItem) => void;
-  onToggleFavorite?: (id: number) => void;
-  favorites?: number[];
+  onToggleFavorite?: (item: MediaItem) => void;
+  favorites?: string[];
 }
 
 export function MovieGrid({
@@ -32,7 +32,7 @@ export function MovieGrid({
           item={item}
           onAddToList={onAddToList}
           onToggleFavorite={onToggleFavorite}
-          isFavorite={favorites.includes(item.id)}
+          isFavorite={favorites.includes(item._id as string)}
         />
       ))}
     </div>

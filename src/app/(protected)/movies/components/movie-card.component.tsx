@@ -17,7 +17,7 @@ interface MovieCardProps {
   item: MediaItem;
   coupleRating?: CoupleRating | null;
   onAddToList?: (item: MediaItem) => void;
-  onToggleFavorite?: (id: number) => void;
+  onToggleFavorite?: (item: MediaItem) => void;
   isFavorite?: boolean;
 }
 
@@ -125,7 +125,7 @@ export function MovieCard({
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                onToggleFavorite(item.id);
+                onToggleFavorite(item);
               }}
               className="flex items-center justify-center w-12 h-12 rounded-full bg-white/20 hover:bg-white/30 transition-colors backdrop-blur-sm"
               aria-label={isFavorite ? "Remover dos favoritos" : "Adicionar aos favoritos"}

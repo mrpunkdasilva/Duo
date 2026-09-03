@@ -32,8 +32,8 @@ export function MovieDetailView({
   const title = movie.title || movie.name || "Sem título";
   const date = movie.release_date || movie.first_air_date;
   const year = date ? new Date(date).getFullYear() : null;
-  const genres = movie.genre_ids
-    .map((id) => GENRE_MAP[id])
+  const genres = (movie.genre_ids || (movie.genres || []).map((g: { id: number }) => g.id) || [])
+    .map((id: number) => GENRE_MAP[id])
     .filter(Boolean);
 
   return (

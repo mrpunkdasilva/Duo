@@ -183,6 +183,7 @@ export interface Genre {
 }
 
 export interface MediaItem {
+  _id?: string;
   id: number;
   title: string;
   name?: string;
@@ -196,6 +197,14 @@ export interface MediaItem {
   genre_ids: number[];
   media_type: MediaType;
   popularity: number;
+  addedBy?: string;
+  favoritedBy?: string[];
+  coupleRating?: {
+    romancio?: number;
+    diversao?: number;
+    emocao?: number;
+    recomendaria?: number;
+  };
 }
 
 export interface MediaDetail extends MediaItem {

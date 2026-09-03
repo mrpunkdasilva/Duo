@@ -64,7 +64,7 @@ export function MoviesView() {
 
   const filteredMovies = movies.filter((movie) => {
     const query = searchQuery.toLowerCase();
-    const matchesSearch = !query || 
+    const matchesSearch = !query ||
       (movie.title || "").toLowerCase().includes(query) ||
       (movie.name || "").toLowerCase().includes(query);
 
@@ -101,9 +101,38 @@ export function MoviesView() {
     }
   });
 
-  const handleToggleFavorite = (id: number) => {
-    console.log("Toggle favorite:", id);
+  const handleToggleFavorite = async (item: MediaItem) => {
+    const movieId = item._id as string;
+    const isFav = favorites.includes(movieId);
+
+    try {
+      const response = await fetch("/api/movies", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: movieId,
+          favorite: !isFav,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Erro ao atualizar favorito");
+      }
+
+      setFavorites((prev) =>
+        isFav ? prev.filter((id) => id !== movieId) : [...prev, movieId]
+      );
+    } catch (err) {
+      console.error("Erro ao atualizar favorito:", err);
+    }
   };
+
+  const favorites = movies
+    .filter((m) => {
+      const favBy = m.favoritedBy || [];
+      return favBy.length > 0;
+    })
+    .map((m) => m._id as string);
 
   const activeFilterCount =
     filters.mediaType.length + filters.genres.length;
@@ -161,7 +190,7 @@ export function MoviesView() {
         <MovieGrid
           items={sortedMovies}
           onToggleFavorite={handleToggleFavorite}
-          favorites={[]}
+          favorites={favorites}
         />
       )}
 
