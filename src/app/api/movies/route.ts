@@ -1,55 +1,221 @@
 import { NextRequest, NextResponse } from "next/server";
-import {
-  searchMovies,
-  searchTVShows,
-  searchMulti,
-  getTrending,
-  getPopularMovies,
-  getPopularTVShows,
-} from "@/lib/tmdb";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import connectToDatabase from "@/lib/mongodb";
+import Movie from "@/models/movie";
 
 export async function GET(request: NextRequest) {
-  const searchParams = request.nextUrl.searchParams;
-  const query = searchParams.get("q");
-  const type = searchParams.get("type") || "multi";
-  const page = searchParams.get("page") || "1";
-  const trending = searchParams.get("trending");
-
   try {
-    let data;
+    const session = await getServerSession(authOptions);
 
-    if (trending) {
-      data = await getTrending(trending as "day" | "week");
-    } else if (query) {
-      switch (type) {
-        case "movie":
-          data = await searchMovies(query, Number(page));
-          break;
-        case "tv":
-          data = await searchTVShows(query, Number(page));
-          break;
-        default:
-          data = await searchMulti(query, Number(page));
-      }
-    } else {
-      const movies = await getPopularMovies(Number(page));
-      const tvShows = await getPopularTVShows(Number(page));
-      data = {
-        page: 1,
-        results: [
-          ...movies.results.map((m) => ({ ...m, media_type: "movie" as const })),
-          ...tvShows.results.map((s) => ({ ...s, media_type: "tv" as const })),
-        ].sort((a, b) => b.popularity - a.popularity),
-        total_results: movies.total_results + tvShows.total_results,
-        total_pages: Math.max(movies.total_pages, tvShows.total_pages),
-      };
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
     }
 
-    return NextResponse.json({ data: data.results, total: data.total_results });
+    await connectToDatabase();
+
+    const searchParams = request.nextUrl.searchParams;
+    const coupleId = searchParams.get("coupleId");
+    const mediaType = searchParams.get("type");
+    const favorite = searchParams.get("favorite");
+
+    const query: Record<string, unknown> = {};
+
+    if (coupleId) {
+      query.coupleId = coupleId;
+    }
+
+    if (mediaType) {
+      query.mediaType = mediaType;
+    }
+
+    if (favorite === "true") {
+      query.favoritedBy = session.user.id;
+    }
+
+    const movies = await Movie.find(query)
+      .sort({ createdAt: -1 })
+      .lean();
+
+    return NextResponse.json({ data: movies });
   } catch (error) {
-    console.error("Error fetching from TMDB:", error);
+    console.error("Error fetching movies:", error);
     return NextResponse.json(
-      { error: "Failed to fetch from TMDB" },
+      { error: "Erro ao buscar filmes" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const session = await getServerSession(authOptions);
+
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
+    }
+
+    await connectToDatabase();
+
+    const body = await request.json();
+    const {
+      coupleId,
+      tmdbId,
+      mediaType,
+      title,
+      name,
+      overview,
+      posterPath,
+      backdropPath,
+      releaseDate,
+      firstAirDate,
+      voteAverage,
+      voteCount,
+      genreIds,
+      popularity,
+      tagline,
+      runtime,
+      numberOfSeasons,
+      numberOfEpisodes,
+      status,
+    } = body;
+
+    if (!coupleId || !tmdbId || !mediaType || !title) {
+      return NextResponse.json(
+        { error: "Dados obrigatórios não fornecidos" },
+        { status: 400 }
+      );
+    }
+
+    const existingMovie = await Movie.findOne({ coupleId, tmdbId });
+
+    if (existingMovie) {
+      return NextResponse.json(
+        { error: "Filme já adicionado" },
+        { status: 409 }
+      );
+    }
+
+    const movie = await Movie.create({
+      coupleId,
+      tmdbId,
+      mediaType,
+      title,
+      name,
+      overview,
+      posterPath,
+      backdropPath,
+      releaseDate,
+      firstAirDate,
+      voteAverage: voteAverage || 0,
+      voteCount: voteCount || 0,
+      genreIds: genreIds || [],
+      popularity: popularity || 0,
+      tagline,
+      runtime,
+      numberOfSeasons,
+      numberOfEpisodes,
+      status,
+      favoritedBy: [session.user.id],
+    });
+
+    return NextResponse.json({ data: movie }, { status: 201 });
+  } catch (error) {
+    console.error("Error creating movie:", error);
+    return NextResponse.json(
+      { error: "Erro ao criar filme" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PUT(request: NextRequest) {
+  try {
+    const session = await getServerSession(authOptions);
+
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
+    }
+
+    await connectToDatabase();
+
+    const body = await request.json();
+    const { id, coupleRating, favorite } = body;
+
+    if (!id) {
+      return NextResponse.json(
+        { error: "ID do filme é obrigatório" },
+        { status: 400 }
+      );
+    }
+
+    const updateData: Record<string, unknown> = {};
+
+    if (coupleRating !== undefined) {
+      updateData.coupleRating = coupleRating;
+    }
+
+    if (favorite !== undefined) {
+      if (favorite) {
+        updateData.$addToSet = { favoritedBy: session.user.id };
+      } else {
+        updateData.$pull = { favoritedBy: session.user.id };
+      }
+    }
+
+    const movie = await Movie.findByIdAndUpdate(id, updateData, { new: true });
+
+    if (!movie) {
+      return NextResponse.json(
+        { error: "Filme não encontrado" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({ data: movie });
+  } catch (error) {
+    console.error("Error updating movie:", error);
+    return NextResponse.json(
+      { error: "Erro ao atualizar filme" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const session = await getServerSession(authOptions);
+
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
+    }
+
+    await connectToDatabase();
+
+    const searchParams = request.nextUrl.searchParams;
+    const id = searchParams.get("id");
+
+    if (!id) {
+      return NextResponse.json(
+        { error: "ID do filme é obrigatório" },
+        { status: 400 }
+      );
+    }
+
+    const movie = await Movie.findByIdAndDelete(id);
+
+    if (!movie) {
+      return NextResponse.json(
+        { error: "Filme não encontrado" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Error deleting movie:", error);
+    return NextResponse.json(
+      { error: "Erro ao excluir filme" },
       { status: 500 }
     );
   }
