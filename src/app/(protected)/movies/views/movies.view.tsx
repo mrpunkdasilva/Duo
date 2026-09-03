@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Heading } from "@/components/ui/heading";
-import { Search, Film, Tv, Heart, Loader2 } from "lucide-react";
+import { Search, Film, Tv, Heart, Loader2, Plus } from "lucide-react";
 import { MediaItem } from "@/types";
 import { MovieGrid } from "../components/movie-grid.component";
 
@@ -78,13 +80,21 @@ export function MoviesView() {
 
   return (
     <div className="px-4 pt-4 space-y-4">
-      <div>
-        <Heading as="h1" variant="page">
-          Filmes e Séries
-        </Heading>
-        <p className="text-sm text-muted-foreground mt-1">
-          Descubra e salve seus filmes e séries favoritos
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <Heading as="h1" variant="page">
+            Filmes e Séries
+          </Heading>
+          <p className="text-sm text-muted-foreground mt-1">
+            Descubra e salve seus filmes e séries favoritos
+          </p>
+        </div>
+        <Link href="/movies/new">
+          <Button className="bg-gradient-to-r from-duo-rose to-duo-teal hover:opacity-90">
+            <Plus className="h-4 w-4 mr-2" />
+            Adicionar
+          </Button>
+        </Link>
       </div>
 
       <div className="relative">
