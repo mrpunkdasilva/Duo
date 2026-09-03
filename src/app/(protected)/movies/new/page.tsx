@@ -201,59 +201,59 @@ export default function NewMoviePage() {
                   </div>
 
                   <div className="absolute bottom-0 left-0 right-0 p-6 space-y-4">
-                    <div className="flex gap-4">
-                      {item.poster_path && (
-                        <div className="flex-shrink-0 w-32 sm:w-40 md:w-48 aspect-[2/3] rounded-xl overflow-hidden shadow-2xl border-2 border-white/30">
-                          <img
-                            src={getImageUrl(item.poster_path, "w300")}
-                            alt={title}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                      )}
-
-                      <div className="flex-1 min-w-0">
-                        <h3 className="text-2xl font-bold text-white line-clamp-2">
-                          {title}
-                        </h3>
-                        {genres.length > 0 && (
-                          <div className="flex flex-wrap gap-2 mt-2">
-                            {genres.map((genre) => (
-                              <Badge
-                                key={genre}
-                                className="bg-white/20 text-white border-0 text-[10px] px-2 py-0.5 backdrop-blur-sm"
-                              >
-                                {genre}
-                              </Badge>
-                            ))}
-                          </div>
-                        )}
+                  {item.poster_path && (
+                    <div className="flex justify-center -mt-32 mb-4">
+                      <div className="w-32 sm:w-40 md:w-48 aspect-[2/3] rounded-xl overflow-hidden shadow-2xl border-2 border-white/30">
+                        <img
+                          src={getImageUrl(item.poster_path, "w300")}
+                          alt={title}
+                          className="w-full h-full object-cover"
+                        />
                       </div>
                     </div>
+                  )}
 
-                    <p className="text-sm text-white/80 line-clamp-2 leading-relaxed">
-                      {item.overview}
-                    </p>
-
-                    <Button
-                      onClick={() => handleAddMovie(item)}
-                      disabled={isAdded || isAdding}
-                      className={`w-full h-12 rounded-xl font-medium transition-all ${
-                        isAdded
-                          ? "bg-duo-teal text-white"
-                          : "bg-gradient-to-r from-duo-rose to-duo-teal hover:opacity-90"
-                      }`}
-                    >
-                      {isAdding ? (
-                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                      ) : isAdded ? (
-                        <Check className="h-4 w-4 mr-2" />
-                      ) : (
-                        <Plus className="h-4 w-4 mr-2" />
-                      )}
-                      {isAdded ? "Adicionado" : "Adicionar à Lista"}
-                    </Button>
+                  <div className="text-center">
+                    <h3 className="text-2xl font-bold text-white line-clamp-2">
+                      {title}
+                    </h3>
+                    {genres.length > 0 && (
+                      <div className="flex flex-wrap justify-center gap-2 mt-2">
+                        {genres.map((genre) => (
+                          <Badge
+                            key={genre}
+                            className="bg-white/20 text-white border-0 text-[10px] px-2 py-0.5 backdrop-blur-sm"
+                          >
+                            {genre}
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
                   </div>
+
+                  <p className="text-sm text-white/80 line-clamp-2 leading-relaxed text-center">
+                    {item.overview}
+                  </p>
+
+                  <Button
+                    onClick={() => handleAddMovie(item)}
+                    disabled={isAdded || isAdding}
+                    className={`w-full h-12 rounded-xl font-medium transition-all ${
+                      isAdded
+                        ? "bg-duo-teal text-white"
+                        : "bg-gradient-to-r from-duo-rose to-duo-teal hover:opacity-90"
+                    }`}
+                  >
+                    {isAdding ? (
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    ) : isAdded ? (
+                      <Check className="h-4 w-4 mr-2" />
+                    ) : (
+                      <Plus className="h-4 w-4 mr-2" />
+                    )}
+                    {isAdded ? "Adicionado" : "Adicionar à Lista"}
+                  </Button>
+                </div>
                 </div>
               );
             })}
