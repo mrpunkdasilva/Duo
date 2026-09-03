@@ -5,8 +5,14 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Heading } from "@/components/ui/heading";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Search, Loader2, Plus, Filter, Heart, Film, Eye, CheckCircle, Clock, ListPlus } from "lucide-react";
 import { MediaItem } from "@/types";
 import { MovieGrid } from "../components/movie-grid.component";
@@ -26,7 +32,16 @@ const defaultFilters: Filters = {
   sortBy: "recent",
 };
 
-type TabValue = "all" | "favorites" | "not_watched" | "watching" | "watched" | "to_watch";
+type StatusFilter = "all" | "favorites" | "not_watched" | "watching" | "watched" | "to_watch";
+
+const STATUS_OPTIONS = [
+  { value: "all", label: "Todos", icon: Film },
+  { value: "favorites", label: "Favoritos", icon: Heart },
+  { value: "not_watched", label: "Não Visto", icon: Eye },
+  { value: "watching", label: "Assistindo", icon: Clock },
+  { value: "watched", label: "Visto", icon: CheckCircle },
+  { value: "to_watch", label: "Ver Depois", icon: ListPlus },
+];
 
 export function MoviesView() {
   const { data: session } = useSession();
@@ -37,7 +52,7 @@ export function MoviesView() {
   const [error, setError] = useState<string | null>(null);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [filters, setFilters] = useState<Filters>(defaultFilters);
-  const [activeTab, setActiveTab] = useState<TabValue>("all");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
 
   const fetchMovies = useCallback(async () => {
     setIsLoading(true);
@@ -103,6 +118,14 @@ export function MoviesView() {
       }
     }
 
+    if (statusFilter !== "all") {
+      if (statusFilter === "favorites") {
+        if (!favorites.includes(movie._id as string)) return false;
+      } else {
+        if (getUserWatchStatus(movie) !== statusFilter) return false;
+      }
+    }
+
     return true;
   });
 
@@ -120,12 +143,6 @@ export function MoviesView() {
         return 0;
     }
   });
-
-  const favoriteMovies = sortedMovies.filter((m) => favorites.includes(m._id as string));
-  const notWatchedMovies = sortedMovies.filter((m) => getUserWatchStatus(m) === "not_watched");
-  const watchingMovies = sortedMovies.filter((m) => getUserWatchStatus(m) === "watching");
-  const watchedMovies = sortedMovies.filter((m) => getUserWatchStatus(m) === "watched");
-  const toWatchMovies = sortedMovies.filter((m) => getUserWatchStatus(m) === "to_watch");
 
   const handleToggleFavorite = async (item: MediaItem) => {
     const movieId = item._id as string;
@@ -164,6 +181,27 @@ export function MoviesView() {
 
   const activeFilterCount =
     filters.mediaType.length + filters.genres.length;
+
+  const getStatusCounts = () => {
+    const base = movies.filter((movie) => {
+      const query = searchQuery.toLowerCase();
+      const matchesSearch = !query ||
+        (movie.title || "").toLowerCase().includes(query) ||
+        (movie.name || "").toLowerCase().includes(query);
+      return matchesSearch;
+    });
+
+    return {
+      all: base.length,
+      favorites: base.filter((m) => favorites.includes(m._id as string)).length,
+      not_watched: base.filter((m) => getUserWatchStatus(m) === "not_watched").length,
+      watching: base.filter((m) => getUserWatchStatus(m) === "watching").length,
+      watched: base.filter((m) => getUserWatchStatus(m) === "watched").length,
+      to_watch: base.filter((m) => getUserWatchStatus(m) === "to_watch").length,
+    };
+  };
+
+  const counts = getStatusCounts();
 
   return (
     <div className="px-4 pt-4 space-y-4">
@@ -206,109 +244,47 @@ export function MoviesView() {
         </Button>
       </div>
 
-      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TabValue)}>
-        <TabsList className="w-full bg-muted/50 rounded-xl h-11 overflow-x-auto flex">
-          <TabsTrigger value="all" className="rounded-lg text-xs flex-shrink-0">
-            Todos ({sortedMovies.length})
-          </TabsTrigger>
-          <TabsTrigger value="favorites" className="rounded-lg text-xs flex-shrink-0">
-            <Heart className="h-3.5 w-3.5 mr-1" />
-            Fav ({favoriteMovies.length})
-          </TabsTrigger>
-          <TabsTrigger value="not_watched" className="rounded-lg text-xs flex-shrink-0">
-            Não Visto ({notWatchedMovies.length})
-          </TabsTrigger>
-          <TabsTrigger value="watching" className="rounded-lg text-xs flex-shrink-0">
-            Assistindo ({watchingMovies.length})
-          </TabsTrigger>
-          <TabsTrigger value="watched" className="rounded-lg text-xs flex-shrink-0">
-            Visto ({watchedMovies.length})
-          </TabsTrigger>
-          <TabsTrigger value="to_watch" className="rounded-lg text-xs flex-shrink-0">
-            Ver Depois ({toWatchMovies.length})
-          </TabsTrigger>
-        </TabsList>
+      <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as StatusFilter)}>
+        <SelectTrigger className="h-11 rounded-xl bg-muted/50">
+          <SelectValue placeholder="Filtrar por status" />
+        </SelectTrigger>
+        <SelectContent>
+          {STATUS_OPTIONS.map((option) => (
+            <SelectItem key={option.value} value={option.value}>
+              <div className="flex items-center gap-2">
+                <option.icon className="h-4 w-4" />
+                <span>{option.label}</span>
+                <span className="text-muted-foreground text-xs">({counts[option.value as StatusFilter]})</span>
+              </div>
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
 
-        {isLoading ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-duo-rose" />
+      {isLoading ? (
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="h-8 w-8 animate-spin text-duo-rose" />
+        </div>
+      ) : error ? (
+        <div className="text-center py-12">
+          <p className="text-destructive">{error}</p>
+        </div>
+      ) : sortedMovies.length === 0 ? (
+        <div className="text-center py-12">
+          <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-muted/50 flex items-center justify-center">
+            <Film className="h-6 w-6 text-muted-foreground" />
           </div>
-        ) : error ? (
-          <div className="text-center py-12">
-            <p className="text-destructive">{error}</p>
-          </div>
-        ) : (
-          <>
-            <TabsContent value="all" className="mt-4">
-              <MovieGrid
-                items={sortedMovies}
-                onToggleFavorite={handleToggleFavorite}
-                favorites={favorites}
-              />
-            </TabsContent>
-
-            <TabsContent value="favorites" className="mt-4">
-              {favoriteMovies.length === 0 ? (
-                <EmptyState icon={Heart} label="Nenhum favorito ainda" />
-              ) : (
-                <MovieGrid
-                  items={favoriteMovies}
-                  onToggleFavorite={handleToggleFavorite}
-                  favorites={favorites}
-                />
-              )}
-            </TabsContent>
-
-            <TabsContent value="not_watched" className="mt-4">
-              {notWatchedMovies.length === 0 ? (
-                <EmptyState icon={Eye} label="Nenhum filme não assistido" />
-              ) : (
-                <MovieGrid
-                  items={notWatchedMovies}
-                  onToggleFavorite={handleToggleFavorite}
-                  favorites={favorites}
-                />
-              )}
-            </TabsContent>
-
-            <TabsContent value="watching" className="mt-4">
-              {watchingMovies.length === 0 ? (
-                <EmptyState icon={Clock} label="Nenhum filme assistindo" />
-              ) : (
-                <MovieGrid
-                  items={watchingMovies}
-                  onToggleFavorite={handleToggleFavorite}
-                  favorites={favorites}
-                />
-              )}
-            </TabsContent>
-
-            <TabsContent value="watched" className="mt-4">
-              {watchedMovies.length === 0 ? (
-                <EmptyState icon={CheckCircle} label="Nenhum filme assistido" />
-              ) : (
-                <MovieGrid
-                  items={watchedMovies}
-                  onToggleFavorite={handleToggleFavorite}
-                  favorites={favorites}
-                />
-              )}
-            </TabsContent>
-
-            <TabsContent value="to_watch" className="mt-4">
-              {toWatchMovies.length === 0 ? (
-                <EmptyState icon={ListPlus} label="Nenhum filme para assistir" />
-              ) : (
-                <MovieGrid
-                  items={toWatchMovies}
-                  onToggleFavorite={handleToggleFavorite}
-                  favorites={favorites}
-                />
-              )}
-            </TabsContent>
-          </>
-        )}
-      </Tabs>
+          <p className="text-sm text-muted-foreground">
+            {statusFilter === "all" ? "Nenhum filme encontrado" : "Nenhum filme nesta categoria"}
+          </p>
+        </div>
+      ) : (
+        <MovieGrid
+          items={sortedMovies}
+          onToggleFavorite={handleToggleFavorite}
+          favorites={favorites}
+        />
+      )}
 
       <MovieFilterDialog
         open={isFilterOpen}
@@ -316,17 +292,6 @@ export function MoviesView() {
         filters={filters}
         onApplyFilters={setFilters}
       />
-    </div>
-  );
-}
-
-function EmptyState({ icon: Icon, label }: { icon: typeof Eye; label: string }) {
-  return (
-    <div className="text-center py-12">
-      <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-muted/50 flex items-center justify-center">
-        <Icon className="h-6 w-6 text-muted-foreground" />
-      </div>
-      <p className="text-sm text-muted-foreground">{label}</p>
     </div>
   );
 }
