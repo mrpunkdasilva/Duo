@@ -14,7 +14,11 @@ export async function GET(request: NextRequest) {
 
   try {
     const data = await searchMulti(query);
-    return NextResponse.json({ data: data.results });
+    const filtered = (data.results || []).filter(
+      (item: { media_type?: string }) =>
+        item.media_type === "movie" || item.media_type === "tv"
+    );
+    return NextResponse.json({ data: filtered });
   } catch (error) {
     console.error("Error searching TMDB:", error);
     return NextResponse.json(

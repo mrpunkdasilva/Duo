@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Heading } from "@/components/ui/heading";
-import { Search, Loader2, Plus, Filter, Heart, Film } from "lucide-react";
+import { Search, Loader2, Plus, Filter, Heart, Film, Eye, CheckCircle, Clock, ListPlus } from "lucide-react";
 import { MediaItem } from "@/types";
 import { MovieGrid } from "../components/movie-grid.component";
 import { MovieFilterDialog } from "../components/movie-filter-dialog.component";
@@ -26,6 +26,8 @@ const defaultFilters: Filters = {
   sortBy: "recent",
 };
 
+type TabValue = "all" | "favorites" | "not_watched" | "watching" | "watched" | "to_watch";
+
 export function MoviesView() {
   const { data: session } = useSession();
   const currentUserId = (session?.user as { id?: string })?.id;
@@ -35,7 +37,7 @@ export function MoviesView() {
   const [error, setError] = useState<string | null>(null);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [filters, setFilters] = useState<Filters>(defaultFilters);
-  const [activeTab, setActiveTab] = useState<"all" | "favorites">("all");
+  const [activeTab, setActiveTab] = useState<TabValue>("all");
 
   const fetchMovies = useCallback(async () => {
     setIsLoading(true);
@@ -73,6 +75,12 @@ export function MoviesView() {
       .filter((m) => m.favoritedBy && m.favoritedBy.includes(currentUserId))
       .map((m) => m._id as string);
   }, [movies, currentUserId]);
+
+  const getUserWatchStatus = (movie: MediaItem): string => {
+    if (!currentUserId) return "not_watched";
+    const status = movie.watchStatuses?.find((ws) => ws.userId === currentUserId);
+    return status?.status || "not_watched";
+  };
 
   const filteredMovies = movies.filter((movie) => {
     const query = searchQuery.toLowerCase();
@@ -114,6 +122,10 @@ export function MoviesView() {
   });
 
   const favoriteMovies = sortedMovies.filter((m) => favorites.includes(m._id as string));
+  const notWatchedMovies = sortedMovies.filter((m) => getUserWatchStatus(m) === "not_watched");
+  const watchingMovies = sortedMovies.filter((m) => getUserWatchStatus(m) === "watching");
+  const watchedMovies = sortedMovies.filter((m) => getUserWatchStatus(m) === "watched");
+  const toWatchMovies = sortedMovies.filter((m) => getUserWatchStatus(m) === "to_watch");
 
   const handleToggleFavorite = async (item: MediaItem) => {
     const movieId = item._id as string;
@@ -194,15 +206,31 @@ export function MoviesView() {
         </Button>
       </div>
 
-      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "all" | "favorites")}>
-        <TabsList className="w-full bg-muted/50 rounded-xl h-11">
-          <TabsTrigger value="all" className="flex-1 rounded-lg text-xs">
+      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TabValue)}>
+        <TabsList className="w-full bg-muted/50 rounded-xl h-auto flex flex-wrap gap-1 p-1">
+          <TabsTrigger value="all" className="flex-1 rounded-lg text-xs min-w-0">
             <Film className="h-3.5 w-3.5 mr-1" />
             Todos ({sortedMovies.length})
           </TabsTrigger>
-          <TabsTrigger value="favorites" className="flex-1 rounded-lg text-xs">
+          <TabsTrigger value="favorites" className="flex-1 rounded-lg text-xs min-w-0">
             <Heart className="h-3.5 w-3.5 mr-1" />
-            Favoritos ({favoriteMovies.length})
+            Fav ({favoriteMovies.length})
+          </TabsTrigger>
+          <TabsTrigger value="not_watched" className="flex-1 rounded-lg text-xs min-w-0">
+            <Eye className="h-3.5 w-3.5 mr-1" />
+            Não Visto ({notWatchedMovies.length})
+          </TabsTrigger>
+          <TabsTrigger value="watching" className="flex-1 rounded-lg text-xs min-w-0">
+            <Clock className="h-3.5 w-3.5 mr-1" />
+            Assistindo ({watchingMovies.length})
+          </TabsTrigger>
+          <TabsTrigger value="watched" className="flex-1 rounded-lg text-xs min-w-0">
+            <CheckCircle className="h-3.5 w-3.5 mr-1" />
+            Visto ({watchedMovies.length})
+          </TabsTrigger>
+          <TabsTrigger value="to_watch" className="flex-1 rounded-lg text-xs min-w-0">
+            <ListPlus className="h-3.5 w-3.5 mr-1" />
+            Ver Depois ({toWatchMovies.length})
           </TabsTrigger>
         </TabsList>
 
@@ -226,17 +254,58 @@ export function MoviesView() {
 
             <TabsContent value="favorites" className="mt-4">
               {favoriteMovies.length === 0 ? (
-                <div className="text-center py-12">
-                  <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-muted/50 flex items-center justify-center">
-                    <Heart className="h-6 w-6 text-muted-foreground" />
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    Nenhum favorito ainda
-                  </p>
-                </div>
+                <EmptyState icon={Heart} label="Nenhum favorito ainda" />
               ) : (
                 <MovieGrid
                   items={favoriteMovies}
+                  onToggleFavorite={handleToggleFavorite}
+                  favorites={favorites}
+                />
+              )}
+            </TabsContent>
+
+            <TabsContent value="not_watched" className="mt-4">
+              {notWatchedMovies.length === 0 ? (
+                <EmptyState icon={Eye} label="Nenhum filme não assistido" />
+              ) : (
+                <MovieGrid
+                  items={notWatchedMovies}
+                  onToggleFavorite={handleToggleFavorite}
+                  favorites={favorites}
+                />
+              )}
+            </TabsContent>
+
+            <TabsContent value="watching" className="mt-4">
+              {watchingMovies.length === 0 ? (
+                <EmptyState icon={Clock} label="Nenhum filme assistindo" />
+              ) : (
+                <MovieGrid
+                  items={watchingMovies}
+                  onToggleFavorite={handleToggleFavorite}
+                  favorites={favorites}
+                />
+              )}
+            </TabsContent>
+
+            <TabsContent value="watched" className="mt-4">
+              {watchedMovies.length === 0 ? (
+                <EmptyState icon={CheckCircle} label="Nenhum filme assistido" />
+              ) : (
+                <MovieGrid
+                  items={watchedMovies}
+                  onToggleFavorite={handleToggleFavorite}
+                  favorites={favorites}
+                />
+              )}
+            </TabsContent>
+
+            <TabsContent value="to_watch" className="mt-4">
+              {toWatchMovies.length === 0 ? (
+                <EmptyState icon={ListPlus} label="Nenhum filme para assistir" />
+              ) : (
+                <MovieGrid
+                  items={toWatchMovies}
                   onToggleFavorite={handleToggleFavorite}
                   favorites={favorites}
                 />
@@ -252,6 +321,17 @@ export function MoviesView() {
         filters={filters}
         onApplyFilters={setFilters}
       />
+    </div>
+  );
+}
+
+function EmptyState({ icon: Icon, label }: { icon: typeof Eye; label: string }) {
+  return (
+    <div className="text-center py-12">
+      <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-muted/50 flex items-center justify-center">
+        <Icon className="h-6 w-6 text-muted-foreground" />
+      </div>
+      <p className="text-sm text-muted-foreground">{label}</p>
     </div>
   );
 }
