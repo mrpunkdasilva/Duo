@@ -3,12 +3,14 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/mongodb";
 import Movie from "@/models/movie";
+import { SessionUser } from "@/types";
 
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
+    const userId = (session?.user as SessionUser)?.id;
 
-    if (!session?.user?.id) {
+    if (!userId) {
       return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
     }
 
@@ -30,7 +32,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (favorite === "true") {
-      query.favoritedBy = session.user.id;
+      query.favoritedBy = userId;
     }
 
     const movies = await Movie.find(query)
@@ -50,8 +52,9 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
+    const userId = (session?.user as SessionUser)?.id;
 
-    if (!session?.user?.id) {
+    if (!userId) {
       return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
     }
 
