@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { Star, Film, Tv, Heart, Plus, Users } from "lucide-react";
+import { Star, Film, Tv, Heart, Users } from "lucide-react";
 import { MediaItem, GENRE_MAP } from "@/types";
 import { getImageUrl } from "@/lib/tmdb";
 
@@ -93,7 +93,7 @@ export function MovieCard({
         <div className="flex items-center gap-1.5 bg-black/60 rounded-full px-3 py-1.5 backdrop-blur-sm">
           <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
           <span className="text-white text-sm font-semibold">
-            {item.vote_average.toFixed(1)}
+            {item.vote_average?.toFixed(1) || "0.0"}
           </span>
         </div>
       </div>
@@ -135,20 +135,6 @@ export function MovieCard({
                   isFavorite ? "fill-red-500 text-red-500" : "text-white"
                 }`}
               />
-            </button>
-          )}
-
-          {onAddToList && (
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                onAddToList(item);
-              }}
-              className="flex items-center justify-center w-12 h-12 rounded-full bg-white/20 hover:bg-white/30 transition-colors backdrop-blur-sm"
-              aria-label="Adicionar à lista"
-            >
-              <Plus className="h-5 w-5 text-white" />
             </button>
           )}
         </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import Link from "next/link";
+import { useSession } from "next-auth/react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -9,14 +9,17 @@ import { Heading } from "@/components/ui/heading";
 import { Search, Film, Tv, Heart, Loader2, Plus } from "lucide-react";
 import { MediaItem } from "@/types";
 import { MovieGrid } from "../components/movie-grid.component";
+import { MovieSearchDialog } from "../components/movie-search-dialog.component";
 
 export function MoviesView() {
+  const { data: session } = useSession();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("all");
   const [favorites, setFavorites] = useState<number[]>([]);
   const [movies, setMovies] = useState<MediaItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const fetchMovies = useCallback(async (query?: string, type?: string) => {
     setIsLoading(true);
@@ -78,6 +81,35 @@ export function MoviesView() {
     console.log("Adicionar à lista:", item);
   };
 
+  const handleAddMovie = async (item: MediaItem) => {
+    const response = await fetch("/api/movies", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        tmdbId: item.id,
+        mediaType: item.media_type,
+        title: item.title,
+        name: item.name,
+        overview: item.overview,
+        posterPath: item.poster_path,
+        backdropPath: item.backdrop_path,
+        releaseDate: item.release_date,
+        firstAirDate: item.first_air_date,
+        voteAverage: item.vote_average,
+        voteCount: item.vote_count,
+        genreIds: item.genre_ids,
+        popularity: item.popularity,
+      }),
+    });
+
+    if (!response.ok) {
+      const data = await response.json();
+      throw new Error(data.error || "Erro ao adicionar filme");
+    }
+
+    fetchMovies();
+  };
+
   return (
     <div className="px-4 pt-4 space-y-4">
       <div className="space-y-3">
@@ -87,12 +119,13 @@ export function MoviesView() {
         <p className="text-sm text-muted-foreground">
           Descubra e salve seus filmes e séries favoritos
         </p>
-        <Link href="/movies/new">
-          <Button className="bg-gradient-to-r from-duo-rose to-duo-teal hover:opacity-90">
-            <Plus className="h-4 w-4 mr-2" />
-            Adicionar
-          </Button>
-        </Link>
+        <Button
+          onClick={() => setIsDialogOpen(true)}
+          className="bg-gradient-to-r from-duo-rose to-duo-teal hover:opacity-90"
+        >
+          <Plus className="h-4 w-4 mr-2" />
+          Adicionar
+        </Button>
       </div>
 
       <div className="relative">
@@ -172,6 +205,12 @@ export function MoviesView() {
           </>
         )}
       </Tabs>
+
+      <MovieSearchDialog
+        open={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        onAddMovie={handleAddMovie}
+      />
     </div>
   );
 }

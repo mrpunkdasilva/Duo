@@ -6,6 +6,29 @@ import Movie from "@/models/movie";
 import User from "@/models/user";
 import { SessionUser } from "@/types";
 
+function transformMovie(movie: Record<string, unknown>) {
+  return {
+    id: movie.tmdbId,
+    _id: movie._id,
+    title: movie.title,
+    name: movie.name,
+    overview: movie.overview,
+    poster_path: movie.posterPath,
+    backdrop_path: movie.backdropPath,
+    release_date: movie.releaseDate,
+    first_air_date: movie.firstAirDate,
+    vote_average: movie.voteAverage,
+    vote_count: movie.voteCount,
+    genre_ids: movie.genreIds,
+    media_type: movie.mediaType,
+    popularity: movie.popularity,
+    addedBy: movie.addedBy,
+    favoritedBy: movie.favoritedBy,
+    coupleRating: movie.coupleRating,
+    createdAt: movie.createdAt,
+  };
+}
+
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
@@ -42,7 +65,9 @@ export async function GET(request: NextRequest) {
       .sort({ createdAt: -1 })
       .lean();
 
-    return NextResponse.json({ data: movies });
+    const transformed = movies.map((m) => transformMovie(m as Record<string, unknown>));
+
+    return NextResponse.json({ data: transformed });
   } catch (error) {
     console.error("Error fetching movies:", error);
     return NextResponse.json(
