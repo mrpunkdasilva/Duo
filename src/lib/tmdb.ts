@@ -1,4 +1,4 @@
-import { MediaItem, MediaDetail } from "@/types";
+import { MediaItem } from "@/types";
 
 const TMDB_BASE_URL = "https://api.themoviedb.org/3";
 
@@ -91,11 +91,11 @@ export async function getPopularTVShows(
   });
 }
 
-export async function getMovieDetail(id: number): Promise<MediaDetail> {
+export async function getMovieDetail(id: number): Promise<MediaItem> {
   return tmdbFetch(`/movie/${id}`);
 }
 
-export async function getTVShowDetail(id: number): Promise<MediaDetail> {
+export async function getTVShowDetail(id: number): Promise<MediaItem> {
   return tmdbFetch(`/tv/${id}`);
 }
 

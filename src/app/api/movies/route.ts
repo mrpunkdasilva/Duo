@@ -212,7 +212,7 @@ export async function PUT(request: NextRequest) {
       const movie = await Movie.findById(id);
       if (movie) {
         const existingIndex = (movie.watchStatuses || []).findIndex(
-          (ws) => ws.userId.toString() === userId
+          (ws: { userId: { toString: () => string } }) => ws.userId.toString() === userId
         );
 
         if (existingIndex >= 0) {
@@ -249,8 +249,9 @@ export async function PUT(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
+    const userId = (session?.user as SessionUser)?.id;
 
-    if (!session?.user?.id) {
+    if (!userId) {
       return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
     }
 

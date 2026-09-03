@@ -209,9 +209,6 @@ export interface MediaItem {
     userId: string;
     status: "not_watched" | "watching" | "watched" | "to_watch";
   }[];
-}
-
-export interface MediaDetail extends MediaItem {
   tagline?: string;
   runtime?: number;
   number_of_seasons?: number;

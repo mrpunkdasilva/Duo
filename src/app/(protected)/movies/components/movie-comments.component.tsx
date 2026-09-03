@@ -19,7 +19,7 @@ interface Comment {
 }
 
 interface MovieCommentsProps {
-  movieId: number;
+  movieId: string;
   currentUserId?: string;
   currentUserName?: string;
   currentUserImage?: string;
