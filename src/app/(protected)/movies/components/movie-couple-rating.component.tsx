@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 
 interface CoupleRatingProps {
   movieId: string;
+  onRatingChange?: (ratings: CoupleRatings) => void;
 }
 
 export interface CoupleRatings {
@@ -24,7 +25,7 @@ const RATING_CRITERIA = [
   { key: "recomendaria" as const, label: "Recomendaria", icon: Heart, color: "text-red-500" },
 ];
 
-export function MovieCoupleRating({ movieId }: CoupleRatingProps) {
+export function MovieCoupleRating({ movieId, onRatingChange }: CoupleRatingProps) {
   const [ratings, setRatings] = useState<CoupleRatings>({
     romancio: 0,
     diversao: 0,
@@ -80,6 +81,8 @@ export function MovieCoupleRating({ movieId }: CoupleRatingProps) {
       if (!response.ok) {
         throw new Error("Erro ao salvar avaliação");
       }
+
+      onRatingChange?.(newRatings);
     } catch (err) {
       console.error("Erro ao salvar avaliação:", err);
     } finally {

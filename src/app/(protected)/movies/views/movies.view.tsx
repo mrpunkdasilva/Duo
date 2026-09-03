@@ -31,6 +31,7 @@ export function MoviesView() {
   const [error, setError] = useState<string | null>(null);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [filters, setFilters] = useState<Filters>(defaultFilters);
+  const [favorites, setFavorites] = useState<string[]>([]);
 
   const fetchMovies = useCallback(async () => {
     setIsLoading(true);
@@ -61,6 +62,13 @@ export function MoviesView() {
   useEffect(() => {
     fetchMovies();
   }, [fetchMovies]);
+
+  useEffect(() => {
+    const favIds = movies
+      .filter((m) => m.favoritedBy && m.favoritedBy.length > 0)
+      .map((m) => m._id as string);
+    setFavorites(favIds);
+  }, [movies]);
 
   const filteredMovies = movies.filter((movie) => {
     const query = searchQuery.toLowerCase();
@@ -126,13 +134,6 @@ export function MoviesView() {
       console.error("Erro ao atualizar favorito:", err);
     }
   };
-
-  const favorites = movies
-    .filter((m) => {
-      const favBy = m.favoritedBy || [];
-      return favBy.length > 0;
-    })
-    .map((m) => m._id as string);
 
   const activeFilterCount =
     filters.mediaType.length + filters.genres.length;

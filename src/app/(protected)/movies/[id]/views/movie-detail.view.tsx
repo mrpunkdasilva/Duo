@@ -28,6 +28,13 @@ interface MovieDetailViewProps {
   currentUserImage?: string;
 }
 
+interface CoupleRating {
+  romancio?: number;
+  diversao?: number;
+  emocao?: number;
+  recomendaria?: number;
+}
+
 export function MovieDetailView({
   movie,
   movieId,
@@ -42,7 +49,8 @@ export function MovieDetailView({
     .map((id: number) => GENRE_MAP[id])
     .filter(Boolean);
 
-  const coupleRating = movie.coupleRating;
+  const [coupleRating, setCoupleRating] = useState<CoupleRating | undefined>(movie.coupleRating);
+  
   const averageRating = coupleRating
     ? Object.values(coupleRating).filter(Boolean).reduce((a, b) => a + b, 0) /
       Object.values(coupleRating).filter(Boolean).length
@@ -239,7 +247,7 @@ export function MovieDetailView({
         <Separator className="my-6" />
 
         {movieId && (
-          <MovieCoupleRating movieId={movieId} />
+          <MovieCoupleRating movieId={movieId} onRatingChange={setCoupleRating} />
         )}
 
         <Separator className="my-6" />
