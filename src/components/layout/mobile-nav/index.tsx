@@ -4,12 +4,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Home, MapPin, Heart, Users } from "lucide-react";
+import { Home, MapPin, Heart, Users, Film } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { href: "/home", icon: Home, label: "Início" },
   { href: "/places", icon: MapPin, label: "Lugares" },
+  { href: "/movies", icon: Film, label: "Filmes" },
   { href: "/partner", icon: Users, label: "Duo" },
 ];
 
@@ -21,7 +22,7 @@ export function MobileNav() {
     <>
       {/* Top bar - mobile */}
       <header className="sticky top-0 z-50 md:hidden">
-        <div className="flex items-center justify-between px-4 h-14 bg-background/80 backdrop-blur-xl border-b border-border/50">
+        <div className="flex items-center justify-between px-4 h-14 bg-background border-b border-border/50">
           <Link href="/home" className="flex items-center gap-2">
             <Heart className="h-5 w-5 fill-duo-rose text-duo-rose" />
             <span className="text-lg font-bold text-gradient">duo</span>
@@ -39,7 +40,7 @@ export function MobileNav() {
 
       {/* Desktop header */}
       <header className="sticky top-0 z-50 hidden md:block">
-        <div className="flex items-center justify-between px-6 h-16 bg-background/80 backdrop-blur-xl border-b border-border/50">
+        <div className="flex items-center justify-between px-6 h-16 bg-background border-b border-border/50">
           <Link href="/home" className="flex items-center gap-2">
             <Heart className="h-6 w-6 fill-duo-rose text-duo-rose" />
             <span className="text-xl font-bold text-gradient">duo</span>
@@ -80,7 +81,7 @@ export function MobileNav() {
       </header>
 
       {/* Bottom nav - mobile only */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-background/90 backdrop-blur-xl border-t border-border/50 safe-area-bottom">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-background border-t border-border/50 safe-area-bottom">
         <div className="flex items-center justify-around h-16 px-2">
           {navItems.map((item) => {
             const isActive = item.href === "/home"

@@ -174,3 +174,71 @@ export interface Comment {
   text: string;
   createdAt: Date;
 }
+
+export type MediaType = "movie" | "tv";
+
+export interface Genre {
+  id: number;
+  name: string;
+}
+
+export interface MediaItem {
+  _id?: string;
+  id: number;
+  title: string;
+  name?: string;
+  overview: string;
+  poster_path: string | null;
+  backdrop_path: string | null;
+  release_date?: string;
+  first_air_date?: string;
+  vote_average: number;
+  vote_count: number;
+  genre_ids: number[];
+  media_type: MediaType;
+  popularity: number;
+  addedBy?: string;
+  favoritedBy?: string[];
+  coupleRating?: {
+    romancio?: number;
+    diversao?: number;
+    emocao?: number;
+    recomendaria?: number;
+  };
+  watchStatuses?: {
+    userId: string;
+    status: "not_watched" | "watching" | "watched" | "to_watch";
+  }[];
+  tagline?: string;
+  runtime?: number;
+  number_of_seasons?: number;
+  number_of_episodes?: number;
+  status?: string;
+  genres?: Genre[];
+  production_companies?: { id: number; name: string }[];
+}
+
+export const GENRES: Genre[] = [
+  { id: 28, name: "Ação" },
+  { id: 12, name: "Aventura" },
+  { id: 16, name: "Animação" },
+  { id: 35, name: "Comédia" },
+  { id: 80, name: "Crime" },
+  { id: 99, name: "Documentário" },
+  { id: 18, name: "Drama" },
+  { id: 10751, name: "Família" },
+  { id: 14, name: "Fantasia" },
+  { id: 36, name: "História" },
+  { id: 27, name: "Terror" },
+  { id: 10402, name: "Música" },
+  { id: 9648, name: "Mistério" },
+  { id: 10749, name: "Romance" },
+  { id: 878, name: "Ficção Científica" },
+  { id: 53, name: "Suspense" },
+  { id: 10752, name: "Guerra" },
+  { id: 37, name: "Faroeste" },
+];
+
+export const GENRE_MAP: Record<number, string> = Object.fromEntries(
+  GENRES.map((g) => [g.id, g.name])
+);
