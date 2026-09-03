@@ -190,10 +190,22 @@ export default function NewMoviePage() {
                 </div>
 
                 <div className="absolute bottom-0 left-0 right-0 p-6 space-y-4">
-                  <div>
-                    <h3 className="text-2xl font-bold text-white line-clamp-2">
-                      {item.title || item.name}
-                    </h3>
+                  <div className="flex gap-4">
+                    {item.poster_path && (
+                      <div className="flex-shrink-0 w-20 aspect-[2/3] rounded-lg overflow-hidden shadow-xl border-2 border-white/20">
+                        <img
+                          src={getImageUrl(item.poster_path, "w200")}
+                          alt={item.title || item.name || ""}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    )}
+
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-2xl font-bold text-white line-clamp-2">
+                        {item.title || item.name}
+                      </h3>
+                    </div>
                   </div>
 
                   <p className="text-sm text-white/80 line-clamp-3 leading-relaxed">
