@@ -139,7 +139,7 @@ export default function NewMoviePage() {
             Resultados ({results.length})
           </Heading>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="space-y-6">
             {results.map((item) => {
               const isAdded = addedIds.includes(item.id);
               const isAdding = addingId === item.id;
