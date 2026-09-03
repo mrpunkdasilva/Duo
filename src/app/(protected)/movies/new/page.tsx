@@ -2,7 +2,6 @@
 
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -14,7 +13,6 @@ import Link from "next/link";
 
 export default function NewMoviePage() {
   const router = useRouter();
-  const { data: session } = useSession();
   const [searchQuery, setSearchQuery] = useState("");
   const [results, setResults] = useState<MediaItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -54,7 +52,6 @@ export default function NewMoviePage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          coupleId: (session?.user as { coupleId?: string })?.coupleId,
           tmdbId: item.id,
           mediaType: item.media_type,
           title: item.title,

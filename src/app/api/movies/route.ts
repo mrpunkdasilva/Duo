@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/mongodb";
 import Movie from "@/models/movie";
+import User from "@/models/user";
 import { SessionUser } from "@/types";
 
 export async function GET(request: NextRequest) {
@@ -16,16 +17,18 @@ export async function GET(request: NextRequest) {
 
     await connectToDatabase();
 
+    const user = await User.findOne({ email: session?.user?.email });
+    const coupleId = user?.coupleId;
+
+    if (!coupleId) {
+      return NextResponse.json({ data: [] });
+    }
+
     const searchParams = request.nextUrl.searchParams;
-    const coupleId = searchParams.get("coupleId");
     const mediaType = searchParams.get("type");
     const favorite = searchParams.get("favorite");
 
-    const query: Record<string, unknown> = {};
-
-    if (coupleId) {
-      query.coupleId = coupleId;
-    }
+    const query: Record<string, unknown> = { coupleId };
 
     if (mediaType) {
       query.mediaType = mediaType;
@@ -60,9 +63,18 @@ export async function POST(request: NextRequest) {
 
     await connectToDatabase();
 
+    const user = await User.findOne({ email: session?.user?.email });
+    const coupleId = user?.coupleId;
+
+    if (!coupleId) {
+      return NextResponse.json(
+        { error: "Você precisa estar em um casal para adicionar filmes" },
+        { status: 400 }
+      );
+    }
+
     const body = await request.json();
     const {
-      coupleId,
       tmdbId,
       mediaType,
       title,
@@ -83,7 +95,7 @@ export async function POST(request: NextRequest) {
       status,
     } = body;
 
-    if (!coupleId || !tmdbId || !mediaType || !title) {
+    if (!tmdbId || !mediaType || !title) {
       return NextResponse.json(
         { error: "Dados obrigatórios não fornecidos" },
         { status: 400 }
@@ -119,7 +131,7 @@ export async function POST(request: NextRequest) {
       numberOfSeasons,
       numberOfEpisodes,
       status,
-      favoritedBy: [session.user.id],
+      favoritedBy: [userId],
     });
 
     return NextResponse.json({ data: movie }, { status: 201 });
