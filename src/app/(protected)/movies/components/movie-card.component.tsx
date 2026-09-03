@@ -2,12 +2,20 @@
 
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { Star, Film, Tv, Heart, Plus } from "lucide-react";
+import { Star, Film, Tv, Heart, Plus, Users } from "lucide-react";
 import { MediaItem, GENRE_MAP } from "@/types";
 import { getImageUrl } from "../data/mock-movies";
 
+interface CoupleRating {
+  romancio: number;
+  diversao: number;
+  emocao: number;
+  recomendaria: number;
+}
+
 interface MovieCardProps {
   item: MediaItem;
+  coupleRating?: CoupleRating | null;
   onAddToList?: (item: MediaItem) => void;
   onToggleFavorite?: (id: number) => void;
   isFavorite?: boolean;
@@ -15,6 +23,7 @@ interface MovieCardProps {
 
 export function MovieCard({
   item,
+  coupleRating,
   onAddToList,
   onToggleFavorite,
   isFavorite = false,
@@ -26,6 +35,11 @@ export function MovieCard({
     .slice(0, 3)
     .map((id) => GENRE_MAP[id])
     .filter(Boolean);
+
+  const averageRating = coupleRating
+    ? Object.values(coupleRating).filter(Boolean).reduce((a, b) => a + b, 0) /
+      Object.values(coupleRating).filter(Boolean).length
+    : null;
 
   return (
     <Link
@@ -67,7 +81,15 @@ export function MovieCard({
         )}
       </div>
 
-      <div className="absolute top-4 right-4">
+      <div className="absolute top-4 right-4 flex items-center gap-2">
+        {averageRating !== null && (
+          <div className="flex items-center gap-1.5 bg-duo-rose/80 rounded-full px-3 py-1.5 backdrop-blur-sm">
+            <Users className="h-4 w-4 text-white" />
+            <span className="text-white text-sm font-semibold">
+              {averageRating.toFixed(1)}
+            </span>
+          </div>
+        )}
         <div className="flex items-center gap-1.5 bg-black/60 rounded-full px-3 py-1.5 backdrop-blur-sm">
           <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
           <span className="text-white text-sm font-semibold">

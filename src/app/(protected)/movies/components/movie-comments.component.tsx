@@ -78,13 +78,13 @@ export function MovieComments({
           placeholder="Deixe um comentário sobre o filme..."
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
-          className="min-h-[40px] h-[40px] rounded-xl resize-none flex-1"
+          className="min-h-[80px] h-[80px] rounded-xl resize-none flex-1"
           maxLength={500}
         />
         <Button
           onClick={handleSubmit}
           disabled={!newComment.trim() || isSubmitting}
-          className="h-[40px] w-[40px] bg-gradient-to-r from-duo-rose to-duo-teal hover:opacity-90 rounded-xl flex-shrink-0"
+          className="h-[80px] w-[40px] bg-gradient-to-r from-duo-rose to-duo-teal hover:opacity-90 rounded-xl flex-shrink-0"
         >
           {isSubmitting ? (
             <Loader2 className="h-4 w-4 animate-spin" />
