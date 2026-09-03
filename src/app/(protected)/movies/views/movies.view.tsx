@@ -80,15 +80,13 @@ export function MoviesView() {
 
   return (
     <div className="px-4 pt-4 space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <Heading as="h1" variant="page">
-            Filmes e Séries
-          </Heading>
-          <p className="text-sm text-muted-foreground mt-1">
-            Descubra e salve seus filmes e séries favoritos
-          </p>
-        </div>
+      <div className="space-y-3">
+        <Heading as="h1" variant="page">
+          Filmes e Séries
+        </Heading>
+        <p className="text-sm text-muted-foreground">
+          Descubra e salve seus filmes e séries favoritos
+        </p>
         <Link href="/movies/new">
           <Button className="bg-gradient-to-r from-duo-rose to-duo-teal hover:opacity-90">
             <Plus className="h-4 w-4 mr-2" />
