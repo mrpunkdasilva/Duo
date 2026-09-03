@@ -139,73 +139,85 @@ export default function NewMoviePage() {
 
           <div className="space-y-3">
             {results.map((item) => (
-              <Card key={item.id} className="border-0 shadow-sm">
-                <CardContent className="p-3">
-                  <div className="flex gap-3">
-                    <div className="flex-shrink-0 w-16 h-24 rounded-lg overflow-hidden bg-muted">
-                      {item.poster_path ? (
-                        <img
-                          src={getImageUrl(item.poster_path, "w200")}
-                          alt={item.title || item.name || ""}
-                          className="w-full h-full object-cover"
-                        />
+              <Card key={item.id} className="border-0 shadow-sm overflow-hidden">
+                <CardContent className="p-0">
+                  {item.backdrop_path ? (
+                    <div className="relative w-full h-32">
+                      <img
+                        src={getImageUrl(item.backdrop_path, "w500")}
+                        alt={item.title || item.name || ""}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                    </div>
+                  ) : (
+                    <div className="w-full h-32 bg-muted flex items-center justify-center">
+                      {item.media_type === "movie" ? (
+                        <Film className="h-8 w-8 text-muted-foreground" />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          {item.media_type === "movie" ? (
-                            <Film className="h-6 w-6 text-muted-foreground" />
-                          ) : (
-                            <Tv className="h-6 w-6 text-muted-foreground" />
-                          )}
-                        </div>
+                        <Tv className="h-8 w-8 text-muted-foreground" />
                       )}
                     </div>
+                  )}
 
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="min-w-0">
-                          <div className="flex items-center gap-2">
-                            <h3 className="font-medium truncate">
-                              {item.title || item.name}
-                            </h3>
-                            <Badge variant="secondary" className="text-[10px] flex-shrink-0">
-                              {item.media_type === "movie" ? "Filme" : "Série"}
-                            </Badge>
-                          </div>
-                          <div className="flex items-center gap-2 mt-0.5">
-                            <span className="text-xs text-muted-foreground">
-                              {item.release_date || item.first_air_date
-                                ? new Date(
-                                    item.release_date || item.first_air_date || ""
-                                  ).getFullYear()
-                                : "N/A"}
-                            </span>
-                            <div className="flex items-center gap-0.5">
-                              <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                              <span className="text-xs">
-                                {item.vote_average?.toFixed(1) || "0.0"}
+                  <div className="p-4 space-y-3">
+                    <div className="flex gap-3">
+                      {item.poster_path && (
+                        <div className="flex-shrink-0 w-16 h-24 rounded-lg overflow-hidden bg-muted">
+                          <img
+                            src={getImageUrl(item.poster_path, "w200")}
+                            alt={item.title || item.name || ""}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      )}
+
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-2">
+                              <h3 className="font-medium line-clamp-1">
+                                {item.title || item.name}
+                              </h3>
+                              <Badge variant="secondary" className="text-[10px] flex-shrink-0">
+                                {item.media_type === "movie" ? "Filme" : "Série"}
+                              </Badge>
+                            </div>
+                            <div className="flex items-center gap-2 mt-1">
+                              <span className="text-xs text-muted-foreground">
+                                {item.release_date || item.first_air_date
+                                  ? new Date(
+                                      item.release_date || item.first_air_date || ""
+                                    ).getFullYear()
+                                  : "N/A"}
                               </span>
+                              <div className="flex items-center gap-0.5">
+                                <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                                <span className="text-xs">
+                                  {item.vote_average?.toFixed(1) || "0.0"}
+                                </span>
+                              </div>
                             </div>
                           </div>
                         </div>
 
-                        <Button
-                          size="sm"
-                          onClick={() => handleAddMovie(item)}
-                          disabled={addingId === item.id}
-                          className="bg-gradient-to-r from-duo-rose to-duo-teal hover:opacity-90 flex-shrink-0"
-                        >
-                          {addingId === item.id ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : (
-                            "Adicionar"
-                          )}
-                        </Button>
+                        <p className="text-xs text-muted-foreground line-clamp-2 mt-2">
+                          {item.overview}
+                        </p>
                       </div>
-
-                      <p className="text-xs text-muted-foreground line-clamp-2 mt-2">
-                        {item.overview}
-                      </p>
                     </div>
+
+                    <Button
+                      onClick={() => handleAddMovie(item)}
+                      disabled={addingId === item.id}
+                      className="w-full bg-gradient-to-r from-duo-rose to-duo-teal hover:opacity-90"
+                    >
+                      {addingId === item.id ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        "Adicionar"
+                      )}
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
