@@ -4,12 +4,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Home, MapPin, Heart, Users } from "lucide-react";
+import { Home, MapPin, Heart, Users, Film } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { href: "/home", icon: Home, label: "Início" },
   { href: "/places", icon: MapPin, label: "Lugares" },
+  { href: "/movies", icon: Film, label: "Filmes" },
   { href: "/partner", icon: Users, label: "Duo" },
 ];
 
