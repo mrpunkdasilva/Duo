@@ -1,46 +1,70 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Heading } from "@/components/ui/heading";
-import { Search, Film, Tv, Heart } from "lucide-react";
+import { Search, Film, Tv, Heart, Loader2 } from "lucide-react";
 import { MediaItem } from "@/types";
-import { MOCK_MOVIES, MOCK_TV_SHOWS } from "../data/mock-movies";
 import { MovieGrid } from "../components/movie-grid.component";
 
 export function MoviesView() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("all");
   const [favorites, setFavorites] = useState<number[]>([]);
+  const [movies, setMovies] = useState<MediaItem[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const filteredMovies = useMemo(() => {
-    if (!searchQuery) return MOCK_MOVIES;
-    return MOCK_MOVIES.filter(
-      (m) =>
-        m.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        m.overview.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [searchQuery]);
+  const fetchMovies = useCallback(async (query?: string, type?: string) => {
+    setIsLoading(true);
+    setError(null);
 
-  const filteredSeries = useMemo(() => {
-    if (!searchQuery) return MOCK_TV_SHOWS;
-    return MOCK_TV_SHOWS.filter(
-      (s) =>
-        (s.name || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
-        s.overview.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [searchQuery]);
+    try {
+      const searchParams = new URLSearchParams();
 
-  const allItems = useMemo(
-    () => [...filteredMovies, ...filteredSeries],
-    [filteredMovies, filteredSeries]
-  );
+      if (query) {
+        searchParams.set("q", query);
+        searchParams.set("type", type || "multi");
+      }
 
-  const favoriteItems = useMemo(
-    () => allItems.filter((item) => favorites.includes(item.id)),
-    [allItems, favorites]
-  );
+      const response = await fetch(`/api/movies?${searchParams.toString()}`);
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch movies");
+      }
+
+      const data = await response.json();
+      setMovies(data.data || []);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred");
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchMovies();
+  }, [fetchMovies]);
+
+  useEffect(() => {
+    const debounceTimer = setTimeout(() => {
+      if (searchQuery) {
+        fetchMovies(searchQuery, activeTab === "movies" ? "movie" : activeTab === "series" ? "tv" : "multi");
+      } else {
+        fetchMovies();
+      }
+    }, 500);
+
+    return () => clearTimeout(debounceTimer);
+  }, [searchQuery, activeTab, fetchMovies]);
+
+  const filteredMovies = movies.filter((m) => m.media_type === "movie");
+  const filteredSeries = movies.filter((m) => m.media_type === "tv");
+
+  const allItems = movies;
+
+  const favoriteItems = movies.filter((item) => favorites.includes(item.id));
 
   const handleToggleFavorite = (id: number) => {
     setFavorites((prev) =>
@@ -92,41 +116,53 @@ export function MoviesView() {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="all" className="mt-4">
-          <MovieGrid
-            items={allItems}
-            onAddToList={handleAddToList}
-            onToggleFavorite={handleToggleFavorite}
-            favorites={favorites}
-          />
-        </TabsContent>
+        {isLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-duo-rose" />
+          </div>
+        ) : error ? (
+          <div className="text-center py-12">
+            <p className="text-destructive">{error}</p>
+          </div>
+        ) : (
+          <>
+            <TabsContent value="all" className="mt-4">
+              <MovieGrid
+                items={allItems}
+                onAddToList={handleAddToList}
+                onToggleFavorite={handleToggleFavorite}
+                favorites={favorites}
+              />
+            </TabsContent>
 
-        <TabsContent value="movies" className="mt-4">
-          <MovieGrid
-            items={filteredMovies}
-            onAddToList={handleAddToList}
-            onToggleFavorite={handleToggleFavorite}
-            favorites={favorites}
-          />
-        </TabsContent>
+            <TabsContent value="movies" className="mt-4">
+              <MovieGrid
+                items={filteredMovies}
+                onAddToList={handleAddToList}
+                onToggleFavorite={handleToggleFavorite}
+                favorites={favorites}
+              />
+            </TabsContent>
 
-        <TabsContent value="series" className="mt-4">
-          <MovieGrid
-            items={filteredSeries}
-            onAddToList={handleAddToList}
-            onToggleFavorite={handleToggleFavorite}
-            favorites={favorites}
-          />
-        </TabsContent>
+            <TabsContent value="series" className="mt-4">
+              <MovieGrid
+                items={filteredSeries}
+                onAddToList={handleAddToList}
+                onToggleFavorite={handleToggleFavorite}
+                favorites={favorites}
+              />
+            </TabsContent>
 
-        <TabsContent value="favorites" className="mt-4">
-          <MovieGrid
-            items={favoriteItems}
-            onAddToList={handleAddToList}
-            onToggleFavorite={handleToggleFavorite}
-            favorites={favorites}
-          />
-        </TabsContent>
+            <TabsContent value="favorites" className="mt-4">
+              <MovieGrid
+                items={favoriteItems}
+                onAddToList={handleAddToList}
+                onToggleFavorite={handleToggleFavorite}
+                favorites={favorites}
+              />
+            </TabsContent>
+          </>
+        )}
       </Tabs>
     </div>
   );

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Star, Film, Tv, Heart, Plus, Users } from "lucide-react";
 import { MediaItem, GENRE_MAP } from "@/types";
-import { getImageUrl } from "../data/mock-movies";
+import { getImageUrl } from "@/lib/tmdb";
 
 interface CoupleRating {
   romancio: number;

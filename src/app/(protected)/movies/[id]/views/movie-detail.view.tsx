@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Star, Film, Tv, Heart, Plus, ArrowLeft, Calendar, Clock } from "lucide-react";
 import { MediaDetail, GENRE_MAP } from "@/types";
-import { getImageUrl } from "@/app/(protected)/movies/data/mock-movies";
+import { getImageUrl } from "@/lib/tmdb";
 import { MovieComments } from "@/app/(protected)/movies/components/movie-comments.component";
 import { MovieCoupleRating } from "@/app/(protected)/movies/components/movie-couple-rating.component";
 import Link from "next/link";
