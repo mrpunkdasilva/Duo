@@ -7,6 +7,13 @@ export interface ICoupleRating {
   recomendaria?: number;
 }
 
+export type WatchStatus = "not_watched" | "watching" | "watched" | "to_watch";
+
+export interface IWatchStatus {
+  userId: mongoose.Types.ObjectId;
+  status: WatchStatus;
+}
+
 export interface IMovie extends Document {
   _id: mongoose.Types.ObjectId;
   coupleId: mongoose.Types.ObjectId;
@@ -31,6 +38,7 @@ export interface IMovie extends Document {
   status?: string;
   coupleRating?: ICoupleRating;
   favoritedBy?: mongoose.Types.ObjectId[];
+  watchStatuses?: IWatchStatus[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -120,6 +128,10 @@ const MovieSchema = new Schema<IMovie>({
   favoritedBy: [{
     type: Schema.Types.ObjectId,
     ref: "User",
+  }],
+  watchStatuses: [{
+    userId: { type: Schema.Types.ObjectId, ref: "User" },
+    status: { type: String, enum: ["not_watched", "watching", "watched", "to_watch"] },
   }],
   createdAt: {
     type: Date,

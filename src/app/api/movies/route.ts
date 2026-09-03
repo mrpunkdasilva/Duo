@@ -25,6 +25,7 @@ function transformMovie(movie: Record<string, unknown>) {
     addedBy: movie.addedBy,
     favoritedBy: movie.favoritedBy,
     coupleRating: movie.coupleRating,
+    watchStatuses: movie.watchStatuses,
     createdAt: movie.createdAt,
   };
 }
@@ -173,15 +174,16 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
+    const userId = (session?.user as SessionUser)?.id;
 
-    if (!session?.user?.id) {
+    if (!userId) {
       return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
     }
 
     await connectToDatabase();
 
     const body = await request.json();
-    const { id, coupleRating, favorite } = body;
+    const { id, coupleRating, favorite, watchStatus } = body;
 
     if (!id) {
       return NextResponse.json(
@@ -198,9 +200,28 @@ export async function PUT(request: NextRequest) {
 
     if (favorite !== undefined) {
       if (favorite) {
-        updateData.$addToSet = { favoritedBy: session.user.id };
+        updateData.$addToSet = { favoritedBy: userId };
       } else {
-        updateData.$pull = { favoritedBy: session.user.id };
+        updateData.$pull = { favoritedBy: userId };
+      }
+    }
+
+    if (watchStatus !== undefined) {
+      const movie = await Movie.findById(id);
+      if (movie) {
+        const existingIndex = (movie.watchStatuses || []).findIndex(
+          (ws) => ws.userId.toString() === userId
+        );
+
+        if (existingIndex >= 0) {
+          updateData.$set = {
+            [`watchStatuses.${existingIndex}.status`]: watchStatus,
+          };
+        } else {
+          updateData.$push = {
+            watchStatuses: { userId, status: watchStatus },
+          };
+        }
       }
     }
 
