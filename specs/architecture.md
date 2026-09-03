@@ -23,22 +23,17 @@
 ```
 src/
 ├── app/
-│   ├── (auth)/                    # Pages públicas
+│   ├── (auth)/                         # Pages públicas
 │   │   ├── login/page.tsx
 │   │   └── register/page.tsx
-│   ├── (protected)/               # Pages autenticadas
-│   │   ├── layout.tsx             # Layout compartilhado (MobileNav)
+│   ├── (protected)/                    # Pages autenticadas
+│   │   ├── layout.tsx                  # Layout compartilhado (MobileNav)
 │   │   ├── home/page.tsx
-│   │   ├── places/
-│   │   │   ├── page.tsx
-│   │   │   ├── new/page.tsx
-│   │   │   └── [id]/
-│   │   │       ├── page.tsx
-│   │   │       └── edit/page.tsx
+│   │   ├── places/...
 │   │   ├── partner/page.tsx
 │   │   ├── categories/page.tsx
-│   │   └── profile/               # Feature complexa (MVVM)
-│   │       ├── page.tsx           # Controller/entry point
+│   │   └── profile/                    # ← Padrão MVVM
+│   │       ├── page.tsx
 │   │       ├── loading.tsx
 │   │       ├── types/
 │   │       ├── hooks/
@@ -46,27 +41,29 @@ src/
 │   │       ├── components/
 │   │       ├── data/
 │   │       └── utils/
-│   ├── api/                       # Rotas API
+│   ├── api/
 │   │   ├── auth/
-│   │   ├── user/                  # Clean Architecture
-│   │   ├── places/
-│   │   ├── categories/
-│   │   ├── couple/
-│   │   ├── stats/
-│   │   └── upload/
-│   ├── layout.tsx                 # Root layout
-│   ├── providers.tsx              # Client providers
+│   │   ├── user/                       # ← Padrão Clean Architecture
+│   │   │   ├── route.ts
+│   │   │   ├── application/
+│   │   │   ├── domain/
+│   │   │   └── infra/
+│   │   ├── places/route.ts
+│   │   ├── upload/route.ts
+│   │   └── ...
+│   ├── layout.tsx
+│   ├── providers.tsx
 │   └── globals.css
 ├── components/
-│   ├── ui/                        # Design system (primitivas)
-│   ├── layout/                    # Layout components
-│   └── features/                  # Componentes de domínio
-├── hooks/                         # Hooks globais
-├── lib/                           # Utilitários compartilhados
-├── models/                        # Models Mongoose
-├── types/                         # Types globais
-├── i18n/                          # Configuração i18n
-└── tests/                         # Testes (espelha src/)
+│   ├── ui/                             # Design system (primitivas)
+│   ├── layout/                         # Layout components
+│   └── features/                       # Componentes de domínio
+├── hooks/                              # Hooks globais
+├── lib/                                # Utilitários compartilhados
+├── models/                             # Models Mongoose
+├── types/                              # Types globais
+├── i18n/                               # Configuração i18n
+└── tests/                              # Testes (espelha src/)
 ```
 
 ---
@@ -78,7 +75,7 @@ src/
 | Localização | Padrão | Exemplo |
 |---|---|---|
 | `components/ui/` | Arquivo flat, sem sufixo | `button.tsx`, `card.tsx` |
-| `components/layout/` | Arquivo flat ou `index.tsx` | `page-header/page-header.component.tsx` |
+| `components/layout/` | `*.component.tsx` | `page-header.component.tsx` |
 | `components/features/` | `index.tsx` barrel | `place-card/index.tsx` |
 | Feature views | `*.view.tsx` | `profile-view.view.tsx` |
 | Feature components | `*.component.tsx` | `profile-card.component.tsx` |
@@ -88,9 +85,12 @@ src/
 | Feature types | `*.types.ts` | `profile.types.ts` |
 | API DTOs | `*.dto.ts` | `user-request.dto.ts` |
 | API strategies | `*.strategy.ts` | `validation.strategy.ts` |
+| API controllers | `*.controller.ts` | `user.controller.ts` |
+| API services | `*.service.ts` | `user.service.ts` |
+| API repositories | `*.repository.ts` | `user.repository.ts` |
+| API mappers | `*.mapper.ts` | `user.mapper.ts` |
 | Models | Arquivo flat | `user.ts`, `place.ts` |
 | Lib | Arquivo flat | `auth.ts`, `utils.ts` |
-| Rotas API | `route.ts` (Next.js) | `api/places/route.ts` |
 
 ### Diretórios
 
@@ -111,114 +111,60 @@ src/
 
 ---
 
-## Padrões de Páginas
+## Padrão de Página — MVVM
 
-### Página Simples
+Toda page complexa segue o padrão **Model-View-ViewModel**:
+
+```
+<page>/
+├── page.tsx              # Controller — entry point, view switcher
+├── loading.tsx           # Next.js loading state
+├── types/
+│   └── <page>.types.ts   # Types específicos da page
+├── hooks/
+│   └── use-<feature>/
+│       └── use-<feature>.hook.ts    # ViewModel — lógica de negócio
+├── views/
+│   └── <view-name>/
+│       └── <view-name>.view.tsx     # View — tela específica
+├── components/
+│   └── <component-name>/
+│       └── <component-name>.component.tsx  # Componentes reutilizáveis
+├── data/
+│   └── <data-name>/
+│       └── <data-name>.data.ts      # Constantes/dados estáticos
+└── utils/
+    └── <util-name>/
+        └── <util-name>.utils.ts     # Funções utilitárias locais
+```
+
+### Controller (page.tsx)
+
+O controller é o entry point. Ele usa um hook orquestrador para decidir qual view renderizar.
 
 ```tsx
 "use client";
 
-export default function SimplePage() {
-  const t = useTranslations("namespace");
-  // useState + useEffect para dados
-  return (
-    <PageContainer>
-      <PageHeader title={t("title")} />
-      {/* conteúdo */}
-    </PageContainer>
-  );
-}
-```
+import { useProfilePage } from "./hooks/use-profile-page/use-profile-page.hook";
+import { ProfileLoadingView } from "./views/profile-loading/profile-loading.view";
+import { ProfileEditView } from "./views/profile-edit/profile-edit.view";
+import { ProfileView } from "./views/profile-view/profile-view.view";
 
-### Página Complexa (MVVM)
-
-```
-page.tsx          → Controller (view switcher)
-hooks/            → Lógica de negócio
-views/            → Telas (loading, view, edit, password)
-components/       → Componentes reutilizáveis da page
-types/            → Types específicos da page
-data/             → Constantes/dados estáticos
-utils/            → Funções utilitárias locais
-```
-
-**Controller pattern:**
-
-```tsx
-// page.tsx
-export default function Page() {
-  const { view, props } = usePageHook();
+export default function ProfilePage() {
+  const { view, props } = useProfilePage();
 
   switch (view) {
-    case "loading": return <LoadingView {...props} />;
-    case "edit":    return <EditView {...props} />;
-    case "view":    return <ViewView {...props} />;
+    case "loading":  return <ProfileLoadingView />;
+    case "edit":     return <ProfileEditView {...props} />;
+    case "password": return <ProfilePasswordView {...props} />;
+    case "view":     return <ProfileView {...props} />;
   }
 }
 ```
 
----
+### ViewModel (hook)
 
-## Padrões de Componentes
-
-### UI Primitives (`components/ui/`)
-
-```tsx
-// button.tsx
-import { cn } from "@/lib/utils";
-
-function Button({ className, ...props }: React.ComponentProps<"button">) {
-  return (
-    <button
-      className={cn("base-styles", className)}
-      {...props}
-    />
-  );
-}
-
-export { Button };
-```
-
-### Layout Components (`components/layout/`)
-
-```tsx
-// page-header/page-header.component.tsx
-interface PageHeaderProps extends React.ComponentProps<"div"> {
-  title: string;
-  action?: React.ReactNode;
-}
-
-function PageHeader({ title, action, className, ...props }: PageHeaderProps) {
-  return (
-    <div className={cn("flex items-center justify-between", className)} {...props}>
-      <Heading as="h1" variant="page">{title}</Heading>
-      {action}
-    </div>
-  );
-}
-
-export { PageHeader };
-```
-
-### Feature Components (`components/features/`)
-
-```tsx
-// place-card/index.tsx
-interface PlaceCardProps {
-  place: Place;
-  onToggleVisited: (id: string) => void;
-}
-
-export function PlaceCard({ place, onToggleVisited }: PlaceCardProps) {
-  // ...
-}
-```
-
----
-
-## Padrões de Hooks
-
-### Hook de Feature
+O hook gere o estado e expõe ações para a view.
 
 ```tsx
 // use-profile.hook.ts
@@ -226,62 +172,237 @@ export function useProfile() {
   const [mode, setMode] = useState<Mode>("view");
   const [bannerColor, setBannerColor] = useState<string | null>(null);
 
-  // Lógica de negócio
+  const handleBack = useCallback(() => setMode("view"), []);
 
-  return {
-    mode,
-    setMode,
-    bannerColor,
-    handleBack,
-  };
+  return { mode, setMode, bannerColor, handleBack };
 }
 ```
 
-### Hook Orquestrador (View Switcher)
+### View
+
+A view é uma tela específica. Ela recebe props do hook e renderiza a UI.
 
 ```tsx
-// use-profile-page.hook.tsx
-export function useProfilePage() {
-  const { mode, ... } = useProfile();
+// profile-edit.view.tsx
+"use client";
 
-  // Retorna qual view mostrar e suas props
-  return { view: mode, props: { ... } };
+interface ProfileEditViewProps {
+  onBack: () => void;
+  onSaved: () => void;
+}
+
+export function ProfileEditView({ onBack, onSaved }: ProfileEditViewProps) {
+  return (
+    <PageContainer>
+      <PageHeader title={t("title")} />
+      <ProfileForm onCancel={onBack} onSaved={onSaved} />
+    </PageContainer>
+  );
 }
 ```
 
 ---
 
-## Padrões de API
+## Padrão de API — Clean Architecture
 
-### Rota Simples
+Toda rota API complexa segue a arquitetura limpa:
+
+```
+api/<resource>/
+├── route.ts                              # Entry point (GET/POST/PUT/DELETE)
+├── application/
+│   ├── controllers/
+│   │   └── <resource>.controller.ts      # Auth, validação, error handling
+│   └── use-cases/
+│       └── <resource>.service.ts         # Lógica de negócio
+├── domain/
+│   ├── dto/
+│   │   ├── <resource>-request.dto.ts     # Request shapes
+│   │   └── <resource>-response.dto.ts    # Response shapes
+│   ├── types/
+│   │   └── <resource>.types.ts           # Types do domínio
+│   └── strategies/
+│       ├── validation.strategy.ts        # Interface de validação
+│       └── <resource>-strategies.ts      # Implementações
+└── infra/
+    ├── mappers/
+    │   └── <resource>.mapper.ts          # Model → Domain
+    └── repositories/
+        └── <resource>.repository.ts      # Queries Mongoose
+```
+
+### Fluxo
+
+```
+route.ts → controller.ts → service.ts → repository.ts → Mongoose Model
+                            ↘ mapper.ts
+                            ↘ strategies/
+```
+
+### Route (Entry Point)
 
 ```tsx
-// api/places/route.ts
-export async function GET(request: Request) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user) {
-    return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
-  }
-
-  await connectToDatabase();
-  // Lógica de negócio
-
-  return NextResponse.json({ success: true, data: result });
+// api/user/route.ts
+export async function GET(request: NextRequest) {
+  const result = await getProfile();
+  return NextResponse.json(result.body, { status: result.status });
 }
 ```
 
-### Rota Clean Architecture
+### Controller
 
+O controller é responsável por:
+1. Verificar autenticação
+2. Validar input via Strategy
+3. Chamar o service
+4. Retornar `{ status, body }`
+
+```tsx
+// user.controller.ts
+export async function updateProfileController(body: unknown) {
+  const userId = await getAuthenticatedUserId();
+  if (!userId) {
+    return { status: 401 as const, body: { error: "Não autorizado" } };
+  }
+
+  const validation = validateWithStrategy(updateProfileStrategy, body);
+  if (!validation.success) {
+    return { status: 400 as const, body: { error: validation.error } };
+  }
+
+  const user = await updateProfile(userId, validation.data!);
+  return { status: 200 as const, body: { data: user } };
+}
 ```
-route.ts → controller.ts → service.ts → repository.ts → Model
-                            \-> mapper.ts
-                            \-> strategies/
+
+### Service (Use Case)
+
+O service contém a lógica de negócio pura.
+
+```tsx
+// user.service.ts
+export async function updateProfile(userId: string, data: UpdateProfileData): Promise<UserData> {
+  const user = await findUserById(userId);
+  if (!user) throw new Error("Usuário não encontrado");
+
+  if (data.email !== user.email) {
+    const existing = await findUserByEmail(data.email, userId);
+    if (existing) throw new Error("Este email já está em uso");
+  }
+
+  user.name = data.name;
+  user.email = data.email;
+  await saveUser(user);
+
+  return toUserData(user);
+}
+```
+
+### Strategy (Validação)
+
+Pattern para validação de input. Cada endpoint tem sua strategy.
+
+```tsx
+// validation.strategy.ts
+export type ValidationStrategy<T> = {
+  validate: (data: unknown) => ValidationResult<T>;
+};
+
+export interface ValidationResult<T> {
+  success: boolean;
+  data?: T;
+  error?: string;
+}
+
+// user-strategies.ts
+export class UpdateProfileStrategy implements ValidationStrategy<UpdateProfileDto> {
+  validate(data: unknown): ValidationResult<UpdateProfileDto> {
+    // Validação dos campos
+    return { success: true, data: { ... } };
+  }
+}
+
+export function validateWithStrategy<T>(
+  strategy: ValidationStrategy<T>,
+  data: unknown
+): ValidationResult<T> {
+  return strategy.validate(data);
+}
+```
+
+### Repository
+
+O repository encapsula as queries ao banco.
+
+```tsx
+// user.repository.ts
+export async function findUserById(userId: string): Promise<IUser | null> {
+  await connectToDatabase();
+  return User.findById(userId).select(USER_FIELDS);
+}
+
+export async function saveUser(user: IUser): Promise<void> {
+  await user.save();
+}
+```
+
+### Mapper
+
+O mapper converte entre models do banco e types do domínio.
+
+```tsx
+// user.mapper.ts
+export function toUserData(user: IUser): UserData {
+  return {
+    id: user._id.toString(),
+    name: user.name,
+    email: user.email,
+    image: user.image || null,
+    bannerColor: user.bannerColor || null,
+    createdAt: user.createdAt,
+  };
+}
 ```
 
 ### Response Shape
 
 ```typescript
-{ success: boolean; data?: T; error?: string }
+{ data?: T; error?: string }
+```
+
+---
+
+## UI Primitives (`components/ui/`)
+
+```tsx
+import { cn } from "@/lib/utils";
+
+function Button({ className, ...props }: React.ComponentProps<"button">) {
+  return (
+    <button className={cn("base-styles", className)} {...props} />
+  );
+}
+
+export { Button };
+```
+
+**Skeleton Primitives:**
+- `Skeleton` — bloco genérico
+- `SkeletonCircle` — círculo (avatar)
+- `SkeletonSquare` — quadrado (ícone)
+- `SkeletonLine` — linha de texto
+- `SkeletonCard` — card container
+
+---
+
+## Layout Components (`components/layout/`)
+
+```tsx
+// PageContainer — wrapper centralizado
+<PageContainer>{children}</PageContainer>
+
+// PageHeader — título + ação
+<PageHeader title="Perfil" action={<Button>Editar</Button>} />
 ```
 
 ---
@@ -299,11 +420,8 @@ export interface IUser extends Document {
   coupleId?: mongoose.Types.ObjectId;
 }
 
-const UserSchema = new Schema<IUser>({
-  // ...
-});
+const UserSchema = new Schema<IUser>({ /* ... */ });
 
-// Índices compostos
 UserSchema.index({ coupleId: 1 });
 
 export default mongoose.models.User || mongoose.model<IUser>("User", UserSchema);
@@ -319,70 +437,45 @@ export default mongoose.models.User || mongoose.model<IUser>("User", UserSchema)
 ## i18n
 
 ```tsx
-// Uso
 const t = useTranslations("auth.login");
 t("title")
 t("greeting", { name: userName })
 t("placesToExplore", { count: n })  // ICU plural
+```
 
-// Estrutura do JSON
-{
-  "auth": {
-    "login": {
-      "title": "Entrar",
-      "greeting": "Olá, {name}"
-    }
-  }
+---
+
+## Hooks
+
+### Hook de Feature
+
+```tsx
+// use-profile.hook.ts
+export function useProfile() {
+  const [mode, setMode] = useState<Mode>("view");
+  // Lógica de negócio
+  return { mode, setMode, handleBack };
+}
+```
+
+### Hook Orquestrador (View Switcher)
+
+```tsx
+// use-profile-page.hook.tsx
+export function useProfilePage() {
+  const { mode, ... } = useProfile();
+  return { view: mode, props: { ... } };
 }
 ```
 
 ---
 
-## Skeleton Primitives
-
-```tsx
-import { Skeleton, SkeletonCircle, SkeletonLine, SkeletonCard, SkeletonSquare } from "@/components/ui/skeleton";
-
-// Uso
-<SkeletonCard>
-  <Skeleton className="h-24 rounded-none" />
-  <SkeletonCircle className="h-24 w-24" />
-  <SkeletonLine className="h-5 w-32" />
-</SkeletonCard>
-```
-
-**Primitivas disponíveis:**
-- `Skeleton` — bloco genérico
-- `SkeletonCircle` — círculo (avatar)
-- `SkeletonSquare` — quadrado (ícone)
-- `SkeletonLine` — linha de texto
-- `SkeletonCard` — card container
-
----
-
-## Layout Components
-
-```tsx
-// PageContainer — wrapper centralizado
-<PageContainer>
-  {children}
-</PageContainer>
-
-// PageHeader — título + ação
-<PageHeader
-  title="Perfil"
-  action={<Button>Editar</Button>}
-/>
-```
-
----
-
-## Estrutura de um Feature Module (Profile)
+## Padrão de um Feature Module Completo
 
 ```
 profile/
-├── page.tsx                    # Controller
-├── loading.tsx                 # Next.js loading
+├── page.tsx                          # Controller
+├── loading.tsx                       # Next.js loading
 ├── types/
 │   └── profile.types.ts
 ├── hooks/
@@ -418,4 +511,32 @@ profile/
 └── utils/
     └── color-utils/
         └── color-utils.utils.ts
+```
+
+---
+
+## Padrão de uma API Completa
+
+```
+user/
+├── route.ts
+├── application/
+│   ├── controllers/
+│   │   └── user.controller.ts
+│   └── use-cases/
+│       └── user.service.ts
+├── domain/
+│   ├── dto/
+│   │   ├── user-request.dto.ts
+│   │   └── user-response.dto.ts
+│   ├── types/
+│   │   └── user.types.ts
+│   └── strategies/
+│       ├── validation.strategy.ts
+│       └── user-strategies.ts
+└── infra/
+    ├── mappers/
+    │   └── user.mapper.ts
+    └── repositories/
+        └── user.repository.ts
 ```
