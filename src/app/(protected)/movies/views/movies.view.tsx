@@ -1,11 +1,13 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Heading } from "@/components/ui/heading";
-import { Search, Loader2, Plus, Filter } from "lucide-react";
+import { Search, Loader2, Plus, Filter, Heart, Film } from "lucide-react";
 import { MediaItem } from "@/types";
 import { MovieGrid } from "../components/movie-grid.component";
 import { MovieFilterDialog } from "../components/movie-filter-dialog.component";
@@ -25,13 +27,15 @@ const defaultFilters: Filters = {
 };
 
 export function MoviesView() {
+  const { data: session } = useSession();
+  const currentUserId = (session?.user as { id?: string })?.id;
   const [searchQuery, setSearchQuery] = useState("");
   const [movies, setMovies] = useState<MediaItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [filters, setFilters] = useState<Filters>(defaultFilters);
-  const [favorites, setFavorites] = useState<string[]>([]);
+  const [activeTab, setActiveTab] = useState<"all" | "favorites">("all");
 
   const fetchMovies = useCallback(async () => {
     setIsLoading(true);
@@ -63,12 +67,12 @@ export function MoviesView() {
     fetchMovies();
   }, [fetchMovies]);
 
-  useEffect(() => {
-    const favIds = movies
-      .filter((m) => m.favoritedBy && m.favoritedBy.length > 0)
+  const favorites = useMemo(() => {
+    if (!currentUserId) return [];
+    return movies
+      .filter((m) => m.favoritedBy && m.favoritedBy.includes(currentUserId))
       .map((m) => m._id as string);
-    setFavorites(favIds);
-  }, [movies]);
+  }, [movies, currentUserId]);
 
   const filteredMovies = movies.filter((movie) => {
     const query = searchQuery.toLowerCase();
@@ -109,6 +113,8 @@ export function MoviesView() {
     }
   });
 
+  const favoriteMovies = sortedMovies.filter((m) => favorites.includes(m._id as string));
+
   const handleToggleFavorite = async (item: MediaItem) => {
     const movieId = item._id as string;
     const isFav = favorites.includes(movieId);
@@ -127,8 +133,17 @@ export function MoviesView() {
         throw new Error("Erro ao atualizar favorito");
       }
 
-      setFavorites((prev) =>
-        isFav ? prev.filter((id) => id !== movieId) : [...prev, movieId]
+      setMovies((prev) =>
+        prev.map((m) =>
+          m._id === movieId
+            ? {
+                ...m,
+                favoritedBy: isFav
+                  ? (m.favoritedBy || []).filter((id) => id !== currentUserId)
+                  : [...(m.favoritedBy || []), currentUserId!],
+              }
+            : m
+        )
       );
     } catch (err) {
       console.error("Erro ao atualizar favorito:", err);
@@ -179,21 +194,57 @@ export function MoviesView() {
         </Button>
       </div>
 
-      {isLoading ? (
-        <div className="flex items-center justify-center py-12">
-          <Loader2 className="h-8 w-8 animate-spin text-duo-rose" />
-        </div>
-      ) : error ? (
-        <div className="text-center py-12">
-          <p className="text-destructive">{error}</p>
-        </div>
-      ) : (
-        <MovieGrid
-          items={sortedMovies}
-          onToggleFavorite={handleToggleFavorite}
-          favorites={favorites}
-        />
-      )}
+      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "all" | "favorites")}>
+        <TabsList className="w-full bg-muted/50 rounded-xl h-11">
+          <TabsTrigger value="all" className="flex-1 rounded-lg text-xs">
+            <Film className="h-3.5 w-3.5 mr-1" />
+            Todos ({sortedMovies.length})
+          </TabsTrigger>
+          <TabsTrigger value="favorites" className="flex-1 rounded-lg text-xs">
+            <Heart className="h-3.5 w-3.5 mr-1" />
+            Favoritos ({favoriteMovies.length})
+          </TabsTrigger>
+        </TabsList>
+
+        {isLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-duo-rose" />
+          </div>
+        ) : error ? (
+          <div className="text-center py-12">
+            <p className="text-destructive">{error}</p>
+          </div>
+        ) : (
+          <>
+            <TabsContent value="all" className="mt-4">
+              <MovieGrid
+                items={sortedMovies}
+                onToggleFavorite={handleToggleFavorite}
+                favorites={favorites}
+              />
+            </TabsContent>
+
+            <TabsContent value="favorites" className="mt-4">
+              {favoriteMovies.length === 0 ? (
+                <div className="text-center py-12">
+                  <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-muted/50 flex items-center justify-center">
+                    <Heart className="h-6 w-6 text-muted-foreground" />
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Nenhum favorito ainda
+                  </p>
+                </div>
+              ) : (
+                <MovieGrid
+                  items={favoriteMovies}
+                  onToggleFavorite={handleToggleFavorite}
+                  favorites={favorites}
+                />
+              )}
+            </TabsContent>
+          </>
+        )}
+      </Tabs>
 
       <MovieFilterDialog
         open={isFilterOpen}

@@ -158,7 +158,7 @@ export async function POST(request: NextRequest) {
       numberOfSeasons,
       numberOfEpisodes,
       status,
-      favoritedBy: [userId],
+      favoritedBy: [],
     });
 
     return NextResponse.json({ data: movie }, { status: 201 });
