@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Star, Film, Tv, Heart, Plus } from "lucide-react";
 import { MediaItem, GENRE_MAP } from "@/types";
@@ -27,7 +28,10 @@ export function MovieCard({
     .filter(Boolean);
 
   return (
-    <div className="relative w-full h-[70vh] min-h-[500px] rounded-2xl overflow-hidden group">
+    <Link
+      href={`/movies/${item.id}`}
+      className="block relative w-full h-[70vh] min-h-[500px] rounded-2xl overflow-hidden group"
+    >
       {item.backdrop_path ? (
         <img
           src={getImageUrl(item.backdrop_path, "original")}
@@ -96,7 +100,11 @@ export function MovieCard({
         <div className="flex items-center gap-3">
           {onToggleFavorite && (
             <button
-              onClick={() => onToggleFavorite(item.id)}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onToggleFavorite(item.id);
+              }}
               className="flex items-center justify-center w-12 h-12 rounded-full bg-white/20 hover:bg-white/30 transition-colors backdrop-blur-sm"
               aria-label={isFavorite ? "Remover dos favoritos" : "Adicionar aos favoritos"}
             >
@@ -110,7 +118,11 @@ export function MovieCard({
 
           {onAddToList && (
             <button
-              onClick={() => onAddToList(item)}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onAddToList(item);
+              }}
               className="flex items-center justify-center w-12 h-12 rounded-full bg-white/20 hover:bg-white/30 transition-colors backdrop-blur-sm"
               aria-label="Adicionar à lista"
             >
@@ -119,6 +131,6 @@ export function MovieCard({
           )}
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
