@@ -21,6 +21,8 @@ interface Comment {
 interface MovieCommentsProps {
   movieId: number;
   currentUserId?: string;
+  currentUserName?: string;
+  currentUserImage?: string;
   onAddComment?: (text: string) => void;
   onDeleteComment?: (commentId: string) => void;
 }
@@ -28,6 +30,8 @@ interface MovieCommentsProps {
 export function MovieComments({
   movieId,
   currentUserId,
+  currentUserName,
+  currentUserImage,
   onAddComment,
   onDeleteComment,
 }: MovieCommentsProps) {
@@ -44,7 +48,8 @@ export function MovieComments({
       const comment: Comment = {
         id: Date.now().toString(),
         userId: currentUserId || "current-user",
-        userName: "Você",
+        userName: currentUserName || "Você",
+        userImage: currentUserImage,
         text: newComment.trim(),
         createdAt: new Date(),
       };

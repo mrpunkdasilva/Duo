@@ -1,12 +1,14 @@
 "use client";
 
 import { useParams } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { MOCK_MOVIES, MOCK_TV_SHOWS } from "@/app/(protected)/movies/data/mock-movies";
 import { MovieDetailView } from "./views/movie-detail.view";
 import { MediaDetail } from "@/types";
 
 export default function MovieDetailPage() {
   const params = useParams();
+  const { data: session } = useSession();
   const id = Number(params.id);
 
   const movie = [...MOCK_MOVIES, ...MOCK_TV_SHOWS].find(
@@ -26,5 +28,12 @@ export default function MovieDetailPage() {
     );
   }
 
-  return <MovieDetailView movie={movie} />;
+  return (
+    <MovieDetailView
+      movie={movie}
+      currentUserId={(session?.user as { id?: string })?.id}
+      currentUserName={session?.user?.name || undefined}
+      currentUserImage={session?.user?.image || undefined}
+    />
+  );
 }

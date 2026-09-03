@@ -15,6 +15,9 @@ interface MovieDetailViewProps {
   onToggleFavorite?: (id: number) => void;
   isFavorite?: boolean;
   onAddToList?: (movie: MediaDetail) => void;
+  currentUserId?: string;
+  currentUserName?: string;
+  currentUserImage?: string;
 }
 
 export function MovieDetailView({
@@ -22,6 +25,9 @@ export function MovieDetailView({
   onToggleFavorite,
   isFavorite = false,
   onAddToList,
+  currentUserId,
+  currentUserName,
+  currentUserImage,
 }: MovieDetailViewProps) {
   const title = movie.title || movie.name || "Sem título";
   const date = movie.release_date || movie.first_air_date;
@@ -204,7 +210,12 @@ export function MovieDetailView({
 
         <Separator className="my-6" />
 
-        <MovieComments movieId={movie.id} />
+        <MovieComments
+          movieId={movie.id}
+          currentUserId={currentUserId}
+          currentUserName={currentUserName}
+          currentUserImage={currentUserImage}
+        />
 
         <div className="pb-8" />
       </div>
