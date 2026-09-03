@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Film, Tv, Heart, ArrowLeft, Calendar, Clock, Eye, CheckCircle, Clock as ClockIcon, ListPlus } from "lucide-react";
+import { Film, Tv, Heart, ArrowLeft, Calendar, Clock, Eye, CheckCircle, Clock as ClockIcon, ListPlus, Users } from "lucide-react";
 import { MediaItem, GENRE_MAP } from "@/types";
 import { getImageUrl } from "@/lib/tmdb";
 import { MovieComments } from "@/app/(protected)/movies/components/movie-comments.component";
@@ -41,6 +41,12 @@ export function MovieDetailView({
   const genres = (movie.genre_ids || [])
     .map((id: number) => GENRE_MAP[id])
     .filter(Boolean);
+
+  const coupleRating = movie.coupleRating;
+  const averageRating = coupleRating
+    ? Object.values(coupleRating).filter(Boolean).reduce((a, b) => a + b, 0) /
+      Object.values(coupleRating).filter(Boolean).length
+    : 0;
 
   const watchStatuses = movie.watchStatuses || [];
   const currentUserStatus = watchStatuses.find(
@@ -175,6 +181,18 @@ export function MovieDetailView({
                 {genre}
               </Badge>
             ))}
+          </div>
+        )}
+
+        {averageRating > 0 && (
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 bg-duo-rose/80 rounded-full px-3 py-1.5">
+              <Users className="h-4 w-4 text-white" />
+              <span className="text-white text-sm font-semibold">
+                {averageRating.toFixed(1)}
+              </span>
+            </div>
+            <span className="text-sm text-muted-foreground">Avaliação do Casal</span>
           </div>
         )}
 
