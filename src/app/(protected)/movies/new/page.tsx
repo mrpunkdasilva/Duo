@@ -165,7 +165,7 @@ export default function NewMoviePage() {
                   </div>
                 )}
 
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-black/20" />
 
                 <div className="absolute top-4 left-4 flex items-center gap-2">
                   <Badge className="bg-black/60 text-white border-0 text-xs px-3 py-1 backdrop-blur-sm">
