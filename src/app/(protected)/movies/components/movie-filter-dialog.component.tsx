@@ -76,23 +76,10 @@ export function MovieFilterDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <div className="flex items-center justify-between">
-            <DialogTitle className="flex items-center gap-2">
-              <Filter className="h-4 w-4 text-duo-rose" />
-              Filtros
-            </DialogTitle>
-            {activeFilterCount > 0 && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleClearAll}
-                className="h-7 text-xs text-muted-foreground"
-              >
-                <X className="h-3 w-3 mr-1" />
-                Limpar
-              </Button>
-            )}
-          </div>
+          <DialogTitle className="flex items-center gap-2">
+            <Filter className="h-4 w-4 text-duo-rose" />
+            Filtros
+          </DialogTitle>
           <DialogDescription>
             Filtre por tipo, gênero e ordenação
           </DialogDescription>
@@ -172,6 +159,16 @@ export function MovieFilterDialog({
         </div>
 
         <DialogFooter className="gap-2 sm:gap-0">
+          {activeFilterCount > 0 && (
+            <Button
+              variant="ghost"
+              onClick={handleClearAll}
+              className="rounded-xl text-muted-foreground"
+            >
+              <X className="h-4 w-4 mr-1" />
+              Limpar
+            </Button>
+          )}
           <Button
             variant="outline"
             onClick={() => onOpenChange(false)}
