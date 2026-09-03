@@ -2,9 +2,12 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Star, Film, Tv, Heart, Plus, ArrowLeft, Calendar, Clock, Users } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { Star, Film, Tv, Heart, Plus, ArrowLeft, Calendar, Clock } from "lucide-react";
 import { MediaDetail, GENRE_MAP } from "@/types";
 import { getImageUrl } from "@/app/(protected)/movies/data/mock-movies";
+import { MovieComments } from "@/app/(protected)/movies/components/movie-comments.component";
+import { MovieCoupleRating } from "@/app/(protected)/movies/components/movie-couple-rating.component";
 import Link from "next/link";
 
 interface MovieDetailViewProps {
@@ -194,6 +197,14 @@ export function MovieDetailView({
             </div>
           </div>
         )}
+
+        <Separator className="my-6" />
+
+        <MovieCoupleRating movieId={movie.id} />
+
+        <Separator className="my-6" />
+
+        <MovieComments movieId={movie.id} />
 
         <div className="pb-8" />
       </div>
