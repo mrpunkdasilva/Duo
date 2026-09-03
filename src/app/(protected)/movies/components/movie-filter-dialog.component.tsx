@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -75,22 +74,22 @@ export function MovieFilterDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md max-h-[85vh] overflow-hidden flex flex-col p-0">
-        <DialogHeader className="px-4 pt-4 pb-2">
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Filter className="h-5 w-5 text-duo-rose" />
-              <DialogTitle>Filtros</DialogTitle>
-            </div>
+            <DialogTitle className="flex items-center gap-2">
+              <Filter className="h-4 w-4 text-duo-rose" />
+              Filtros
+            </DialogTitle>
             {activeFilterCount > 0 && (
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={handleClearAll}
-                className="text-xs text-muted-foreground h-7"
+                className="h-7 text-xs text-muted-foreground"
               >
                 <X className="h-3 w-3 mr-1" />
-                Limpar tudo
+                Limpar
               </Button>
             )}
           </div>
@@ -99,7 +98,7 @@ export function MovieFilterDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto px-4 space-y-4">
+        <div className="space-y-4">
           <div className="space-y-3">
             <Label className="text-sm font-medium">Tipo</Label>
             <div className="flex gap-2">
@@ -126,7 +125,7 @@ export function MovieFilterDialog({
 
           <div className="space-y-3">
             <Label className="text-sm font-medium">Gêneros</Label>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto">
               {GENRES.map((genre) => (
                 <button
                   key={genre.id}
@@ -172,12 +171,19 @@ export function MovieFilterDialog({
           </div>
         </div>
 
-        <DialogFooter className="px-4 pb-4">
+        <DialogFooter className="gap-2 sm:gap-0">
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            className="rounded-xl"
+          >
+            Cancelar
+          </Button>
           <Button
             onClick={handleApply}
-            className="w-full h-11 bg-gradient-to-r from-duo-rose to-duo-teal hover:opacity-90"
+            className="rounded-xl bg-gradient-to-r from-duo-rose to-duo-teal hover:opacity-90"
           >
-            Aplicar Filtros
+            Aplicar
             {activeFilterCount > 0 && ` (${activeFilterCount})`}
           </Button>
         </DialogFooter>

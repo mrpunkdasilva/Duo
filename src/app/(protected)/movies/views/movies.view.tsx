@@ -32,16 +32,12 @@ export function MoviesView() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [filters, setFilters] = useState<Filters>(defaultFilters);
 
-  const fetchMovies = useCallback(async (query?: string) => {
+  const fetchMovies = useCallback(async () => {
     setIsLoading(true);
     setError(null);
 
     try {
       const searchParams = new URLSearchParams();
-
-      if (query) {
-        searchParams.set("q", query);
-      }
 
       if (filters.mediaType.length === 1) {
         searchParams.set("type", filters.mediaType[0]);
@@ -66,19 +62,14 @@ export function MoviesView() {
     fetchMovies();
   }, [fetchMovies]);
 
-  useEffect(() => {
-    const debounceTimer = setTimeout(() => {
-      if (searchQuery) {
-        fetchMovies(searchQuery);
-      } else {
-        fetchMovies();
-      }
-    }, 500);
-
-    return () => clearTimeout(debounceTimer);
-  }, [searchQuery, fetchMovies]);
-
   const filteredMovies = movies.filter((movie) => {
+    const query = searchQuery.toLowerCase();
+    const matchesSearch = !query || 
+      (movie.title || "").toLowerCase().includes(query) ||
+      (movie.name || "").toLowerCase().includes(query);
+
+    if (!matchesSearch) return false;
+
     if (filters.mediaType.length > 0) {
       if (!filters.mediaType.includes(movie.media_type)) {
         return false;
