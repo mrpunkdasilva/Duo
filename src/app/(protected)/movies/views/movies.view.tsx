@@ -1,27 +1,38 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useSession } from "next-auth/react";
+import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Heading } from "@/components/ui/heading";
-import { Search, Film, Tv, Heart, Loader2, Plus } from "lucide-react";
+import { Search, Loader2, Plus, Filter } from "lucide-react";
 import { MediaItem } from "@/types";
 import { MovieGrid } from "../components/movie-grid.component";
-import { MovieSearchDialog } from "../components/movie-search-dialog.component";
+import { MovieFilterDialog } from "../components/movie-filter-dialog.component";
+
+interface Filters {
+  mediaType: string[];
+  genres: number[];
+  yearRange: string;
+  sortBy: string;
+}
+
+const defaultFilters: Filters = {
+  mediaType: [],
+  genres: [],
+  yearRange: "",
+  sortBy: "recent",
+};
 
 export function MoviesView() {
-  const { data: session } = useSession();
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeTab, setActiveTab] = useState("all");
-  const [favorites, setFavorites] = useState<number[]>([]);
   const [movies, setMovies] = useState<MediaItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [filters, setFilters] = useState<Filters>(defaultFilters);
 
-  const fetchMovies = useCallback(async (query?: string, type?: string) => {
+  const fetchMovies = useCallback(async (query?: string) => {
     setIsLoading(true);
     setError(null);
 
@@ -30,7 +41,10 @@ export function MoviesView() {
 
       if (query) {
         searchParams.set("q", query);
-        searchParams.set("type", type || "multi");
+      }
+
+      if (filters.mediaType.length === 1) {
+        searchParams.set("type", filters.mediaType[0]);
       }
 
       const response = await fetch(`/api/movies?${searchParams.toString()}`);
@@ -46,7 +60,7 @@ export function MoviesView() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [filters.mediaType]);
 
   useEffect(() => {
     fetchMovies();
@@ -55,60 +69,53 @@ export function MoviesView() {
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
       if (searchQuery) {
-        fetchMovies(searchQuery, activeTab === "movies" ? "movie" : activeTab === "series" ? "tv" : "multi");
+        fetchMovies(searchQuery);
       } else {
         fetchMovies();
       }
     }, 500);
 
     return () => clearTimeout(debounceTimer);
-  }, [searchQuery, activeTab, fetchMovies]);
+  }, [searchQuery, fetchMovies]);
 
-  const filteredMovies = movies.filter((m) => m.media_type === "movie");
-  const filteredSeries = movies.filter((m) => m.media_type === "tv");
-
-  const allItems = movies;
-
-  const favoriteItems = movies.filter((item) => favorites.includes(item.id));
-
-  const handleToggleFavorite = (id: number) => {
-    setFavorites((prev) =>
-      prev.includes(id) ? prev.filter((fId) => fId !== id) : [...prev, id]
-    );
-  };
-
-  const handleAddToList = (item: MediaItem) => {
-    console.log("Adicionar à lista:", item);
-  };
-
-  const handleAddMovie = async (item: MediaItem) => {
-    const response = await fetch("/api/movies", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        tmdbId: item.id,
-        mediaType: item.media_type,
-        title: item.title,
-        name: item.name,
-        overview: item.overview,
-        posterPath: item.poster_path,
-        backdropPath: item.backdrop_path,
-        releaseDate: item.release_date,
-        firstAirDate: item.first_air_date,
-        voteAverage: item.vote_average,
-        voteCount: item.vote_count,
-        genreIds: item.genre_ids,
-        popularity: item.popularity,
-      }),
-    });
-
-    if (!response.ok) {
-      const data = await response.json();
-      throw new Error(data.error || "Erro ao adicionar filme");
+  const filteredMovies = movies.filter((movie) => {
+    if (filters.mediaType.length > 0) {
+      if (!filters.mediaType.includes(movie.media_type)) {
+        return false;
+      }
     }
 
-    fetchMovies();
+    if (filters.genres.length > 0) {
+      const movieGenres = movie.genre_ids || [];
+      if (!filters.genres.some((g) => movieGenres.includes(g))) {
+        return false;
+      }
+    }
+
+    return true;
+  });
+
+  const sortedMovies = [...filteredMovies].sort((a, b) => {
+    switch (filters.sortBy) {
+      case "rating":
+        return (b.vote_average || 0) - (a.vote_average || 0);
+      case "title":
+        return (a.title || "").localeCompare(b.title || "");
+      case "year":
+        const yearA = a.release_date || a.first_air_date || "";
+        const yearB = b.release_date || b.first_air_date || "";
+        return yearB.localeCompare(yearA);
+      default:
+        return 0;
+    }
+  });
+
+  const handleToggleFavorite = (id: number) => {
+    console.log("Toggle favorite:", id);
   };
+
+  const activeFilterCount =
+    filters.mediaType.length + filters.genres.length;
 
   return (
     <div className="px-4 pt-4 space-y-4">
@@ -119,97 +126,59 @@ export function MoviesView() {
         <p className="text-sm text-muted-foreground">
           Descubra e salve seus filmes e séries favoritos
         </p>
+        <Link href="/movies/new">
+          <Button className="bg-gradient-to-r from-duo-rose to-duo-teal hover:opacity-90">
+            <Plus className="h-4 w-4 mr-2" />
+            Adicionar
+          </Button>
+        </Link>
+      </div>
+
+      <div className="flex gap-2">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Buscar filmes ou séries..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-9 h-12 rounded-xl bg-muted/50"
+          />
+        </div>
         <Button
-          onClick={() => setIsDialogOpen(true)}
-          className="bg-gradient-to-r from-duo-rose to-duo-teal hover:opacity-90"
+          variant="outline"
+          onClick={() => setIsFilterOpen(true)}
+          className="h-12 px-4 rounded-xl relative"
         >
-          <Plus className="h-4 w-4 mr-2" />
-          Adicionar
+          <Filter className="h-4 w-4" />
+          {activeFilterCount > 0 && (
+            <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-duo-rose text-white text-xs flex items-center justify-center">
+              {activeFilterCount}
+            </span>
+          )}
         </Button>
       </div>
 
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="Buscar filmes ou séries..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-9 h-12 rounded-xl bg-muted/50"
+      {isLoading ? (
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="h-8 w-8 animate-spin text-duo-rose" />
+        </div>
+      ) : error ? (
+        <div className="text-center py-12">
+          <p className="text-destructive">{error}</p>
+        </div>
+      ) : (
+        <MovieGrid
+          items={sortedMovies}
+          onToggleFavorite={handleToggleFavorite}
+          favorites={[]}
         />
-      </div>
+      )}
 
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="w-full bg-muted/50 rounded-xl h-11">
-          <TabsTrigger value="all" className="flex-1 rounded-lg text-xs">
-            Todos ({allItems.length})
-          </TabsTrigger>
-          <TabsTrigger value="movies" className="flex-1 rounded-lg text-xs">
-            <Film className="h-3.5 w-3.5 mr-1" />
-            Filmes ({filteredMovies.length})
-          </TabsTrigger>
-          <TabsTrigger value="series" className="flex-1 rounded-lg text-xs">
-            <Tv className="h-3.5 w-3.5 mr-1" />
-            Séries ({filteredSeries.length})
-          </TabsTrigger>
-          <TabsTrigger value="favorites" className="flex-1 rounded-lg text-xs">
-            <Heart className="h-3.5 w-3.5 mr-1" />
-            ({favoriteItems.length})
-          </TabsTrigger>
-        </TabsList>
-
-        {isLoading ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-duo-rose" />
-          </div>
-        ) : error ? (
-          <div className="text-center py-12">
-            <p className="text-destructive">{error}</p>
-          </div>
-        ) : (
-          <>
-            <TabsContent value="all" className="mt-4">
-              <MovieGrid
-                items={allItems}
-                onAddToList={handleAddToList}
-                onToggleFavorite={handleToggleFavorite}
-                favorites={favorites}
-              />
-            </TabsContent>
-
-            <TabsContent value="movies" className="mt-4">
-              <MovieGrid
-                items={filteredMovies}
-                onAddToList={handleAddToList}
-                onToggleFavorite={handleToggleFavorite}
-                favorites={favorites}
-              />
-            </TabsContent>
-
-            <TabsContent value="series" className="mt-4">
-              <MovieGrid
-                items={filteredSeries}
-                onAddToList={handleAddToList}
-                onToggleFavorite={handleToggleFavorite}
-                favorites={favorites}
-              />
-            </TabsContent>
-
-            <TabsContent value="favorites" className="mt-4">
-              <MovieGrid
-                items={favoriteItems}
-                onAddToList={handleAddToList}
-                onToggleFavorite={handleToggleFavorite}
-                favorites={favorites}
-              />
-            </TabsContent>
-          </>
-        )}
-      </Tabs>
-
-      <MovieSearchDialog
-        open={isDialogOpen}
-        onOpenChange={setIsDialogOpen}
-        onAddMovie={handleAddMovie}
+      <MovieFilterDialog
+        open={isFilterOpen}
+        onOpenChange={setIsFilterOpen}
+        filters={filters}
+        onApplyFilters={setFilters}
       />
     </div>
   );
