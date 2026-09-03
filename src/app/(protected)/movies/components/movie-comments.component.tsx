@@ -25,32 +25,13 @@ interface MovieCommentsProps {
   onDeleteComment?: (commentId: string) => void;
 }
 
-const MOCK_COMMENTS: Comment[] = [
-  {
-    id: "1",
-    userId: "user-1",
-    userName: "Ana",
-    userImage: "",
-    text: "Esse filme é incrível! Já assisti 3 vezes e choro toda vez 😭",
-    createdAt: new Date("2024-01-15"),
-  },
-  {
-    id: "2",
-    userId: "user-2",
-    userName: "Pedro",
-    userImage: "",
-    text: "A melhor parte é quando ele volta no tempo e encontra a filha. Cena perfeita!",
-    createdAt: new Date("2024-01-16"),
-  },
-];
-
 export function MovieComments({
   movieId,
   currentUserId,
   onAddComment,
   onDeleteComment,
 }: MovieCommentsProps) {
-  const [comments, setComments] = useState<Comment[]>(MOCK_COMMENTS);
+  const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
