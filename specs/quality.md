@@ -111,6 +111,49 @@ src/tests/
 - `describe()` com nome do módulo/função
 - `it()` com descrição em inglês, começando com "should"
 
+#### Padrão AAA (Arrange, Act, Assert)
+
+Todo teste deve seguir o padrão AAA com comentários claros:
+
+```typescript
+it("should return user data when valid ID is provided", async () => {
+  // Arrange
+  const userId = "user-123";
+  const mockUser = { id: userId, name: "Test User" };
+  mockFindOne.mockResolvedValue(mockUser);
+
+  // Act
+  const result = await getUser(userId);
+
+  // Assert
+  expect(result).toEqual(mockUser);
+  expect(mockFindOne).toHaveBeenCalledWith({ _id: userId });
+});
+```
+
+#### Regras de Teste
+
+- Cada teste deve validar **um único conceito** (cenário lógico)
+- Use nomes descritivos no formato `should [expected behavior] when [condition]`
+- Evite lógica de controle (`if`, `for`, `while`) dentro dos testes
+- Teste **comportamento público** (não detalhes de implementação)
+- Use mocks apenas para dependências externas (APIs, serviços)
+- Prefira implementações reais quando possível
+
+#### Exemplos de Nomes de Teste
+
+```typescript
+// ✓ Correto
+it("should return 401 when no session exists", async () => { ... });
+it("should create user when valid data is provided", async () => { ... });
+it("should throw error when database connection fails", async () => { ... });
+
+// ✗ Errado
+it("test1", async () => { ... });
+it("works", async () => { ... });
+it("handles case", async () => { ... });
+```
+
 #### Estrutura Básica
 
 ```typescript
