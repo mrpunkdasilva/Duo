@@ -10,6 +10,7 @@ export interface ICoupleRating {
 export interface IMovie extends Document {
   _id: mongoose.Types.ObjectId;
   coupleId: mongoose.Types.ObjectId;
+  addedBy: mongoose.Types.ObjectId;
   tmdbId: number;
   mediaType: "movie" | "tv";
   title: string;
@@ -40,6 +41,11 @@ const MovieSchema = new Schema<IMovie>({
     ref: "Couple",
     required: [true, "ID do casal é obrigatório"],
     index: true,
+  },
+  addedBy: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    required: [true, "ID do usuário que adicionou é obrigatório"],
   },
   tmdbId: {
     type: Number,

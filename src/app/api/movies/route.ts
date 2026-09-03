@@ -113,6 +113,7 @@ export async function POST(request: NextRequest) {
 
     const movie = await Movie.create({
       coupleId,
+      addedBy: userId,
       tmdbId,
       mediaType,
       title,
