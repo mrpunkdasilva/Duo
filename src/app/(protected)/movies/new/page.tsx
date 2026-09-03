@@ -139,7 +139,7 @@ export default function NewMoviePage() {
             Resultados ({results.length})
           </Heading>
 
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {results.map((item) => {
               const isAdded = addedIds.includes(item.id);
               const isAdding = addingId === item.id;
@@ -152,7 +152,7 @@ export default function NewMoviePage() {
               return (
                 <div
                   key={item.id}
-                  className="relative w-full h-[80vh] min-h-[600px] rounded-2xl overflow-hidden shadow-lg"
+                  className="relative w-full h-[60vh] min-h-[500px] rounded-2xl overflow-hidden shadow-lg"
                 >
                   {item.backdrop_path ? (
                     <img
