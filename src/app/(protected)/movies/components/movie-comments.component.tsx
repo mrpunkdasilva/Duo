@@ -68,7 +68,7 @@ export function MovieComments({
         Comentários
       </Heading>
 
-      <div className="flex gap-2 items-end">
+      <div className="flex gap-2 items-center">
         <Textarea
           placeholder="Deixe um comentário sobre o filme..."
           value={newComment}
