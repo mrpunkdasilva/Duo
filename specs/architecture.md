@@ -127,93 +127,276 @@ src/
 
 ## Padrão de Página — MVVM
 
-Toda page complexa segue o padrão **Model-View-ViewModel**:
+Toda page complexa segue o padrão **Model-View-ViewModel**, com referência completa no `profile/`.
+
+### Estrutura de Pastas
 
 ```
 <page>/
-├── page.tsx              # Controller — entry point, view switcher
-├── loading.tsx           # Next.js loading state
+├── page.tsx                          # Controller — entry point, view switcher
+├── loading.tsx                       # Next.js loading state
 ├── types/
-│   └── <page>.types.ts   # Types específicos da page
+│   └── <page>.types.ts               # ViewKey, interfaces das views, discriminated union
 ├── hooks/
-│   └── use-<feature>/
-│       └── use-<feature>.hook.ts    # ViewModel — lógica de negócio
+│   ├── use-<page>-page/
+│   │   └── use-<page>-page.hook.tsx  # Hook orquestrador — decide qual view renderizar
+│   ├── use-<page>/
+│   │   └── use-<page>.hook.ts        # ViewModel principal — estado + ações
+│   └── use-<page>-form/
+│       └── use-<page>-form.hook.ts   # ViewModel de formulário (se aplicável)
 ├── views/
 │   └── <view-name>/
-│       └── <view-name>.view.tsx     # View — tela específica
+│       └── <view-name>.view.tsx      # View — tela específica (UI pura)
 ├── components/
 │   └── <component-name>/
-│       └── <component-name>.component.tsx  # Componentes reutilizáveis
+│       └── <component-name>.component.tsx  # Componentes reutilizáveis da feature
 ├── data/
 │   └── <data-name>/
-│       └── <data-name>.data.ts      # Constantes/dados estáticos
+│       └── <data-name>.data.ts       # Constantes/dados estáticos
 └── utils/
     └── <util-name>/
-        └── <util-name>.utils.ts     # Funções utilitárias locais
+        └── <util-name>.utils.ts      # Funções utilitárias locais
+```
+
+### Referência: `profile/`
+
+```
+profile/
+├── page.tsx                          # Controller
+├── loading.tsx                       # Next.js loading
+├── types/
+│   └── profile.types.ts              # ViewKey, ProfileUser, MenuItem, PageResult
+├── hooks/
+│   ├── use-profile-page/
+│   │   └── use-profile-page.hook.tsx # Orquestrador — retorna discriminated union
+│   ├── use-profile/
+│   │   └── use-profile.hook.ts       # Estado (mode, bannerColor, isLoading)
+│   └── use-profile-form/
+│       └── use-profile-form.hook.ts  # Estado do form + handleSave
+├── views/
+│   ├── profile-view/
+│   │   └── profile-view.view.tsx     # Tela principal (card + menu + signout)
+│   ├── profile-edit/
+│   │   └── profile-edit.view.tsx     # Tela de edição
+│   ├── profile-password/
+│   │   └── profile-password.view.tsx # Tela de troca de senha
+│   └── profile-loading/
+│       └── profile-loading.view.tsx  # Skeleton de loading
+├── components/
+│   ├── profile-card/
+│   │   └── profile-card.component.tsx
+│   ├── profile-form/
+│   │   └── profile-form.component.tsx
+│   ├── profile-menu-item/
+│   │   └── profile-menu-item.component.tsx
+│   └── skeleton/
+│       └── skeleton.component.tsx
+├── data/
+│   └── banner-presets/
+│       └── banner-presets.data.ts
+└── utils/
+    ├── color-utils/
+    │   └── color-utils.utils.ts
+    └── file-utils/
+        └── file-utils.utils.ts
 ```
 
 ### Controller (page.tsx)
 
-O controller é o entry point. Ele usa um hook orquestrador para decidir qual view renderizar.
+O controller é o entry point. Ele usa um hook orquestrador para decidir qual view renderizar via **discriminated union**.
 
 ```tsx
 "use client";
 
 import { useProfilePage } from "./hooks/use-profile-page/use-profile-page.hook";
-import { ProfileLoadingView } from "./views/profile-loading/profile-loading.view";
-import { ProfileEditView } from "./views/profile-edit/profile-edit.view";
 import { ProfileView } from "./views/profile-view/profile-view.view";
+import { ProfileEditView } from "./views/profile-edit/profile-edit.view";
+import { ProfilePasswordView } from "./views/profile-password/profile-password.view";
+import { ProfileLoadingView } from "./views/profile-loading/profile-loading.view";
+import type {
+  ProfileLoadingViewProps,
+  ProfileEditViewProps,
+  ProfilePasswordViewProps,
+  ProfileViewProps,
+} from "./types/profile.types";
 
 export default function ProfilePage() {
-  const { view, props } = useProfilePage();
+  const result = useProfilePage();
 
-  switch (view) {
-    case "loading":  return <ProfileLoadingView />;
-    case "edit":     return <ProfileEditView {...props} />;
-    case "password": return <ProfilePasswordView {...props} />;
-    case "view":     return <ProfileView {...props} />;
+  switch (result.view) {
+    case "loading":
+      return <ProfileLoadingView {...result.props as ProfileLoadingViewProps} />;
+    case "edit":
+      return <ProfileEditView {...result.props as ProfileEditViewProps} />;
+    case "password":
+      return <ProfilePasswordView {...result.props as ProfilePasswordViewProps} />;
+    case "view":
+      return <ProfileView {...result.props as ProfileViewProps} />;
+    default:
+      return null;
   }
 }
 ```
 
-### ViewModel (hook)
+### Types (discriminated union)
 
-O hook gere o estado e expõe ações para a view.
+O type principal é uma discriminated union que amarra `view` ao seu `props`:
+
+```tsx
+// profile.types.ts
+export type ViewKey = "loading" | "view" | "edit" | "password";
+
+export type ProfilePageResult =
+  | { view: "loading"; props: ProfileLoadingViewProps }
+  | { view: "edit"; props: ProfileEditViewProps }
+  | { view: "password"; props: ProfilePasswordViewProps }
+  | { view: "view"; props: ProfileViewProps };
+```
+
+Cada view tem sua interface de props:
+
+```tsx
+export interface ProfileViewProps {
+  title: string;
+  editText: string;
+  onEdit: () => void;
+  bannerColor: string | null;
+  user: ProfileUser;
+  menuItems: MenuItem[];
+  signOutText: string;
+}
+
+export interface ProfileEditViewProps {
+  title: string;
+  onBack: () => void;
+  onSaved: () => void;
+}
+```
+
+### Hook Orquestrador (use-profile-page)
+
+O hook orquestrador é o "cerébro" da page. Ele:
+1. Usa hooks de dependência (session, traduções, ViewModel)
+2. Retorna a discriminated union `{ view, props }`
+3. Monta os menuItems, callbacks e dados para a view
+
+```tsx
+// use-profile-page.hook.tsx
+export function useProfilePage(): ProfilePageResult {
+  const t = useTranslations("profile");
+  const { status, data: session } = useSession();
+  const { mode, setMode, bannerColor, isLoading, handleBack } = useProfile();
+
+  if (status === "loading") {
+    return { view: "loading", props: { title: t("title") } };
+  }
+
+  if (isLoading) {
+    return { view: "loading", props: { title: t("title") } };
+  }
+
+  if (mode === "edit") {
+    return {
+      view: "edit",
+      props: { title: t("title"), onBack: handleBack, onSaved: handleBack },
+    };
+  }
+
+  return {
+    view: "view",
+    props: {
+      title: t("title"),
+      editText: t("edit"),
+      onEdit: () => setMode("edit"),
+      bannerColor,
+      user,
+      menuItems,
+      signOutText: t("signOut"),
+    },
+  };
+}
+```
+
+### ViewModel (use-profile)
+
+O ViewModel principal gere o estado compartilhado entre views:
 
 ```tsx
 // use-profile.hook.ts
 export function useProfile() {
   const [mode, setMode] = useState<Mode>("view");
   const [bannerColor, setBannerColor] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadProfile() {
+      try {
+        const res = await fetch("/api/user");
+        if (res.ok) {
+          const data = await res.json();
+          setBannerColor(data.data?.bannerColor || null);
+        }
+      } catch {} finally {
+        setIsLoading(false);
+      }
+    }
+    loadProfile();
+  }, []);
 
   const handleBack = useCallback(() => setMode("view"), []);
 
-  return { mode, setMode, bannerColor, handleBack };
+  return { mode, setMode, bannerColor, isLoading, handleBack };
 }
 ```
 
 ### View
 
-A view é uma tela específica. Ela recebe props do hook e renderiza a UI.
+A view é uma tela específica. Ela recebe props do hook e renderiza a UI. **UI pura — zero lógica de negócio.**
 
 ```tsx
-// profile-edit.view.tsx
-"use client";
-
-interface ProfileEditViewProps {
-  onBack: () => void;
-  onSaved: () => void;
-}
-
-export function ProfileEditView({ onBack, onSaved }: ProfileEditViewProps) {
+// profile-view.view.tsx
+export function ProfileView({
+  title,
+  editText,
+  onEdit,
+  bannerColor,
+  user,
+  menuItems,
+  signOutText,
+}: ProfileViewProps) {
   return (
     <PageContainer>
-      <PageHeader title={t("title")} />
-      <ProfileForm onCancel={onBack} onSaved={onSaved} />
+      <PageHeader
+        title={title}
+        action={
+          <Button variant="ghost" size="sm" onClick={onEdit} className="rounded-xl">
+            {editText}
+          </Button>
+        }
+      />
+      <ProfileCard name={user.name} email={user.email} image={user.image} bannerColor={bannerColor} />
+      <Stack gap={4}>
+        {menuItems.map((item, i) => (
+          <ProfileMenuItem key={i} {...item} />
+        ))}
+      </Stack>
+      <Button variant="outline" className="w-full h-12 rounded-xl text-destructive ..." onClick={() => signOut({ callbackUrl: "/login" })}>
+        <LogOut className="h-4 w-4 mr-2" />
+        {signOutText}
+      </Button>
     </PageContainer>
   );
 }
 ```
+
+### Regras do Padrão MVVM
+
+1. **Controller** — nunca contém lógica de negócio, apenas orquestra views
+2. **Hook orquestrador** — retorna discriminated union `{ view, props }`
+3. **ViewModel** — gere estado e ações, expõe para a view
+4. **View** — UI pura, recebe props, zero fetch/estado local complexo
+5. **Types** — discriminated union garante type safety entre view e props
+6. **loading.tsx** — sempre usa a view de loading correspondente
 
 ---
 
@@ -562,16 +745,214 @@ export default mongoose.models.User || mongoose.model<IUser>("User", UserSchema)
 
 ## i18n
 
+### Namespaces
+
+Cada feature tem seu namespace. O namespace é o **nome da feature em camelCase** no singular:
+
+| Feature | Namespace | Exemplo |
+|---|---|---|
+| Profile | `profile` | `useTranslations("profile")` |
+| Places | `places` | `useTranslations("places")` |
+| Place Detail | `placeDetail` | `useTranslations("placeDetail")` |
+| Place Form | `placeForm` | `useTranslations("placeForm")` |
+| New Place | `newPlace` | `useTranslations("newPlace")` |
+| Edit Place | `editPlace` | `useTranslations("editPlace")` |
+| Categories | `categories` | `useTranslations("categories")` |
+| Duo/Partner | `duo` | `useTranslations("duo")` |
+| Dashboard | `dashboard` | `useTranslations("dashboard")` |
+| Auth Login | `auth.login` | `useTranslations("auth.login")` |
+| Auth Register | `auth.register` | `useTranslations("auth.register")` |
+| Common | `common` | `useTranslations("common")` |
+| Nav | `nav` | `useTranslations("nav")` |
+
+### Regras de Naming
+
+1. **Namespace = feature name em camelCase**: `profile`, `placeForm`, `placeDetail`
+2. **Sub-namespaces com ponto**: `auth.login`, `auth.register`
+3. **Common para textos compartilhados**: `common.save`, `common.cancel`, `common.back`
+4. **Chaves em camelCase**: `title`, `nameRequired`, `changePassword`
+5. **Parâmetros com `{}`**: `t("greeting", { name: userName })`
+6. **ICU plural**: `t("placesToExplore", { count: n })` → `{count, plural, one {# lugar} other {# lugares}}`
+
+### Estrutura do JSON
+
+```json
+{
+  "common": {
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "back": "Voltar",
+    "error": "Erro"
+  },
+  "profile": {
+    "title": "Perfil",
+    "edit": "Editar",
+    "name": "Nome",
+    "nameRequired": "Nome é obrigatório"
+  },
+  "auth": {
+    "login": {
+      "title": "Entrar",
+      "email": "Email"
+    },
+    "register": {
+      "title": "Criar conta"
+    }
+  }
+}
+```
+
+### Uso
+
 ```tsx
-const t = useTranslations("auth.login");
+// Namespace principal da feature
+const t = useTranslations("profile");
 t("title")
+t("nameRequired")
+
+// Namespace de common (textos compartilhados)
+const tc = useTranslations("common");
+tc("save")
+tc("cancel")
+
+// Com parâmetros
 t("greeting", { name: userName })
-t("placesToExplore", { count: n })  // ICU plural
+
+// ICU plural
+t("placesToExplore", { count: n })
+// → "Vocês têm 1 lugar pra explorar" ou "Vocês têm 5 lugares pra explorar"
 ```
 
 ---
 
 ## Hooks
+
+### Regras Gerais
+
+1. **`useCallback`** — sempre para funções expostas em props ou passadas a dependências
+2. **`useMemo`** — para valores computados que dependem de estado
+3. **`useRef`** — para referências DOM e valores mutáveis que não causam re-render
+4. **Nunca** usar `useCallback`/`useMemo` inline no JSX
+5. **Sempre** tipar o retorno do hook
+
+### useCallback — Funções em Hooks
+
+**Quando usar:** Toda função que será exposta como prop ou passada como dependência.
+
+```tsx
+// use-profile.hook.ts
+export function useProfile() {
+  const [mode, setMode] = useState<Mode>("view");
+
+  // ✅ Correto — callback memorizado
+  const handleBack = useCallback(() => setMode("view"), []);
+
+  return { mode, setMode, handleBack };
+}
+```
+
+```tsx
+// use-avatar-upload.hook.ts
+export function useAvatarUpload({ onUpload }: UseAvatarUploadProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // ✅ Correto — callback memorizado com dependência
+  const triggerFileInput = useCallback(() => {
+    fileInputRef.current?.click();
+  }, []);
+
+  // ✅ Correto — callback async memorizado
+  const handleFileChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    // ... lógica
+    onUpload(data.url);
+  }, [onUpload]);
+
+  return { fileInputRef, triggerFileInput, handleFileChange };
+}
+```
+
+**Regras:**
+- `useCallback(() => { ... }, [])` — sem dependências (função estática)
+- `useCallback(() => { ... }, [dep])` — com dependências
+- **NUNCA** usar `useCallback` sem o array de dependências
+
+### useMemo — Valores Computados
+
+**Quando usar:** Valores derivados de estado que são caros de calcular ou usados como dependências.
+
+```tsx
+// use-profile-form.hook.ts
+export function useProfileForm({ onSaved }: UseProfileFormProps) {
+  const [name, setName] = useState(session?.user?.name || "");
+  const [email, setEmail] = useState(session?.user?.email || "");
+
+  // ✅ Correto — valor computado memorizado
+  const isFormValid = useMemo(() => {
+    return name.trim().length > 0 && email.trim().includes("@");
+  }, [name, email]);
+
+  return { name, setName, email, setEmail, isFormValid };
+}
+```
+
+**Regras:**
+- Usar para: validação, filtros, transformações de dados
+- **NUNCA** usar para: primitivos simples (`name.length > 0` → usar `useCallback` ou lógica inline)
+- Incluir **todas** as dependências no array
+
+### useRef — Referências DOM e Valores Mutáveis
+
+**Quando usar:** Acessar elementos DOM diretamente ou manter valores que não devem causar re-render.
+
+```tsx
+// use-avatar-upload.hook.ts
+export function useAvatarUpload({ onUpload }: UseAvatarUploadProps) {
+  // ✅ Correto — referência DOM
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const triggerFileInput = useCallback(() => {
+    fileInputRef.current?.click();
+  }, []);
+
+  return { fileInputRef, triggerFileInput };
+}
+```
+
+```tsx
+// Uso no componente
+<input ref={fileInputRef} type="file" className="hidden" />
+```
+
+**Regras:**
+- `useRef<T>(null)` — tipar o tipo do elemento DOM
+- **NUNCA** usar `useRef` para estado que deve causar re-render → usar `useState`
+- **NUNCA** atribuir `.current` diretamente → usar `useState` ou `useCallback`
+
+### Context — Quando Usar
+
+**Quando usar:** Dados que precisam ser acessados por múltiplos componentes aninhados (forms, auth, theme).
+
+```tsx
+// ✅ Padrão — Context para formulários (shadcn/ui)
+const FormFieldContext = React.createContext<FormFieldContextValue>({} as FormFieldContextValue);
+
+// Provider
+<FormFieldContext.Provider value={{ name: props.name }}>
+  <Controller {...props} />
+</FormFieldContext.Provider>
+
+// Consumer
+const fieldContext = React.useContext(FormFieldContext);
+```
+
+**Regras:**
+- Criar em `components/ui/` para contexts compartilhados
+- Usar `React.createContext` com tipo explícito
+- Provider sempre com valor default seguro (`{} as Type`)
+- **NUNCA** criar context para dados que podem ser passados via props
+- **NUNCA** usar Context para estado local de uma feature → usar hooks
 
 ### Hook de Feature
 
@@ -579,8 +960,11 @@ t("placesToExplore", { count: n })  // ICU plural
 // use-profile.hook.ts
 export function useProfile() {
   const [mode, setMode] = useState<Mode>("view");
-  // Lógica de negócio
-  return { mode, setMode, handleBack };
+  const [bannerColor, setBannerColor] = useState<string | null>(null);
+
+  const handleBack = useCallback(() => setMode("view"), []);
+
+  return { mode, setMode, bannerColor, handleBack };
 }
 ```
 
@@ -588,11 +972,20 @@ export function useProfile() {
 
 ```tsx
 // use-profile-page.hook.tsx
-export function useProfilePage() {
+export function useProfilePage(): ProfilePageResult {
   const { mode, ... } = useProfile();
   return { view: mode, props: { ... } };
 }
 ```
+
+### Checklist de Hooks
+
+- [ ] Funções expostas em props usam `useCallback`
+- [ ] Valores computados usam `useMemo`
+- [ ] Referências DOM usam `useRef<T>(null)`
+- [ ] Array de dependências sempre presente
+- [ ] Return type tipado (discriminated union ou interface)
+- [ ] Nenhum `useCallback`/`useMemo` inline no JSX
 
 ---
 
