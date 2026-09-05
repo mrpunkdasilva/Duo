@@ -48,6 +48,56 @@ user.id = token.id as string;
 - Nunca usar `any` — usar `unknown` + type guard se necessário
 - Nunca usar `as any` — criar interface ou usar type assertion adequada
 - `as unknown as Tipo` só como último recurso, com comentário explicativo
+
+---
+
+## 2. ZERO div em Pages e Componentes
+
+### Regra
+
+**PROIBIDO** o uso de `<div>` em arquivos de UI:
+- `page.tsx`
+- `views/*.view.tsx`
+- `components/*.component.tsx`
+
+### Substituições obrigatórias
+
+| Div用途 | Componente correto |
+|---|---|
+| `<div className="flex ...">` | `<Flex>` |
+| `<div className="grid ...">` | `<Grid>` |
+| `<div className="space-y-...">` | `<Stack gap={...}>` |
+| `<div className="p-...">` | `<Box p={...}>` ou `<Card>` |
+| `<div className="text-center">` | `<Center>` |
+| `<div className="relative ...">` | `<Position>` |
+| Container genérico | `<Box>` |
+
+### Componentes a criar (se não existirem)
+
+Criar em `src/components/ui/`:
+
+- `box.tsx` — Container genérico (substitui div)
+- `stack.tsx` — Layout vertical/horizontal com gap
+- `flex.tsx` — Flex wrapper
+- `grid.tsx` — Grid wrapper
+- `center.tsx` — Centralizar conteúdo
+- `position.tsx` — Posicionamento absoluto/relativo
+
+### Verificação
+
+Rodar antes de commitar:
+
+```bash
+grep -r "<div" src/app/\(protected\)/ --include="*.tsx" | grep -v "node_modules"
+```
+
+Deve retornar **ZERO** resultados em pages/views/components.
+
+### Exceções
+
+Únicos casos onde `<div>` é permitido:
+- Internamente em componentes shadcn/ui que já usam div
+- `<Separator>`, `<Skeleton>` — wrappers de terceiros
 - Exceção: `jest.Mock` casts em testes são aceitáveis
 
 ---

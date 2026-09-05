@@ -57,8 +57,19 @@ src/
 │   └── globals.css
 ├── components/
 │   ├── ui/                             # Design system (primitivas)
+│   │   ├── button.tsx
+│   │   ├── card.tsx
+│   │   ├── box.tsx                     # ← Container genérico (substitui div)
+│   │   ├── stack.tsx                   # ← Layout vertical/horizontal
+│   │   ├── flex.tsx                    # ← Flex wrapper
+│   │   ├── grid.tsx                    # ← Grid wrapper
+│   │   └── ...
 │   ├── layout/                         # Layout components
+│   │   └── page-header/
+│   │       └── page-header.component.tsx
 │   └── features/                       # Componentes de domínio
+│       └── place-card/
+│           └── place-card.component.tsx
 ├── hooks/                              # Hooks globais
 ├── lib/                                # Utilitários compartilhados
 ├── models/                             # Models Mongoose
@@ -77,7 +88,7 @@ src/
 |---|---|---|
 | `components/ui/` | Arquivo flat, sem sufixo | `button.tsx`, `card.tsx` |
 | `components/layout/` | `*.component.tsx` | `page-header.component.tsx` |
-| `components/features/` | `index.tsx` barrel | `place-card/index.tsx` |
+| `components/features/` | `*.component.tsx` dentro de pasta | `place-card/place-card.component.tsx` |
 | Feature views | `*.view.tsx` | `profile-view.view.tsx` |
 | Feature components | `*.component.tsx` | `profile-card.component.tsx` |
 | Feature hooks | `*.hook.ts` / `*.hook.tsx` | `use-profile.hook.ts` |
@@ -97,6 +108,8 @@ src/
 
 - **kebab-case** para tudo: `profile-card/`, `use-profile/`, `banner-presets/`
 - **Route groups** com parênteses: `(auth)/`, `(protected)/`
+- **Componentes em pastas** com arquivo `*.component.tsx`: `movie-card/movie-card.component.tsx`
+- **NUNCA usar `index.tsx`** — sempre nome explícito do arquivo
 
 ### Exports
 
@@ -373,6 +386,68 @@ export function toUserData(user: IUser): UserData {
 
 ---
 
+## Regras de Componentes
+
+### 1. Componentes sempre em pastas
+
+Nunca criar arquivos de componente soltos. Sempre seguir o padrão:
+
+```
+components/
+├── component-name/
+│   └── component-name.component.tsx    # Componente
+│   └── index.ts                         # Barrel export (opcional)
+```
+
+### 2. Usar apenas Design System + shadcn/ui
+
+Se um componente não existe, **criar** antes de usar `div`. O projeto usa:
+
+- **shadcn/ui** (`components/ui/`) — componentes base: Button, Card, Input, Badge, Select, Dialog, etc.
+- **Design System custom** (`components/ui/`) — primitivas próprias: Skeleton, Heading, PageContainer, PageHeader, etc.
+
+**NÃO usar `div` com estilos inline para criar componentes visuais.** Sempre buscar equivalente no design system.
+
+### 3. Localização dos componentes
+
+| Tipo | Localização | Exemplo |
+|---|---|---|
+| **Genérico** (reutilizável em múltiplas features) | `src/components/ui/` ou `src/components/layout/` | Button, Card, PageContainer |
+| **Específico da feature** | `src/app/(protected)/<feature>/components/` | MovieCard, ProfileForm |
+
+### 4. ZERO div em pages e componentes de page
+
+**PROIBIDO** o uso de `<div>` em:
+- `page.tsx`
+- `views/*.view.tsx`
+- `components/*.component.tsx`
+
+**Substituições obrigatórias:**
+
+| DIV用途 | Componente correto |
+|---|---|
+| `<div className="flex ...">` | `<Flex>` ou `<Stack>` (criar se necessário) |
+| `<div className="grid ...">` | `<Grid>` (criar se necessário) |
+| `<div className="space-y-...">` | `<Stack gap={...}>` |
+| `<div className="p-...">` | `<Box p={...}>` ou `<Card>` |
+| `<div className="text-center">` | `<Center>` ou `<TextAlign>` |
+| `<div className="relative ...">` | `<Position>` ou `<Box>` |
+| `<div className="hidden ...">` | `<Show>` ou `<VisuallyHidden>` |
+| Layout wrapper genérico | `<Box>` — o "div" do design system |
+
+**Componentes `<Box>` e `<Stack>` devem ser criados em `components/ui/`** se não existirem.
+
+### 5. Excepciones ao uso de div
+
+Únicos casos onde `<div>` é permitido:
+- `<Separator>` (shadcn) — internamente usa div
+- `<Skeleton>` — wrapper de loading
+- Layouts internos de shadcn/ui que já usam div
+
+**Verificação:** Rodar `grep -r "<div" src/app/` deve retornar ZERO resultados em pages/views/components.
+
+---
+
 ## UI Primitives (`components/ui/`)
 
 ```tsx
@@ -385,6 +460,56 @@ function Button({ className, ...props }: React.ComponentProps<"button">) {
 }
 
 export { Button };
+```
+
+### Layout Primitives (criar se não existirem)
+
+| Componente | Uso | Equivalente div |
+|---|---|---|
+| `<Box>` | Container genérico com estilos | `<div className="...">` |
+| `<Stack>` | Layout vertical com gap | `<div className="space-y-...">` |
+| `<Flex>` | Layout flexível | `<div className="flex ...">` |
+| `<Grid>` | Layout em grid | `<div className="grid ...">` |
+| `<Center>` | Centralizar conteúdo | `<div className="flex items-center justify-center">` |
+| `<Position>` | posicionamento absoluto/relativo | `<div className="relative/absolute ...">` |
+
+**Exemplo de `<Box>`:**
+
+```tsx
+// components/ui/box.tsx
+interface BoxProps extends React.HTMLAttributes<HTMLDivElement> {
+  as?: React.ElementType;
+}
+
+export function Box({ as: Component = "div", className, ...props }: BoxProps) {
+  return <Component className={className} {...props} />;
+}
+```
+
+**Exemplo de `<Stack>`:**
+
+```tsx
+// components/ui/stack.tsx
+import { cn } from "@/lib/utils";
+
+interface StackProps extends React.HTMLAttributes<HTMLDivElement> {
+  gap?: number | string;
+  direction?: "row" | "column";
+}
+
+export function Stack({ gap = 4, direction = "column", className, ...props }: StackProps) {
+  return (
+    <div
+      className={cn(
+        "flex",
+        direction === "column" ? "flex-col" : "flex-row",
+        className
+      )}
+      style={{ gap: typeof gap === "number" ? `${gap * 0.25}rem` : gap }}
+      {...props}
+    />
+  );
+}
 ```
 
 **Skeleton Primitives:**
