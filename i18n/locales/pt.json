@@ -21,7 +21,8 @@
     "home": "Início",
     "places": "Lugares",
     "new": "Novo",
-    "duo": "Duo"
+    "duo": "Duo",
+    "timeline": "Timeline"
   },
   "auth": {
     "login": {
@@ -166,6 +167,14 @@
     "cafeteria": "Cafeteria",
     "bar": "Bar",
     "loja": "Loja"
+  },
+  "timeline": {
+    "title": "Timeline",
+    "empty": "Nenhuma memória ainda",
+    "emptyDescription": "Visite lugares e assistam filmes juntos para criar sua linha do tempo",
+    "place": "Lugar",
+    "movie": "Filme",
+    "memory": "Memória"
   },
   "metadata": {
     "title": "duo - Lugares para visitar juntos",
