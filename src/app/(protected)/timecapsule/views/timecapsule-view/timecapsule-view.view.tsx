@@ -2,8 +2,8 @@
 
 import { Lock, Unlock } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PageContainer } from "@/components/layout/page-container";
-import { PageHeader } from "@/components/layout/page-header";
+import { PageContainer } from "@/components/layout/page-container/page-container.component";
+import { PageHeader } from "@/components/layout/page-header/page-header.component";
 import { TimeCapsuleItem } from "../../components/timecapsule-item/timecapsule-item.component";
 import { TimeCapsuleMonthGroup } from "../../components/timecapsule-month/timecapsule-month.component";
 import { TimeCapsuleEmpty } from "../../components/timecapsule-empty/timecapsule-empty.component";
