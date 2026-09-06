@@ -4,11 +4,11 @@ import { Lock, Unlock } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PageContainer } from "@/components/layout/page-container";
 import { PageHeader } from "@/components/layout/page-header";
-import { TimeCapsuleItem } from "../components/timecapsule-item/timecapsule-item.component";
-import { TimeCapsuleMonthGroup } from "../components/timecapsule-month/timecapsule-month.component";
-import { TimeCapsuleEmpty } from "../components/timecapsule-empty/timecapsule-empty.component";
-import { TimeCapsuleForm } from "../components/timecapsule-form/timecapsule-form.component";
-import type { TimeCapsule } from "../types/timecapsule.types";
+import { TimeCapsuleItem } from "../../components/timecapsule-item/timecapsule-item.component";
+import { TimeCapsuleMonthGroup } from "../../components/timecapsule-month/timecapsule-month.component";
+import { TimeCapsuleEmpty } from "../../components/timecapsule-empty/timecapsule-empty.component";
+import { TimeCapsuleForm } from "../../components/timecapsule-form/timecapsule-form.component";
+import type { TimeCapsule } from "../../types/timecapsule.types";
 
 interface TimeCapsuleViewProps {
   sealedByMonth: Array<{
