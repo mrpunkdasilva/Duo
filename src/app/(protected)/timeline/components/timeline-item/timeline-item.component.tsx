@@ -1,3 +1,6 @@
+"use client";
+
+import { useRouter } from "next/navigation";
 import { MapPin, Film, Camera, Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -39,6 +42,7 @@ interface TimelineItemCardProps {
 }
 
 export function TimelineItemCard({ item }: TimelineItemCardProps) {
+  const router = useRouter();
   const config = TYPE_CONFIG[item.type];
   const Icon = config.icon;
 
@@ -47,8 +51,19 @@ export function TimelineItemCard({ item }: TimelineItemCardProps) {
     month: "short",
   });
 
+  const handleClick = () => {
+    if (item.type === "movie") {
+      router.push(`/movies/${item.sourceId}`);
+    } else {
+      router.push(`/places/${item.sourceId}`);
+    }
+  };
+
   return (
-    <Card className="ring-1 ring-foreground/10">
+    <Card
+      className="ring-1 ring-foreground/10 cursor-pointer hover:ring-foreground/20 hover:shadow-md transition-all"
+      onClick={handleClick}
+    >
       <CardContent className="p-4">
         <div className="flex gap-3">
           {item.photo && (
