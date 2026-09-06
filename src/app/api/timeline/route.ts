@@ -106,7 +106,7 @@ export async function GET(request: NextRequest) {
             : undefined,
           description: movieObj.overview?.slice(0, 100),
           rating: avgRating,
-          sourceId: movieObj._id.toString(),
+          sourceId: movieObj.tmdbId.toString(),
         });
       }
     }
