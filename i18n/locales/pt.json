@@ -22,7 +22,35 @@
     "places": "Lugares",
     "new": "Novo",
     "duo": "Duo",
-    "timeline": "Timeline"
+    "timeline": "Timeline",
+    "timecapsule": "Cápsulas"
+  },
+  "timecapsule": {
+    "title": "Cápsulas do Tempo",
+    "empty": "Nenhuma cápsula ainda",
+    "emptyDescription": "Crie uma cápsula do tempo para seu parceiro e abram juntos em uma data especial!",
+    "sealed": "Selada",
+    "opened": "Aberta",
+    "ready": "Pronta!",
+    "open": "Abrir",
+    "create": "Nova Cápsula",
+    "createTitle": "Nova Cápsula do Tempo",
+    "titlePlaceholder": "Ex: Nosso primeiro viagem juntos",
+    "messagePlaceholder": "Escreva uma mensagem para ser aberta no futuro...",
+    "openAt": "Data de abertura",
+    "createdAt": "Criada",
+    "opensAt": "Abre",
+    "daysUntil": "Abre em {count} dia(s)",
+    "readyToOpen": "Pronta para abrir!",
+    "sender": "De",
+    "recipient": "Para",
+    "creating": "Criando...",
+    "createSuccess": "Cápsula criada com sucesso!",
+    "openSuccess": "Cápsula aberta!",
+    "openError": "Essa cápsula ainda não pode ser aberta",
+    "sealedTab": "Seladas",
+    "openedTab": "Abertas",
+    "readyCapsules": "Prontas para abrir ({count})"
   },
   "auth": {
     "login": {
